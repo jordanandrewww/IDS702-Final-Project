@@ -1,0 +1,199 @@
+---
+title: "Project Proposal"
+author: "ALL group member names here"
+subtitle: "Due November 16 at 11:59pm"
+format: pdf
+editor: visual
+---
+
+#### Load Packages
+
+```{r load-packages, message = FALSE, warning = FALSE}
+library(tidyverse)
+```
+
+# Dataset 1 (top choice)
+
+**Data source:**
+
+**Brief description:**
+
+**Research question 1:**
+
+-   Outcome variable (include the name/description and type of variable):
+
+**Research question 2:**
+
+-   Outcome variable (include the name/description and type of variable):
+
+**Load the data and provide a `glimpse()`**:
+
+```{r data-1, warning=FALSE}
+
+```
+
+**Exploratory Plots:**
+
+```{r plots-1}
+
+```
+
+# Dataset 2
+
+**Data source:**
+
+Kaggle (**2025 Travelers UMC)**
+
+Link: <https://www.kaggle.com/competitions/2025-travelers-umc> \
+(It is a private link, but we have datasets)
+
+**Brief description:**
+
+This dataset contains **18000 rows** and **29 columns**, representing detailed records of auto insurance claims referred to the subrogation team between 2020 and 2021. The variables capture driver demographics, vehicle characteristics, claim details, and contextual factors such as liability percentage and accident type. Each row corresponds to a unique insurance claim, allowing investigation of how these factors relate to subrogation outcomes and estimated payout amounts.
+
+**Research question 1:**
+
+Are claims with a higher estimated policyholder liability percentage (*liab_prct*) less likely to result in subrogation?
+
+-   Outcome variable (include the name/description and type of variable):
+
+    **`subrogation`** – Indicator of whether the claim was subrogated (1 = yes, 0 = no).\
+    **Type:** *Binary*
+
+**Research question 2:**
+
+Does the estimated payout amount (*claim_est_payout*) differ significantly by accident type (*accident_type*) and the presence of a witness (*witness_present_ind*)?
+
+-   Outcome variable (include the name/description and type of variable):\
+    **`claim_est_payout`** – Estimated payout amount for the claim.\
+    **Type:** *Continuous*
+
+**Load the data and provide a `glimpse()`**:
+
+```{r data-2, warning=FALSE}
+library(dplyr)
+my_data <- read.csv("data/Training_TriGuard.csv")
+glimpse(my_data)
+```
+
+**Exploratory Plots:**
+
+```{r}
+# Load libraries
+library(tidyverse)
+
+# Load data
+file_path <- "data/Training_TriGuard.csv"
+df <- read.csv(file_path)
+
+# Keep only relevant variables
+eda_df <- df %>%
+  select(subrogation, liab_prct) %>%
+  filter(!is.na(subrogation), !is.na(liab_prct)) %>%
+  mutate(subrogation = factor(subrogation, labels = c("No Subrogation", "Subrogated")))
+
+# --- Plot 1: Distribution of the outcome variable (subrogation) ---
+ggplot(eda_df, aes(x = subrogation, fill = subrogation)) +
+  geom_bar(alpha = 0.8) +
+  theme_minimal() +
+  scale_fill_manual(values = c("#F08080", "#66C2A5")) +
+  labs(
+    title = "Distribution of Claims by Subrogation Status",
+    x = "Subrogation Status",
+    y = "Number of Claims",
+    fill = "Subrogation Status"
+  )
+
+# --- Plot 2: Relationship between liability % and subrogation ---
+ggplot(eda_df, aes(x = liab_prct, fill = subrogation)) +
+  geom_density(alpha = 0.6) +
+  theme_minimal() +
+  scale_fill_manual(values = c("#F08080", "#66C2A5")) +
+  labs(
+    title = "Distribution of Policyholder Liability Percentage by Subrogation Status",
+    x = "Policyholder Liability Percentage (liab_prct)",
+    y = "Density",
+    fill = "Subrogation Status"
+  )
+
+
+
+```
+
+```{r}
+# Load libraries
+library(tidyverse)
+
+# Load dataset
+file_path <- "data/Training_TriGuard.csv"
+df <- read.csv(file_path)
+
+# Keep only relevant variables
+eda_df <- df %>%
+  select(claim_est_payout, accident_type, witness_present_ind) %>%
+  filter(!is.na(claim_est_payout), !is.na(accident_type), !is.na(witness_present_ind)) %>%
+  mutate(
+    witness_present_ind = factor(witness_present_ind, labels = c("No Witness", "Witness Present"))
+  )
+
+# --- Plot 1: Distribution of outcome variable (claim_est_payout) ---
+ggplot(eda_df, aes(x = claim_est_payout)) +
+  geom_histogram(fill = "#66C2A5", color = "black", bins = 30, alpha = 0.8) +
+  theme_minimal() +
+  labs(
+    title = "Distribution of Estimated Claim Payout Amounts",
+    x = "Claim Estimated Payout (claim_est_payout)",
+    y = "Number of Claims"
+  )
+
+# --- Plot 2: Distribution of payout by accident type and witness presence ---
+ggplot(eda_df, aes(x = accident_type, y = claim_est_payout, fill = witness_present_ind)) +
+  geom_boxplot(alpha = 0.7, outlier.color = "red") +
+  theme_minimal() +
+  scale_fill_manual(values = c("#F08080", "#66C2A5")) +
+  labs(
+    title = "Estimated Claim Payout by Accident Type and Witness Presence",
+    x = "Accident Type",
+    y = "Estimated Claim Payout (claim_est_payout)",
+    fill = "Witness Presence"
+  )
+
+```
+
+# Dataset 3 (optional)
+
+**Data source:**
+
+**Brief description:**
+
+**Research question 1:**
+
+-   Outcome variable (include the name/description and type of variable):
+
+**Research question 2:**
+
+-   Outcome variable (include the name/description and type of variable):
+
+**Load the data and provide a `glimpse()`**:
+
+```{r data-3, warning=FALSE}
+
+```
+
+**Exploratory Plots:**
+
+```{r plots-3}
+
+```
+
+# 
+
+# Team Charter
+
+#### When will you meet as a team to work on the project components? Will these meetings be held in person or virtually?
+
+#### What is your group policy on missing team meetings (e.g., how much advance notice should be provided)?
+
+#### How will your team communicate (email, Slack, text messages)? What is your policy on appropriate response time (within a certain number of hours? Nights/weekends?)?
+
+#### 
