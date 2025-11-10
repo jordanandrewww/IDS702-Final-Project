@@ -247,40 +247,16 @@ ggplot(eda_df, aes(x = accident_type, y = claim_est_payout, fill = witness_prese
 
 ```
 
-# Dataset 3 (optional)
-
-**Data source:**
-
-**Brief description:**
-
-**Research question 1:**
-
--   Outcome variable (include the name/description and type of variable):
-
-**Research question 2:**
-
--   Outcome variable (include the name/description and type of variable):
-
-**Load the data and provide a `glimpse()`**:
-
-```{r data-3, warning=FALSE}
-
-```
-
-**Exploratory Plots:**
-
-```{r plots-3}
-
-```
-
-# 
-
 # Team Charter
 
 #### When will you meet as a team to work on the project components? Will these meetings be held in person or virtually?
 
+We will meet virtually at least once a week to discuss anything we have completed so far and to figure out what else needs to be completed during the following week. This way we all stay updated and on track, but can do work outside of group meetings.
+
 #### What is your group policy on missing team meetings (e.g., how much advance notice should be provided)?
+
+Our group policy is that we try to provide 24 hours notice for missing meetings.
 
 #### How will your team communicate (email, Slack, text messages)? What is your policy on appropriate response time (within a certain number of hours? Nights/weekends?)?
 
-#### 
+We communicate via Whatsapp, and our policy is to respond within 2 hours. If it is past 10pm, you don't need to respond until the next morning.
