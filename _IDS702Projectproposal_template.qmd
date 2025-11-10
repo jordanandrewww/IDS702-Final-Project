@@ -1,6 +1,6 @@
 ---
 title: "Project Proposal"
-author: "ALL group member names here"
+author: "Jordan Andrew, Pranshul Bhatnagar, Arushi Singh, and Jay Wu"
 subtitle: "Due November 16 at 11:59pm"
 format: pdf
 editor: visual
@@ -10,31 +10,131 @@ editor: visual
 
 ```{r load-packages, message = FALSE, warning = FALSE}
 library(tidyverse)
+library(dplyr)
 ```
 
 # Dataset 1 (top choice)
 
-**Data source:**
+**Data source:** Kaggle - <https://www.kaggle.com/datasets/catherinerasgaitis/mxmh-survey-results> (10/10 usability ranking)
 
 **Brief description:**
 
-**Research question 1:**
+This data set, which is called Music & Mental Health Survey Results, aims to capture any possible correlation between one's music taste and their self-reported mental health. This data set includes responses from 736 people and contains 33 variables, of which there are a mix of numeric and categorical. The data was collected between August and November of 2022 via a google form that was posted in various Reddit forums, Discord servers, and social media platforms. Posters and "business cards" were also used to advertise the form in libraries, parks, and other public locations. Each row represents a single person, and they were asked questions like their age, how many hours they spend listening to music each day, what streaming service they use most often, and to rank their experiences with various mental illnesses on a scale of 1-10.
+
+**Research question 1:** How does the number of hours spent listening to music per day vary by anxiety status and primary streaming service?
 
 -   Outcome variable (include the name/description and type of variable):
+    -   Name: Hours.per.day
+    -   Description: The self-reported number of hours each participant spends listening to music in a typical day
+    -   Type of variable: Continuous
 
-**Research question 2:**
+**Research question 2:** Are individuals who identify as instrumentalists or composers less likely to report symptoms of insomnia compared to non-musicians?
 
 -   Outcome variable (include the name/description and type of variable):
+    -   Name: Insomnia
+    -   Description: Self-reported measure indicating whether the participant experiences insomnia symptoms (e.g., difficulty falling or staying asleep); rated on a scale of 1-10, where we will say:
+        -   **0 = No or mild insomnia** (ratings 1–5)
+        -   **1 = Moderate to severe insomnia** (ratings 6–10)
+    -   Type of variable: Binary
 
 **Load the data and provide a `glimpse()`**:
 
 ```{r data-1, warning=FALSE}
+library(dplyr)
+music_data <- read.csv("data/mxmh_survey_results.csv")
+glimpse(music_data)
 
 ```
 
 **Exploratory Plots:**
 
 ```{r plots-1}
+
+# -------------------------------------------------------------------
+# EDA for Research Question 1:
+# How does the number of hours spent listening to music per day vary
+# by anxiety status and primary streaming service?
+# -------------------------------------------------------------------
+
+# 1. Outcome variable plot (Hours per day)
+ggplot(music_data, aes(x = Hours.per.day)) +
+  geom_histogram(fill = "#69b3a2", bins = 20, color = "white") +
+  labs(
+    title = "Distribution of Hours Spent Listening to Music per Day",
+    x = "Hours per Day",
+    y = "Count"
+  ) +
+  theme_minimal(base_size = 14)
+
+
+# 2. Relationship plot: Hours per day vs. Streaming Service, by Anxiety
+music_data <- music_data %>%
+  mutate(
+    anxiety_group = case_when(
+      Anxiety <= 3 ~ "Low (1–3)",
+      Anxiety <= 7 ~ "Moderate (4–7)",
+      Anxiety > 7 ~ "High (8–10)"
+    ),
+    anxiety_group = factor(anxiety_group, levels = c("Low (1–3)", "Moderate (4–7)", "High (8–10)"))
+  )
+
+ggplot(music_data, aes(x = Primary.streaming.service, y = Hours.per.day, fill = anxiety_group)) +
+  geom_boxplot() +
+  labs(
+    title = "Hours per Day by Streaming Service and Anxiety Group",
+    x = "Primary Streaming Service",
+    y = "Hours per Day",
+    fill = "Anxiety Group"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+```{r}
+music_data <- music_data %>%
+  mutate(
+    insomnia_binary = ifelse(Insomnia >= 6, 1, 0),
+    insomnia_binary = factor(insomnia_binary, labels = c("Low/Mild (1–5)", "Moderate/Severe (6–10)"))
+  )
+
+# -------------------------------------------------------------------
+# EDA for Research Question 2
+# -------------------------------------------------------------------
+
+# 1. Plot outcome variable: Insomnia Binary
+ggplot(music_data, aes(x = insomnia_binary, fill = insomnia_binary)) +
+  geom_bar() +
+  scale_fill_manual(values = c("#8ecae6", "#ffb703")) +
+  labs(
+    title = "Prevalence of Moderate to Severe Insomnia",
+    x = "Insomnia Status",
+    y = "Number of Participants"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "none")
+
+
+# 2. Relationship plot: Insomnia by Musical Engagement
+music_data %>%
+  mutate(musician_type = case_when(
+    Instrumentalist == "Yes" & Composer == "Yes" ~ "Both",
+    Instrumentalist == "Yes" ~ "Instrumentalist Only",
+    Composer == "Yes" ~ "Composer Only",
+    TRUE ~ "Neither"
+  )) %>%
+  ggplot(aes(x = musician_type, fill = insomnia_binary)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title = "Insomnia Prevalence by Musical Engagement",
+    x = "Musician Type",
+    y = "Percentage of Participants",
+    fill = "Insomnia Status"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1))
+
 
 ```
 
@@ -44,7 +144,7 @@ library(tidyverse)
 
 Kaggle (**2025 Travelers UMC)**
 
-Link: <https://www.kaggle.com/competitions/2025-travelers-umc> \
+Link: <https://www.kaggle.com/competitions/2025-travelers-umc>\
 (It is a private link, but we have datasets)
 
 **Brief description:**
@@ -71,20 +171,13 @@ Does the estimated payout amount (*claim_est_payout*) differ significantly by ac
 **Load the data and provide a `glimpse()`**:
 
 ```{r data-2, warning=FALSE}
-library(dplyr)
-my_data <- read.csv("data/Training_TriGuard.csv")
+df <- read.csv("data/Training_TriGuard.csv")
 glimpse(my_data)
 ```
 
 **Exploratory Plots:**
 
 ```{r}
-# Load libraries
-library(tidyverse)
-
-# Load data
-file_path <- "data/Training_TriGuard.csv"
-df <- read.csv(file_path)
 
 # Keep only relevant variables
 eda_df <- df %>%
@@ -121,12 +214,6 @@ ggplot(eda_df, aes(x = liab_prct, fill = subrogation)) +
 ```
 
 ```{r}
-# Load libraries
-library(tidyverse)
-
-# Load dataset
-file_path <- "data/Training_TriGuard.csv"
-df <- read.csv(file_path)
 
 # Keep only relevant variables
 eda_df <- df %>%
