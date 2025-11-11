@@ -172,7 +172,7 @@ Does the estimated payout amount (*claim_est_payout*) differ significantly by ac
 
 ```{r data-2, warning=FALSE}
 df <- read.csv("data/Training_TriGuard.csv")
-glimpse(my_data)
+glimpse(df)
 ```
 
 **Exploratory Plots:**
