@@ -247,6 +247,96 @@ ggplot(eda_df, aes(x = accident_type, y = claim_est_payout, fill = witness_prese
 
 ```
 
+# Dataset 3
+
+**Data source:**
+
+Kaggle
+
+Link: <https://www.kaggle.com/datasets/ayeshasiddiqa123/cars-pre?resource=download>
+
+**Brief description:**
+
+This dataset is a large flight-pricing dataset scraped from the online travel agency EaseMyTrip.com. The data was collected between February 11 and March 31st of 2022, using the Octoparse web-scraping tool and contains 300,153 unique flight booking options for travel between India's 6 major metropolitan cities. The data consists of both economy and business-class listings, which were collected separately and then merged into a single cleaned dataset. The dataset contains columns like airline, source city, class, flight duration, and price.
+
+**Research question 1:**
+
+How does the average ticket price differ across airlines, and does this relationship depend on seat class (Economy vs Business), controlling for route characteristics?
+
+Outcome variable: ticket price (continuous)
+
+**Research question 2:**
+
+Do business-class flights tend to depart at systematically earlier or later times of day compared to economy flights?
+
+Outcome variable: Arrival time of day ordinal/categorical (5 categories)
+
+-   early morning, morning, afternoon, evening, night
+
+**Load the data and provide a `glimpse()`**:
+
+```{r data-2, warning=FALSE}
+flight_data <- read.csv("data/airline_data.csv")
+glimpse(flight_data)
+```
+
+**Exploratory Plots:**
+
+```{r}
+
+# Distribution of flight ticket prices
+ggplot(flight_data, aes(x = price)) +
+  geom_histogram(bins = 20) +
+  labs(
+    title = "Histogram of Ticket Prices",
+    x = "Ticket Price (INR)",
+    y = "Count"
+  ) +
+  theme_minimal()
+
+# Ticket price by airline and seat class
+ggplot(flight_data, aes(x = airline, y = price, fill = class)) +
+  geom_boxplot(position = position_dodge()) +
+  labs(
+    title = "Ticket Price by Airline and Seat Class",
+    x = "Airline",
+    y = "Ticket Price (INR)",
+    fill = "Seat Class"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r}
+# Distribution of arrival time categories
+ggplot(flight_data, aes(x = arrival_time)) +
+  geom_bar() +
+  labs(
+    title = "Distribution of Arrival Time Categories",
+    x = "Arrival Time of Day",
+    y = "Count"
+  ) +
+  theme_minimal()
+
+# Arrival time distribution by seat class
+ggplot(flight_data, aes(x = arrival_time, fill = class)) +
+  geom_bar(position = "dodge") +
+  labs(
+    title = "Arrival Time Category by Seat Class",
+    x = "Arrival Time of Day",
+    y = "Count",
+    fill = "Seat Class"
+  ) +
+  theme_minimal()
+
+# Notice that there are a lot more economy flights in this dataset so might have to even out that distribution
+
+
+
+```
+
+# 
+
 # Team Charter
 
 #### When will you meet as a team to work on the project components? Will these meetings be held in person or virtually?
