@@ -1,0 +1,152 @@
+---
+title: "Final Project"
+author: "Jordan Andrew, Pranshul Bhatnagar, Arushi Singh, and Jay Wu"
+subtitle: "Due December 13th at 12:00pm"
+format: pdf
+editor: visual
+---
+
+#### Load Packages
+
+```{r load-packages, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(dplyr)
+```
+
+**Load the data and provide a `glimpse()`**:
+
+```{r data-1, warning=FALSE}
+library(dplyr)
+music_data <- read.csv("data/mxmh_survey_results.csv")
+glimpse(music_data)
+
+```
+
+# **Data Cleaning**
+
+```{r}
+# Showing which columns have null values and how many
+music_data %>%
+  summarise(across(everything(), ~ sum(is.na(.)))) %>%
+  pivot_longer(everything(), names_to = "column", values_to = "na_count") %>%
+  filter(na_count > 0) %>%
+  arrange(desc(na_count))
+
+```
+
+```{r}
+# Summary to spot outliers
+summary(music_data$Age)
+
+# Count unrealistic ages
+sum(music_data$Age < 10 | music_data$Age > 90, na.rm = TRUE)
+
+# View rows with unrealistic ages
+music_data %>% 
+  filter(Age < 10 | Age > 90)
+```
+
+```{r}
+
+# Checking that music hours per day doesn't contain unrealistic # of hours
+summary(music_data$Hours.per.day)
+
+music_data %>% 
+  filter(Hours.per.day < 0 | Hours.per.day > 16)
+
+# we will remove the 89 year old who listens to rap exclusively while working and has no perceived mental health issues
+
+```
+
+```{r}
+cols <- c("Anxiety", "Depression", "Insomnia", "OCD")
+
+# Checking if any values for self reported mental illness are out of the 0-10 range
+music_data %>% 
+  summarise(across(all_of(cols), 
+                   ~ sum(. < 0 | . > 10, na.rm = TRUE)))
+
+
+```
+
+```{r}
+yn_cols <- c(
+  "While.working",
+  "Instrumentalist",
+  "Composer",
+  "Exploratory",
+  "Foreign.languages"
+)
+
+# Checking to see if any of the "yes" "no" columns have values outside of these options
+sapply(music_data[yn_cols], function(x) all(x %in% c("Yes", "No")))
+
+lapply(music_data[yn_cols], function(x) setdiff(unique(x), c("Yes", "No")))
+
+sapply(music_data[yn_cols], function(x) sum(x == "", na.rm = TRUE))
+
+# We will drop the rows that having missing values here, as there is no clear way how to impute them
+
+
+```
+
+```{r}
+freq_cols <- c(
+  "Frequency..Classical.",
+  "Frequency..Country.",
+  "Frequency..EDM.",
+  "Frequency..Folk.",
+  "Frequency..Gospel.",
+  "Frequency..Hip.hop.",
+  "Frequency..Jazz.",
+  "Frequency..K.pop.",
+  "Frequency..Latin.",
+  "Frequency..Lofi.",
+  "Frequency..Metal.",
+  "Frequency..Pop.",
+  "Frequency..R.B.",
+  "Frequency..Rap.",
+  "Frequency..Rock.",
+  "Frequency..Video.game.music."
+)
+
+allowed_freq <- c("Never", "Rarely", "Sometimes", "Very frequently")
+
+
+# Checking to see if any of the frequency columns have values outside of "Never, Rarely, Sometimes, Very frequently"
+sapply(music_data[freq_cols], function(x) sum(!(x %in% allowed_freq)))
+```
+
+```{r}
+# Cleaning our data
+
+# dropping BPM column
+music_data <- music_data %>% select(-any_of("BPM"))
+
+# dropping 1 row that has a null value for Age
+music_data <- music_data %>% 
+  filter(!is.na(Age))
+
+# Dropping the 89 year old year old who listens to only rap while working 24 hours a day(unrealistic value)
+music_data <- music_data %>%
+  filter(!(Age == 89 & Hours.per.day == 24))
+
+# Dropping the rows that have non "yes" "no" answers for questions that only permit those values (9 rows were removed here)
+allowed_yn <- c("Yes", "No")
+
+music_data <- music_data %>%
+  filter(
+    if_all(all_of(yn_cols), ~ .x %in% allowed_yn)
+  )
+
+music_data_clean <- music_data
+
+glimpse(music_data_clean)
+
+```
+
+# **Modeling**
+
+```{r}
+
+```

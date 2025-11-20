@@ -149,7 +149,7 @@ Link: <https://www.kaggle.com/competitions/2025-travelers-umc>\
 
 **Brief description:**
 
-This dataset contains **18000 rows** and **29 columns**, representing detailed records of auto insurance claims referred to the subrogation team between 2020 and 2021. The variables capture driver demographics, vehicle characteristics, claim details, and contextual factors such as liability percentage and accident type. Each row corresponds to a unique insurance claim, allowing investigation of how these factors relate to subrogation outcomes and estimated payout amounts.
+This dataset contains **18000 rows** and **29 columns**, representing detailed records of auto insurance claims referred to the subrogation team between 2020 and 2021. The data is sampled from these claims. The variables capture driver demographics, vehicle characteristics, claim details, and contextual factors such as liability percentage and accident type. Each row corresponds to a unique insurance claim, allowing investigation of how these factors relate to subrogation outcomes and estimated payout amounts.
 
 **Research question 1:**
 
@@ -170,7 +170,7 @@ Does the estimated payout amount (*claim_est_payout*) differ significantly by ac
 
 **Load the data and provide a `glimpse()`**:
 
-```{r data-2, warning=FALSE}
+```{r}
 df <- read.csv("data/Training_TriGuard.csv")
 glimpse(df)
 ```
@@ -253,11 +253,11 @@ ggplot(eda_df, aes(x = accident_type, y = claim_est_payout, fill = witness_prese
 
 Kaggle
 
-Link: <https://www.kaggle.com/datasets/ayeshasiddiqa123/cars-pre?resource=download>
+Link:<https://www.kaggle.com/datasets/shubhambathwal/flight-price-prediction>
 
 **Brief description:**
 
-This dataset is a large flight-pricing dataset scraped from the online travel agency EaseMyTrip.com. The data was collected between February 11 and March 31st of 2022, using the Octoparse web-scraping tool and contains 300,153 unique flight booking options for travel between India's 6 major metropolitan cities. The data consists of both economy and business-class listings, which were collected separately and then merged into a single cleaned dataset. The dataset contains columns like airline, source city, class, flight duration, and price.
+This dataset is a large flight-pricing dataset scraped from the online travel agency EaseMyTrip.com. The data was collected between February 11 and March 31st of 2022, using the Octoparse web-scraping tool and contains 300,153 unique flight booking options for travel between India's 6 major metropolitan cities. Each row represents 1 flight option. The data consists of both economy and business-class listings, which were collected separately and then merged into a single cleaned dataset. The dataset contains 11 columns, including airline, source city, class, flight duration, and price.
 
 **Research question 1:**
 
