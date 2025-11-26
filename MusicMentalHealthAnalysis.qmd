@@ -11,6 +11,7 @@ editor: visual
 ```{r load-packages, message = FALSE, warning = FALSE}
 library(tidyverse)
 library(dplyr)
+library(car)
 ```
 
 **Load the data and provide a `glimpse()`**:
@@ -117,6 +118,8 @@ allowed_freq <- c("Never", "Rarely", "Sometimes", "Very frequently")
 sapply(music_data[freq_cols], function(x) sum(!(x %in% allowed_freq)))
 ```
 
+# **General Data Cleaning**
+
 ```{r}
 # Cleaning our data
 
@@ -145,32 +148,32 @@ glimpse(music_data_clean)
 
 ```
 
-# **Modeling**
+# **Research Question 1**
 
 ```{r}
-# Question 1: How does the number of hours spent listening to music per day vary by anxiety status and primary streaming service?
+# Question 1: How does the number of hours spent listening to music per day vary by depression status and primary streaming service?
 
-# factor the anxiety variable to have 3 levels (low, medium, high)
-music_data_clean <- music_data_clean |>
-  mutate(
-    Anxiety_num = case_when(
-      Anxiety <= 3 ~ 1,
-      Anxiety <= 7 ~ 2,
-      TRUE ~ 3
-    ),
-    Anxiety_cat = factor(
-      Anxiety_num,
-      levels = c(1, 2, 3),
-      labels = c("Low", "Medium", "High")
-    )
-  )
+# this will be the dataset used for our first research question
+music_data_1 <- music_data_clean
 
-# fit our linear regression model
-model_rq1 <- lm(
-Hours.per.day ~ Anxiety * Primary.streaming.service,
-data = music_data_clean)
+unique(music_data_1$Primary.streaming.service)
 
-summary(model_rq1)
+music_data_1 %>%
+  count(Primary.streaming.service)
+
+# removing the row where Primary.streaming.service is empty
+music_data_1 <- music_data_1 %>%
+  filter(Primary.streaming.service != "")
+
+music_data_1 %>%
+  filter(Primary.streaming.service == "I do not use a streaming service.")
+
+# removing the rows where participants stated they do not use a streaming service
+music_data_1 <- music_data_1 %>%
+  filter(Primary.streaming.service != "I do not use a streaming service.")
+
+music_data_1 %>%
+  count(Primary.streaming.service)
 
 
 
@@ -178,6 +181,33 @@ summary(model_rq1)
 
 ```
 
+# **Modeling for Research Question 1**
+
 ```{r}
-# Question 2: Are individuals who identify as instrumentalists or composers less likely to report symptoms of insomnia compared to non-musicians?
+# Question 1: How does the number of hours spent listening to music per day vary by depression status and primary streaming service?
+
+# fit our linear regression model
+model_rq1 <- lm(
+Hours.per.day ~ Depression*Primary.streaming.service,
+data = music_data_1)
+
+summary(model_rq1)
+```
+
+# **Diagnostics for Research Question 1 Model**
+
+```{r}
+plot(model_rq1)
+
+vif(model_rq1)
+
+
+
+```
+
+```{r}
+model_log <- lm(log(Hours.per.day + 1) ~ Depression * Primary.streaming.service,
+                data = music_data_1)
+
+summary(model_log)
 ```
