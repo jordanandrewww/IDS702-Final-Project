@@ -12,6 +12,7 @@ editor: visual
 library(tidyverse)
 library(dplyr)
 library(car)
+library(ggplot2)
 ```
 
 **Load the data and provide a `glimpse()`**:
@@ -117,6 +118,9 @@ allowed_freq <- c("Never", "Rarely", "Sometimes", "Very frequently")
 # Checking to see if any of the frequency columns have values outside of "Never, Rarely, Sometimes, Very frequently"
 sapply(music_data[freq_cols], function(x) sum(!(x %in% allowed_freq)))
 ```
+```{r}
+table(music_data$Music.effects)
+```
 
 # **General Data Cleaning**
 
@@ -141,6 +145,21 @@ music_data <- music_data %>%
   filter(
     if_all(all_of(yn_cols), ~ .x %in% allowed_yn)
   )
+
+# removing 7 rows where Music.effects has an empty string as a response
+music_data <- music_data %>%
+  filter(Music.effects != "")
+
+# Keep only columns that exist in the data
+freq_cols_present <- freq_cols[freq_cols %in% colnames(music_data)]
+
+# Only rename if any of these columns exist
+if (length(freq_cols_present) > 0) {
+  music_data <- music_data %>%
+    rename_with(.cols = all_of(freq_cols_present), 
+                .fn = ~ gsub("Frequency\\.\\.", "freq_", .x) %>% 
+                       gsub("\\.", "", .))  # Remove all remaining periods
+}
 
 music_data_clean <- music_data
 
@@ -174,11 +193,6 @@ music_data_1 <- music_data_1 %>%
 
 music_data_1 %>%
   count(Primary.streaming.service)
-
-
-
-
-
 ```
 
 # **Modeling for Research Question 1**
@@ -188,10 +202,39 @@ music_data_1 %>%
 
 # fit our linear regression model
 model_rq1 <- lm(
-Hours.per.day ~ Depression*Primary.streaming.service,
-data = music_data_1)
+  Hours.per.day ~ Depression * Primary.streaming.service +
+    Age +
+    While.working +
+    Instrumentalist +
+    Composer +
+    Exploratory +
+    Foreign.languages +
+    Anxiety +
+    Insomnia +
+    OCD +
+    Fav.genre +
+    Music.effects +
+    freq_Classical +
+    freq_Country +
+    freq_EDM +
+    freq_Folk +
+    freq_Gospel +
+    freq_Hiphop +
+    freq_Jazz +
+    freq_Kpop +
+    freq_Latin +
+    freq_Lofi +
+    freq_Metal +
+    freq_Pop +
+    freq_RB +
+    freq_Rap +
+    freq_Rock +
+    freq_Videogamemusic,
+  data = music_data_1
+)
 
 summary(model_rq1)
+
 ```
 
 # **Diagnostics for Research Question 1 Model**
@@ -199,15 +242,109 @@ summary(model_rq1)
 ```{r}
 plot(model_rq1)
 
+```
+```{r}
+# checking for multicollinearity
 vif(model_rq1)
+```
+```{r}
+# Possible transformations here (maybe get rid of those outlier points)
+```
+
+
+
+# **Log Transformation of Outcome Variable RQ1**
+```{r}
+
+```
+
+# **Research Question 2**
+
+```{r}
+# Question 2: “How does the number of hours spent listening to music each day impact the severity of reported depression symptoms?”
+
+# Use cleaned dataset
+music_data_2 <- music_data_clean
+
+# Fit logistic regression including all relevant predictors
+model2 <- glm(
+  Depression ~ Hours.per.day +
+    Age +
+    While.working +
+    Instrumentalist +
+    Composer +
+    Exploratory +
+    Foreign.languages +
+    Anxiety +
+    Insomnia +
+    OCD +
+    Fav.genre +
+    Music.effects +
+    freq_Classical +
+    freq_Country +
+    freq_EDM +
+    freq_Folk +
+    freq_Gospel +
+    freq_Hiphop +
+    freq_Jazz +
+    freq_Kpop +
+    freq_Latin +
+    freq_Lofi +
+    freq_Metal +
+    freq_Pop +
+    freq_RB +
+    freq_Rap +
+    freq_Rock +
+    freq_Videogamemusic,
+  data = music_data_2,
+  family = binomial
+)
+
+# View model summary
+summary(model2)
+
+# Coefficients on the odds scale
+exp(coef(model2))
+
 
 
 
 ```
+# **Diagnostics RQ2**
 
 ```{r}
-model_log <- lm(log(Hours.per.day + 1) ~ Depression * Primary.streaming.service,
-                data = music_data_1)
+# Leverage (hat values)
+plot(model2, which = 5)
 
-summary(model_log)
+hat_vals <- hatvalues(model2)
+which(hat_vals > 2 * mean(hat_vals))   # high leverage
+```
+```{r}
+# Goodness-of-fit: Hosmer–Lemeshow test
+library(ResourceSelection)
+hoslem.test(music_data_2$high_depression, fitted(model2), g = 5)
+
+
+```
+
+# **Research Question 2 Plots**
+```{r}
+
+# Create prediction data
+pred_df <- music_data_2 %>%
+  mutate(heavy_use = factor(heavy_use, levels = c(0,1), labels = c("Not Heavy ( <4 hrs )", "Heavy ( ≥4 hrs )"))) %>%
+  group_by(heavy_use) %>%
+  summarize(prob = mean(high_depression))
+
+# Plot
+ggplot(pred_df, aes(x = heavy_use, y = prob, fill = heavy_use)) +
+  geom_col(width = 0.6) +
+  labs(
+    title = "Predicted Probability of High Depression (≥7) by Heavy Music Use",
+    x = "Daily Music Use",
+    y = "Predicted Probability of High Depression"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "none") +
+  scale_y_continuous(limits = c(0, 1))
 ```
