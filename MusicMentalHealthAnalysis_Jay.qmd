@@ -1,0 +1,551 @@
+---
+title: "Final Project"
+author: "Jordan Andrew, Pranshul Bhatnagar, Arushi Singh, and Jay Wu"
+subtitle: "Due December 13th at 12:00pm"
+format: pdf
+editor: visual
+---
+
+#### Load Packages
+
+```{r load-packages, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(dplyr)
+library(car)
+library(ggplot2)
+```
+
+**Load the data and provide a `glimpse()`**:
+
+```{r data-1, warning=FALSE}
+library(dplyr)
+music_data <- read.csv("data/mxmh_survey_results.csv")
+glimpse(music_data)
+
+```
+
+# **Data Cleaning**
+
+```{r}
+# Showing which columns have null values and how many
+music_data %>%
+  summarise(across(everything(), ~ sum(is.na(.)))) %>%
+  pivot_longer(everything(), names_to = "column", values_to = "na_count") %>%
+  filter(na_count > 0) %>%
+  arrange(desc(na_count))
+
+```
+
+```{r}
+# Summary to spot outliers
+summary(music_data$Age)
+
+# Count unrealistic ages
+sum(music_data$Age < 10 | music_data$Age > 90, na.rm = TRUE)
+
+# View rows with unrealistic ages
+music_data %>% 
+  filter(Age < 10 | Age > 90)
+```
+
+```{r}
+
+# Checking that music hours per day doesn't contain unrealistic # of hours
+summary(music_data$Hours.per.day)
+
+music_data %>% 
+  filter(Hours.per.day < 0 | Hours.per.day > 16)
+
+# we will remove the 89 year old who listens to rap exclusively while working and has no perceived mental health issues
+
+```
+
+```{r}
+cols <- c("Anxiety", "Depression", "Insomnia", "OCD")
+
+# Checking if any values for self reported mental illness are out of the 0-10 range
+music_data %>% 
+  summarise(across(all_of(cols), 
+                   ~ sum(. < 0 | . > 10, na.rm = TRUE)))
+
+
+```
+
+```{r}
+yn_cols <- c(
+  "While.working",
+  "Instrumentalist",
+  "Composer",
+  "Exploratory",
+  "Foreign.languages"
+)
+
+# Checking to see if any of the "yes" "no" columns have values outside of these options
+sapply(music_data[yn_cols], function(x) all(x %in% c("Yes", "No")))
+
+lapply(music_data[yn_cols], function(x) setdiff(unique(x), c("Yes", "No")))
+
+sapply(music_data[yn_cols], function(x) sum(x == "", na.rm = TRUE))
+
+# We will drop the rows that having missing values here, as there is no clear way how to impute them
+
+
+```
+
+```{r}
+freq_cols <- c(
+  "Frequency..Classical.",
+  "Frequency..Country.",
+  "Frequency..EDM.",
+  "Frequency..Folk.",
+  "Frequency..Gospel.",
+  "Frequency..Hip.hop.",
+  "Frequency..Jazz.",
+  "Frequency..K.pop.",
+  "Frequency..Latin.",
+  "Frequency..Lofi.",
+  "Frequency..Metal.",
+  "Frequency..Pop.",
+  "Frequency..R.B.",
+  "Frequency..Rap.",
+  "Frequency..Rock.",
+  "Frequency..Video.game.music."
+)
+
+allowed_freq <- c("Never", "Rarely", "Sometimes", "Very frequently")
+
+
+# Checking to see if any of the frequency columns have values outside of "Never, Rarely, Sometimes, Very frequently"
+sapply(music_data[freq_cols], function(x) sum(!(x %in% allowed_freq)))
+```
+
+```{r}
+table(music_data$Music.effects)
+```
+
+# **General Data Cleaning**
+
+```{r}
+# Cleaning our data
+
+# dropping BPM column
+music_data <- music_data %>% select(-any_of("BPM"))
+
+# dropping 1 row that has a null value for Age
+music_data <- music_data %>% 
+  filter(!is.na(Age))
+
+# Dropping the 89 year old year old who listens to only rap while working 24 hours a day(unrealistic value)
+music_data <- music_data %>%
+  filter(!(Age == 89 & Hours.per.day == 24))
+
+# Dropping the rows that have non "yes" "no" answers for questions that only permit those values (9 rows were removed here)
+allowed_yn <- c("Yes", "No")
+
+music_data <- music_data %>%
+  filter(
+    if_all(all_of(yn_cols), ~ .x %in% allowed_yn)
+  )
+
+# removing 7 rows where Music.effects has an empty string as a response
+music_data <- music_data %>%
+  filter(Music.effects != "")
+
+# Keep only columns that exist in the data
+freq_cols_present <- freq_cols[freq_cols %in% colnames(music_data)]
+
+# Only rename if any of these columns exist
+if (length(freq_cols_present) > 0) {
+  music_data <- music_data %>%
+    rename_with(.cols = all_of(freq_cols_present), 
+                .fn = ~ gsub("Frequency\\.\\.", "freq_", .x) %>% 
+                       gsub("\\.", "", .))  # Remove all remaining periods
+}
+
+music_data_clean <- music_data
+
+glimpse(music_data_clean)
+
+```
+
+# **Research Question 1**
+
+```{r}
+# Question 1: How does the number of hours spent listening to music per day vary by depression status and primary streaming service?
+
+# this will be the dataset used for our first research question
+music_data_1 <- music_data_clean
+
+unique(music_data_1$Primary.streaming.service)
+
+music_data_1 %>%
+  count(Primary.streaming.service)
+
+# removing the row where Primary.streaming.service is empty
+music_data_1 <- music_data_1 %>%
+  filter(Primary.streaming.service != "")
+
+music_data_1 %>%
+  filter(Primary.streaming.service == "I do not use a streaming service.")
+
+# removing the rows where participants stated they do not use a streaming service
+music_data_1 <- music_data_1 %>%
+  filter(Primary.streaming.service != "I do not use a streaming service.")
+
+music_data_1 %>%
+  count(Primary.streaming.service)
+```
+
+# **Modeling for Research Question 1**
+
+```{r}
+# Question 1: How does the number of hours spent listening to music per day vary by depression status and primary streaming service?
+
+# fit our linear regression model
+model_rq1 <- lm(
+  Hours.per.day ~ Depression * Primary.streaming.service +
+    Age +
+    While.working +
+    Instrumentalist +
+    Composer +
+    Exploratory +
+    Foreign.languages +
+    Anxiety +
+    Insomnia +
+    OCD +
+    Fav.genre +
+    Music.effects +
+    freq_Classical +
+    freq_Country +
+    freq_EDM +
+    freq_Folk +
+    freq_Gospel +
+    freq_Hiphop +
+    freq_Jazz +
+    freq_Kpop +
+    freq_Latin +
+    freq_Lofi +
+    freq_Metal +
+    freq_Pop +
+    freq_RB +
+    freq_Rap +
+    freq_Rock +
+    freq_Videogamemusic,
+  data = music_data_1
+)
+
+summary(model_rq1)
+
+```
+
+# **Diagnostics for Research Question 1 Model**
+
+```{r}
+plot(model_rq1)
+
+```
+
+```{r}
+# checking for multicollinearity
+vif(model_rq1, type = "predictor")
+```
+
+```{r}
+# Possible transformations here (maybe get rid of those outlier points)
+```
+
+# **Log Transformation of Outcome Variable RQ1**
+
+```{r}
+p1 <- ggplot(music_data_1, aes(x = Hours.per.day)) +
+geom_histogram(bins = 30, color = "black") +
+labs(
+x = "Hours of music listening per day",
+y = "Count",
+title = "Distribution of Hours.per.day"
+)
+
+p2 <- ggplot(music_data_1, aes(x = log_hours)) +
+geom_histogram(bins = 30, color = "black") +
+labs(
+x = "log(Hours.per.day + 0.1)",
+y = "Count",
+title = "Distribution of log-transformed Hours.per.day"
+)
+
+p1
+p2
+```
+
+```{r}
+# build log-transformed outcome
+music_data_1 <- music_data_1 %>%
+  mutate(log_hours = log(Hours.per.day + 0.1))
+
+# run log-transform
+model_rq1_log <- lm(
+  log_hours ~ Depression * Primary.streaming.service +
+    Age +
+    While.working +
+    Instrumentalist +
+    Composer +
+    Exploratory +
+    Foreign.languages +
+    Anxiety +
+    Insomnia +
+    OCD +
+    Fav.genre +
+    Music.effects +
+    freq_Classical +
+    freq_Country +
+    freq_EDM +
+    freq_Folk +
+    freq_Gospel +
+    freq_Hiphop +
+    freq_Jazz +
+    freq_Kpop +
+    freq_Latin +
+    freq_Lofi +
+    freq_Metal +
+    freq_Pop +
+    freq_RB +
+    freq_Rap +
+    freq_Rock +
+    freq_Videogamemusic,
+  data = music_data_1
+)
+
+summary(model_rq1_log)
+
+# plot again
+plot(model_rq1_log)
+
+
+
+```
+
+```{r}
+# checking for multicollinearity
+vif(model_rq1_log, type = "predictor")
+```
+
+# **Results for RQ1**
+
+```{r}
+library(broom)
+library(dplyr)
+library(knitr)
+library(kableExtra)
+
+# --- tidy model output ---
+tbl_rq1 <- tidy(model_rq1_log) %>% 
+  select(term, estimate, std.error, statistic, p.value) %>% 
+  mutate(
+    estimate  = round(estimate, 2),
+    std.error = round(std.error, 2),
+    statistic = round(statistic, 2),
+    p.value   = ifelse(p.value < 0.001, "<0.001",
+                       sprintf("%.2f", round(p.value, 2)))
+  ) %>%
+  rename(
+    Variable    = term,
+    Estimate    = estimate,
+    `Std Error` = std.error,   
+    `t-value`   = statistic,   
+    `p-value`   = p.value
+  )
+
+# --- print nice LaTeX-style table ---
+kable(
+  tbl_rq1,
+  booktabs = TRUE,
+  caption = "Linear Regression Model Summary for RQ1"
+) %>%
+  kable_styling(position = "center", full_width = FALSE)
+
+
+```
+
+```{r}
+# Distribution of music listening time across primary streaming services
+ggplot(music_data_1, aes(x = Primary.streaming.service,
+y = Hours.per.day)) +
+geom_boxplot() +
+labs(
+x = "Primary streaming service",
+y = "Hours of music listening per day",
+title = "Hours of music listening by primary streaming service"
+) +
+theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+This boxplot compares the distribution of daily music listening hours across streaming platforms.\
+Spotify and YouTube Music users show wider variability and more high-hour outliers, whereas Pandora users report consistently lower listening times.
+This descriptive comparison provides initial evidence that listening behavior may differ by platform, motivating the inclusion of streaming service in the regression model.
+
+```{r}
+# Raw relationship between depression and music listening time across streaming platforms
+ggplot(music_data_1,
+aes(x = Depression,
+y = Hours.per.day,
+color = Primary.streaming.service)) +
+geom_jitter(width = 0.2, height = 0.2, alpha = 0.5) +
+geom_smooth(method = "lm", se = FALSE) +
+labs(
+x = "Depression score (0–10)",
+y = "Hours of music listening per day",
+color = "Streaming service",
+title = "Depression vs. hours of music listening by streaming service"
+)
+```
+
+This descriptive plot visualizes the raw data without adjusting for any covariates.\
+It shows how music listening hours vary with depression scores across streaming services,\
+providing an exploratory view of potential differences in slopes before fitting the statistical model.
+
+```{r}
+# Model-estimated interaction between depression and streaming platform on music listening time
+
+# Create a sequence of Depression values across the observed range
+dep_seq <- seq(
+  from = min(music_data_1$Depression, na.rm = TRUE),
+  to   = max(music_data_1$Depression, na.rm = TRUE),
+  length.out = 50
+)
+
+# Identify representative values for covariates 
+# (e.g., median for continuous variables, modal category for categorical variables)
+
+age_med <- median(music_data_1$Age, na.rm = TRUE)
+
+# Function to compute the mode for categorical variables
+mode_char <- function(x) names(sort(table(x), decreasing = TRUE))[1]
+
+# Modes for binary/categorical covariates
+while_mode   <- mode_char(music_data_1$While.working)
+instr_mode   <- mode_char(music_data_1$Instrumentalist)
+comp_mode    <- mode_char(music_data_1$Composer)
+expl_mode    <- mode_char(music_data_1$Exploratory)
+lang_mode    <- mode_char(music_data_1$Foreign.languages)
+genre_mode   <- mode_char(music_data_1$Fav.genre)
+effect_mode  <- mode_char(music_data_1$Music.effects)
+
+# Mode function for frequency variables
+freq_mode <- function(var) mode_char(music_data_1[[var]])
+
+# Extract factor levels for streaming service
+stream_levels <- levels(factor(music_data_1$Primary.streaming.service))
+
+# Construct prediction grid:
+# Vary Depression and streaming service,
+# while holding all other covariates at representative values
+newdat <- expand.grid(
+  Depression = dep_seq,
+  Primary.streaming.service = stream_levels
+) %>%
+  mutate(
+    Age = age_med,
+    While.working   = while_mode,
+    Instrumentalist = instr_mode,
+    Composer        = comp_mode,
+    Exploratory     = expl_mode,
+    Foreign.languages = lang_mode,
+    Anxiety   = mean(music_data_1$Anxiety, na.rm = TRUE),
+    Insomnia  = mean(music_data_1$Insomnia, na.rm = TRUE),
+    OCD       = mean(music_data_1$OCD, na.rm = TRUE),
+    Fav.genre     = genre_mode,
+    Music.effects = effect_mode,
+    freq_Classical      = freq_mode("freq_Classical"),
+    freq_Country        = freq_mode("freq_Country"),
+    freq_EDM            = freq_mode("freq_EDM"),
+    freq_Folk           = freq_mode("freq_Folk"),
+    freq_Gospel         = freq_mode("freq_Gospel"),
+    freq_Hiphop         = freq_mode("freq_Hiphop"),
+    freq_Jazz           = freq_mode("freq_Jazz"),
+    freq_Kpop           = freq_mode("freq_Kpop"),
+    freq_Latin          = freq_mode("freq_Latin"),
+    freq_Lofi           = freq_mode("freq_Lofi"),
+    freq_Metal          = freq_mode("freq_Metal"),
+    freq_Pop            = freq_mode("freq_Pop"),
+    freq_RB             = freq_mode("freq_RB"),
+    freq_Rap            = freq_mode("freq_Rap"),
+    freq_Rock           = freq_mode("freq_Rock"),
+    freq_Videogamemusic = freq_mode("freq_Videogamemusic")
+  )
+
+# Generate model-based predicted values (predicted log-hours)
+newdat$pred_log_hours <- predict(model_rq1_log, newdata = newdat)
+
+# Plot the interaction between Depression and streaming service
+ggplot(newdat,
+       aes(x = Depression,
+           y = pred_log_hours,
+           color = Primary.streaming.service)) +
+  geom_line(size = 1) +
+  labs(
+    x = "Depression score (0–10)",
+    y = "Predicted log-hours of music listening",
+    color = "Streaming service",
+    title = "Interaction between depression and streaming service on music listening time"
+  )
+
+
+```
+
+This plot displays predicted values from the multivariable regression model, holding all other covariates constant.\
+The lines represent the adjusted effect of depression for each streaming service, allowing direct interpretation of the statistical interaction tested in the model.
+
+# **Research Question 2**
+
+```{r}
+# Question 2: “How does the number of hours spent listening to music each day impact the severity of reported depression symptoms?”
+
+# Use cleaned dataset
+music_data_2 <- music_data_clean
+
+# Fit logistic regression including all relevant predictors
+model2 <- glm(
+  Depression ~ Hours.per.day +
+    Age +
+    While.working +
+    Instrumentalist +
+    Composer +
+    Exploratory +
+    Foreign.languages +
+    Anxiety +
+    Insomnia +
+    OCD +
+    Fav.genre +
+    Music.effects +
+    freq_Classical +
+    freq_Country +
+    freq_EDM +
+    freq_Folk +
+    freq_Gospel +
+    freq_Hiphop +
+    freq_Jazz +
+    freq_Kpop +
+    freq_Latin +
+    freq_Lofi +
+    freq_Metal +
+    freq_Pop +
+    freq_RB +
+    freq_Rap +
+    freq_Rock +
+    freq_Videogamemusic,
+  data = music_data_2,
+  family = binomial
+)
+
+# View model summary
+summary(model2)
+
+# Coefficients on the odds scale
+exp(coef(model2))
+
+
+
+
+```
+
+# **Diagnostics RQ2**
