@@ -245,7 +245,7 @@ plot(model_rq1)
 ```
 ```{r}
 # checking for multicollinearity
-vif(model_rq1)
+vif(model_rq1, type = "predictor")
 ```
 ```{r}
 # Possible transformations here (maybe get rid of those outlier points)
@@ -312,39 +312,7 @@ exp(coef(model2))
 ```
 # **Diagnostics RQ2**
 
-```{r}
-# Leverage (hat values)
-plot(model2, which = 5)
-
-hat_vals <- hatvalues(model2)
-which(hat_vals > 2 * mean(hat_vals))   # high leverage
-```
-```{r}
-# Goodness-of-fit: Hosmer–Lemeshow test
-library(ResourceSelection)
-hoslem.test(music_data_2$high_depression, fitted(model2), g = 5)
 
 
-```
 
-# **Research Question 2 Plots**
-```{r}
 
-# Create prediction data
-pred_df <- music_data_2 %>%
-  mutate(heavy_use = factor(heavy_use, levels = c(0,1), labels = c("Not Heavy ( <4 hrs )", "Heavy ( ≥4 hrs )"))) %>%
-  group_by(heavy_use) %>%
-  summarize(prob = mean(high_depression))
-
-# Plot
-ggplot(pred_df, aes(x = heavy_use, y = prob, fill = heavy_use)) +
-  geom_col(width = 0.6) +
-  labs(
-    title = "Predicted Probability of High Depression (≥7) by Heavy Music Use",
-    x = "Daily Music Use",
-    y = "Predicted Probability of High Depression"
-  ) +
-  theme_minimal(base_size = 14) +
-  theme(legend.position = "none") +
-  scale_y_continuous(limits = c(0, 1))
-```
