@@ -261,14 +261,17 @@ vif(model_rq1, type = "predictor")
 # **Research Question 2**
 
 ```{r}
-# Question 2: “How does the number of hours spent listening to music each day impact the severity of reported depression symptoms?”
+# Question 2: Does the number of hours spent listening to music each day increase the likelihood of reporting high depression symptoms?
 
-# Use cleaned dataset
+# this will be the dataset used for our first research question
 music_data_2 <- music_data_clean
+
+# create high_depression as 1 if Depression >= threshold, 0 otherwise
+music_data_2$high_depression <- ifelse(music_data_2$Depression >= 7, 1, 0)
 
 # Fit logistic regression including all relevant predictors
 model2 <- glm(
-  Depression ~ Hours.per.day +
+  high_depression ~ Hours.per.day +
     Age +
     While.working +
     Instrumentalist +
@@ -307,11 +310,123 @@ summary(model2)
 exp(coef(model2))
 
 
-
-
 ```
 # **Diagnostics RQ2**
 
+# **Partial residual plot**
+```{r}
+# Partial residual plot for our main predictor (Hours.per.day)
+
+# This checks linearity of Hours.per.day with log-odds.
+crPlot(model2, "Hours.per.day")
+
+```
+# **Checking for multicollinearity**
+```{r}
+vif(model2)
+```
+# **Checking for high leverage points**
+```{r}
+hatvalues <- hatvalues(model2)
+which(hatvalues > (2*mean(hatvalues)))
+
+```
+
+# **Goodness-of-fit (Hosmer-Lemeshow test) **
+```{r}
+# This test compares observed and expected frequencies of the outcome.
+ResourceSelection::hoslem.test(model2$y, fitted(model2))
+
+```
+# **Confusion Matrix **
+```{r}
+probs <- predict(model2, type = "response")
+
+pred_class <- ifelse(probs > 0.5, 1, 0)
+pred_class <- factor(pred_class, levels = c(0,1))
+
+caret::confusionMatrix(
+  table(pred_class, music_data_2$high_depression),
+  positive = "1",
+  mode = "everything"
+)
+
+```
+# **ROC Curve and AUC **
+```{r}
+pROC::roc(music_data_2$high_depression, probs,
+          print.thres = "best",
+          print.auc = TRUE,
+          legacy.axes = TRUE,
+          plot = TRUE)
+
+```
+# **Updated Confusion Matrix with "best" Threshold**
+```{r}
+probs <- predict(model2, type = "response")
+
+pred_class <- ifelse(probs > 0.325, 1, 0)
+pred_class <- factor(pred_class, levels = c(0,1))
+
+caret::confusionMatrix(
+  table(pred_class, music_data_2$high_depression),
+  positive = "1",
+  mode = "everything"
+)
+```
+# **Reduced Model Comparison (no Hours.per.day)**
+```{r}
+
+# reduced model without Hours.per.day
+model2_red <- glm(
+  high_depression ~
+    Age +
+    While.working +
+    Instrumentalist +
+    Composer +
+    Exploratory +
+    Foreign.languages +
+    Anxiety +
+    Insomnia +
+    OCD +
+    Fav.genre +
+    Music.effects +
+    freq_Classical +
+    freq_Country +
+    freq_EDM +
+    freq_Folk +
+    freq_Gospel +
+    freq_Hiphop +
+    freq_Jazz +
+    freq_Kpop +
+    freq_Latin +
+    freq_Lofi +
+    freq_Metal +
+    freq_Pop +
+    freq_RB +
+    freq_Rap +
+    freq_Rock +
+    freq_Videogamemusic,
+  data = music_data_2,
+  family = binomial
+)
+
+
+# Deviance test
+anova(model2_red, model2, test="Chisq")
+
+AIC(model2_red)
+AIC(model2)
+
+
+
+
+```
+# ** Confidence Intervals and Odds Ratios**
+```{r}
+exp(cbind(OR = coef(model2), confint(model2)))
+
+```
 
 
 
