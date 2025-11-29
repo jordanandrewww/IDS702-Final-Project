@@ -849,3 +849,113 @@ Limitations
 3.  Several genre and listening-frequency categories have very small sample sizes, leading to unstable estimates and wide confidence intervals.
 4.  The model includes a large number of covariates relative to the sample size, increasing the risk of overfitting.
 5.  The limited number of participants with extremely high listening hours restricts the ability to test nonlinear effects or apply more flexible modeling approaches.
+
+# Other transformation results
+
+## Remove outliers
+
+```{r}
+##########################################
+# MODEL A: Raw Hours (no transform)
+##########################################
+
+model_rq1_raw <- lm(
+  Hours.per.day ~ Depression * Primary.streaming.service +
+    Age + While.working + Instrumentalist + Composer + Exploratory +
+    Foreign.languages + Anxiety + Insomnia + OCD + Fav.genre + Music.effects +
+    freq_Classical + freq_Country + freq_EDM + freq_Folk + freq_Gospel +
+    freq_Hiphop + freq_Jazz + freq_Kpop + freq_Latin + freq_Lofi +
+    freq_Metal + freq_Pop + freq_RB + freq_Rap + freq_Rock + freq_Videogamemusic,
+  data = music_data_1
+)
+
+##########################################
+# MODEL B: Log-transform (final model)
+##########################################
+
+model_rq1_log <- lm(
+  log_hours ~ Depression * Primary.streaming.service +
+    Age + While.working + Instrumentalist + Composer + Exploratory +
+    Foreign.languages + Anxiety + Insomnia + OCD + Fav.genre + Music.effects +
+    freq_Classical + freq_Country + freq_EDM + freq_Folk + freq_Gospel +
+    freq_Hiphop + freq_Jazz + freq_Kpop + freq_Latin + freq_Lofi +
+    freq_Metal + freq_Pop + freq_RB + freq_Rap + freq_Rock + freq_Videogamemusic,
+  data = music_data_1
+)
+
+##########################################
+# MODEL C: Log-transform + Remove Outliers
+##########################################
+
+cooks <- cooks.distance(model_rq1_log)
+cutoff <- 4 / length(cooks)
+
+# Keep only points below cutoff
+music_data_1_no_outlier <- music_data_1[cooks < cutoff, ]
+
+model_rq1_log_no_out <- lm(
+  log_hours ~ Depression * Primary.streaming.service +
+    Age + While.working + Instrumentalist + Composer + Exploratory +
+    Foreign.languages + Anxiety + Insomnia + OCD + Fav.genre + Music.effects +
+    freq_Classical + freq_Country + freq_EDM + freq_Folk + freq_Gospel +
+    freq_Hiphop + freq_Jazz + freq_Kpop + freq_Latin + freq_Lofi +
+    freq_Metal + freq_Pop + freq_RB + freq_Rap + freq_Rock + freq_Videogamemusic,
+  data = music_data_1_no_outlier
+)
+
+length(which(cooks > cutoff))  # how many points removed
+
+##########################################
+# Model 4: Different log transform (log(x + 1))
+##########################################
+music_data_1 <- music_data_1 %>%
+  mutate(log_hours_1 = log(Hours.per.day + 1))
+
+model_rq1_log1 <- lm(
+  log_hours_1 ~ Depression * Primary.streaming.service +
+    Age + While.working + Instrumentalist + Composer +
+    Exploratory + Foreign.languages +
+    Anxiety + Insomnia + OCD + Fav.genre + Music.effects +
+    freq_Classical + freq_Country + freq_EDM + freq_Folk +
+    freq_Gospel + freq_Hiphop + freq_Jazz + freq_Kpop +
+    freq_Latin + freq_Lofi + freq_Metal + freq_Pop +
+    freq_RB + freq_Rap + freq_Rock + freq_Videogamemusic,
+  data = music_data_1
+)
+
+##########################################
+# Model 5: Simplified model (drop weak predictors)
+##########################################
+model_rq1_simple <- lm(
+  log_hours_1 ~ Depression * Primary.streaming.service +
+    Age + Anxiety + Insomnia + OCD,
+  data = music_data_1
+)
+
+
+```
+
+```{r}
+##########################################
+# Model comparison
+##########################################
+
+data.frame(
+  Model = c("Raw model", "Log transform", "Log transform + remove outliers", "log1", "simple"),
+  Adj_R2 = c(
+    summary(model_rq1_raw)$adj.r.squared,
+    summary(model_rq1_log)$adj.r.squared,
+    summary(model_rq1_log_no_out)$adj.r.squared,
+    summary(model_rq1_log1)$adj.r.squared,
+    summary(model_rq1_simple)$adj.r.squared
+  ),
+  AIC = c(
+    AIC(model_rq1_raw),
+    AIC(model_rq1_log),
+    AIC(model_rq1_log_no_out),
+    AIC(model_rq1_log1),
+    AIC(model_rq1_simple)
+  )
+)
+
+```
