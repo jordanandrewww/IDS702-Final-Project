@@ -512,6 +512,88 @@ abline(h = 4/length(cooks), col = "red", lty = 2)
 which(cooks > (4/length(cooks)))
 ```
 
+# Remove outliers based on cook distance
+
+```{r}
+cooks <- cooks.distance(model_rq1_log)
+cutoff <- 4 / length(cooks)
+
+# Keep only points below cutoff
+music_data_1_no_outlier <- music_data_1[cooks < cutoff, ]
+
+model_rq1_log_no_out <- lm(
+  log_hours ~ Depression * Primary.streaming.service +
+    Age + While.working + Instrumentalist + Composer + Exploratory +
+    Foreign.languages + Anxiety + Insomnia + OCD + Fav.genre + Music.effects +
+    freq_Classical + freq_Country + freq_EDM + freq_Folk + freq_Gospel +
+    freq_Hiphop + freq_Jazz + freq_Kpop + freq_Latin + freq_Lofi +
+    freq_Metal + freq_Pop + freq_RB + freq_Rap + freq_Rock + freq_Videogamemusic,
+  data = music_data_1_no_outlier
+)
+
+summary(model_rq1_log_no_out)
+
+plot(model_rq1_log_no_out)
+```
+
+## The result is much more better now! Wonderful!
+
+# Check cook distance again
+
+```{r}
+library(ggplot2)
+library(gridExtra)
+
+### 1. Cook’s distance BEFORE removing outliers
+cooks_before <- cooks.distance(model_rq1_log)
+cutoff <- 4 / length(cooks_before)
+
+df_before <- data.frame(
+  index = 1:length(cooks_before),
+  cooks = cooks_before
+)
+
+### 2. Cook’s distance AFTER removing outliers
+cooks_after <- cooks.distance(model_rq1_log_no_out)
+
+df_after <- data.frame(
+  index = 1:length(cooks_after),
+  cooks = cooks_after
+)
+
+### ---- FIND COMMON Y-LIMIT ----
+ymax <- max(c(cooks_before, cooks_after))
+
+### ---- PLOTS ----
+
+p_before <- ggplot(df_before, aes(x = index, y = cooks)) +
+  geom_segment(aes(xend = index, yend = 0)) +
+  geom_hline(yintercept = cutoff, color = "red", linetype = "dashed") +
+  ylim(0, ymax) +                                           # <-- SAME Y-LIMIT
+  labs(
+    title = "Cook's Distance (Before Removing Outliers)",
+    y = "Cook's distance",
+    x = "Index"
+  ) +
+  theme_minimal()
+
+p_after <- ggplot(df_after, aes(x = index, y = cooks)) +
+  geom_segment(aes(xend = index, yend = 0)) +
+  geom_hline(yintercept = cutoff, color = "red", linetype = "dashed") +
+  ylim(0, ymax) +                                           # <-- SAME Y-LIMIT
+  labs(
+    title = "Cook's Distance (After Removing Outliers)",
+    y = "Cook's distance",
+    x = "Index"
+  ) +
+  theme_minimal()
+
+### ---- SIDE-BY-SIDE ----
+grid.arrange(p_before, p_after, ncol = 2)
+
+
+```
+
 # **Research Question 2**
 
 ```{r}
@@ -850,7 +932,7 @@ Limitations
 4.  The model includes a large number of covariates relative to the sample size, increasing the risk of overfitting.
 5.  The limited number of participants with extremely high listening hours restricts the ability to test nonlinear effects or apply more flexible modeling approaches.
 
-# Other transformation results
+# Other transformation results for RQ1!
 
 ## Remove outliers
 
