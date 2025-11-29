@@ -498,17 +498,34 @@ ggplot(newdat,
 This plot displays predicted values from the multivariable regression model, holding all other covariates constant.\
 The lines represent the adjusted effect of depression for each streaming service, allowing direct interpretation of the statistical interaction tested in the model.
 
+```{r}
+# Cook's distance for linear regression (RQ1)
+cooks <- cooks.distance(model_rq1_log)
+
+plot(cooks, type = "h",
+     main = "Influential points measured by Cook’s distance",
+     ylab = "Cook's distance",
+     xlab = "Index")
+abline(h = 4/length(cooks), col = "red", lty = 2)
+
+# Identify influential observations
+which(cooks > (4/length(cooks)))
+```
+
 # **Research Question 2**
 
 ```{r}
-# Question 2: “How does the number of hours spent listening to music each day impact the severity of reported depression symptoms?”
+# Question 2: Does the number of hours spent listening to music each day increase the likelihood of reporting high depression symptoms?
 
-# Use cleaned dataset
+# this will be the dataset used for our first research question
 music_data_2 <- music_data_clean
+
+# create high_depression as 1 if Depression >= threshold, 0 otherwise
+music_data_2$high_depression <- ifelse(music_data_2$Depression >= 7, 1, 0)
 
 # Fit logistic regression including all relevant predictors
 model2 <- glm(
-  Depression ~ Hours.per.day +
+  high_depression ~ Hours.per.day +
     Age +
     While.working +
     Instrumentalist +
@@ -547,8 +564,288 @@ summary(model2)
 exp(coef(model2))
 
 
+```
+
+# **Diagnostics RQ2**
+
+# **Partial residual plot**
+
+```{r}
+# Partial residual plot for our main predictor (Hours.per.day)
+
+# This checks linearity of Hours.per.day with log-odds.
+crPlot(model2, "Hours.per.day")
+
+```
+
+# **Checking for multicollinearity**
+
+```{r}
+vif(model2)
+```
+
+# **Checking for high leverage points**
+
+```{r}
+hatvalues <- hatvalues(model2)
+which(hatvalues > (2*mean(hatvalues)))
+
+```
+
+# **Goodness-of-fit (Hosmer-Lemeshow test)**
+
+```{r}
+# This test compares observed and expected frequencies of the outcome.
+ResourceSelection::hoslem.test(model2$y, fitted(model2))
+
+```
+
+# **Confusion Matrix**
+
+```{r}
+probs <- predict(model2, type = "response")
+
+pred_class <- ifelse(probs > 0.5, 1, 0)
+pred_class <- factor(pred_class, levels = c(0,1))
+
+caret::confusionMatrix(
+  table(pred_class, music_data_2$high_depression),
+  positive = "1",
+  mode = "everything"
+)
+
+```
+
+# **ROC Curve and AUC**
+
+```{r}
+pROC::roc(music_data_2$high_depression, probs,
+          print.thres = "best",
+          print.auc = TRUE,
+          legacy.axes = TRUE,
+          plot = TRUE)
+
+```
+
+# **Updated Confusion Matrix with "best" Threshold**
+
+```{r}
+probs <- predict(model2, type = "response")
+
+pred_class <- ifelse(probs > 0.325, 1, 0)
+pred_class <- factor(pred_class, levels = c(0,1))
+
+caret::confusionMatrix(
+  table(pred_class, music_data_2$high_depression),
+  positive = "1",
+  mode = "everything"
+)
+```
+
+# **Reduced Model Comparison (no Hours.per.day)**
+
+```{r}
+
+# reduced model without Hours.per.day
+model2_red <- glm(
+  high_depression ~
+    Age +
+    While.working +
+    Instrumentalist +
+    Composer +
+    Exploratory +
+    Foreign.languages +
+    Anxiety +
+    Insomnia +
+    OCD +
+    Fav.genre +
+    Music.effects +
+    freq_Classical +
+    freq_Country +
+    freq_EDM +
+    freq_Folk +
+    freq_Gospel +
+    freq_Hiphop +
+    freq_Jazz +
+    freq_Kpop +
+    freq_Latin +
+    freq_Lofi +
+    freq_Metal +
+    freq_Pop +
+    freq_RB +
+    freq_Rap +
+    freq_Rock +
+    freq_Videogamemusic,
+  data = music_data_2,
+  family = binomial
+)
+
+
+# Deviance test
+anova(model2_red, model2, test="Chisq")
+
+AIC(model2_red)
+AIC(model2)
+
+
 
 
 ```
 
-# **Diagnostics RQ2**
+# \*\* Confidence Intervals and Odds Ratios\*\*
+
+```{r, message = FALSE, warning = FALSE}
+exp(cbind(OR = coef(model2), confint(model2)))
+
+```
+
+# Plots for RQ2
+
+```{r, message = FALSE, warning = FALSE}
+library(broom)
+library(kableExtra)
+
+# Tidy logistic regression output on the exponential scale
+tbl_rq2 <- tidy(
+  model2,
+  conf.int   = TRUE,
+  conf.level = 0.95,
+  exponentiate = TRUE
+) %>%
+  select(term, estimate, std.error, conf.low, conf.high, p.value) %>%
+  mutate(
+    estimate  = round(estimate, 2),
+    std.error = round(std.error, 2),
+    conf.low  = round(conf.low, 2),
+    conf.high = round(conf.high, 2),
+    p.value   = ifelse(p.value < 0.001, "<0.001",
+                       sprintf("%.2f", round(p.value, 2)))
+  ) %>%
+  rename(
+    Variable      = term,
+    `Odds Ratio`  = estimate,
+    `Std Error`   = std.error,
+    `2.5% CI`     = conf.low,
+    `97.5% CI`    = conf.high,
+    `p-value`     = p.value
+  )
+
+# LaTeX-friendly table
+kable(
+  tbl_rq2,
+  booktabs = TRUE,
+  caption = "Logistic Regression Model Summary for RQ2 (Odds Ratios)"
+) %>%
+  kable_styling(position = "center", full_width = FALSE)
+```
+
+```{r}
+# Raw relationship between hours of listening and high depression
+ggplot(music_data_2,
+       aes(x = Hours.per.day, y = high_depression)) +
+  geom_jitter(height = 0.05, width = 0.1, alpha = 0.3) +
+  geom_smooth(method = "glm",
+              method.args = list(family = "binomial"),
+              se = TRUE,
+              color = "blue") +
+  labs(
+    x = "Hours of music listening per day",
+    y = "Probability of high depression",
+    title = "Relationship between listening time and high depression (raw data + logistic fit)"
+  )
+```
+
+```{r}
+# Helper: mode function for categorical variables
+mode_char <- function(x) {
+  names(sort(table(x), decreasing = TRUE))[1]
+}
+
+# Build a prediction grid for Hours.per.day
+hours_seq <- seq(
+  from = min(music_data_2$Hours.per.day, na.rm = TRUE),
+  to   = max(music_data_2$Hours.per.day, na.rm = TRUE),
+  length.out = 100
+)
+
+# Typical values for covariates
+age_med <- median(music_data_2$Age, na.rm = TRUE)
+
+newdat_rq2 <- data.frame(
+  Hours.per.day = hours_seq,
+  Age = age_med,
+  While.working   = mode_char(music_data_2$While.working),
+  Instrumentalist = mode_char(music_data_2$Instrumentalist),
+  Composer        = mode_char(music_data_2$Composer),
+  Exploratory     = mode_char(music_data_2$Exploratory),
+  Foreign.languages = mode_char(music_data_2$Foreign.languages),
+  Anxiety   = mean(music_data_2$Anxiety, na.rm = TRUE),
+  Insomnia  = mean(music_data_2$Insomnia, na.rm = TRUE),
+  OCD       = mean(music_data_2$OCD, na.rm = TRUE),
+  Fav.genre     = mode_char(music_data_2$Fav.genre),
+  Music.effects = mode_char(music_data_2$Music.effects),
+  freq_Classical      = mode_char(music_data_2$freq_Classical),
+  freq_Country        = mode_char(music_data_2$freq_Country),
+  freq_EDM            = mode_char(music_data_2$freq_EDM),
+  freq_Folk           = mode_char(music_data_2$freq_Folk),
+  freq_Gospel         = mode_char(music_data_2$freq_Gospel),
+  freq_Hiphop         = mode_char(music_data_2$freq_Hiphop),
+  freq_Jazz           = mode_char(music_data_2$freq_Jazz),
+  freq_Kpop           = mode_char(music_data_2$freq_Kpop),
+  freq_Latin          = mode_char(music_data_2$freq_Latin),
+  freq_Lofi           = mode_char(music_data_2$freq_Lofi),
+  freq_Metal          = mode_char(music_data_2$freq_Metal),
+  freq_Pop            = mode_char(music_data_2$freq_Pop),
+  freq_RB             = mode_char(music_data_2$freq_RB),
+  freq_Rap            = mode_char(music_data_2$freq_Rap),
+  freq_Rock           = mode_char(music_data_2$freq_Rock),
+  freq_Videogamemusic = mode_char(music_data_2$freq_Videogamemusic)
+)
+
+# Predicted probabilities from the full logistic model
+newdat_rq2$pred_prob <- predict(model2, newdata = newdat_rq2, type = "response")
+
+# Plot model-based effect of Hours.per.day
+ggplot(newdat_rq2, aes(x = Hours.per.day, y = pred_prob)) +
+  geom_line(size = 1) +
+  labs(
+    x = "Hours of music listening per day",
+    y = "Predicted probability of high depression",
+    title = "Model-based effect of listening time on probability of high depression"
+  ) +
+  ylim(0, 1)
+```
+
+```{r}
+# Deviance residuals vs fitted values for logistic regression
+dev_resid <- residuals(model2, type = "deviance")
+fitted_vals <- fitted(model2)
+
+plot(fitted_vals, dev_resid,
+     xlab = "Fitted values (predicted probability)",
+     ylab = "Deviance residuals",
+     main = "Deviance residuals vs fitted values for logistic regression",
+     pch = 20, cex = 0.6)
+abline(h = 0, col = "red", lty = 2)
+```
+
+```{r}
+# Cook's distance for logistic regression model
+cooks_rq2 <- cooks.distance(model2)
+
+plot(cooks_rq2, type = "h",
+     main = "Influential points measured by Cook's distance (logistic model)",
+     xlab = "Index",
+     ylab = "Cook's distance")
+abline(h = 4/length(cooks_rq2), col = "red", lty = 2)
+
+which(cooks_rq2 > 4/length(cooks_rq2))
+```
+
+Limitations
+
+1.  The data are cross-sectional, so the analysis cannot establish causal relationships between music listening time and depression symptoms.
+2.  All variables are self-reported, which may introduce recall bias and measurement error, particularly for mental-health scores and estimated hours of listening.
+3.  Several genre and listening-frequency categories have very small sample sizes, leading to unstable estimates and wide confidence intervals.
+4.  The model includes a large number of covariates relative to the sample size, increasing the risk of overfitting.
+5.  The limited number of participants with extremely high listening hours restricts the ability to test nonlinear effects or apply more flexible modeling approaches.
