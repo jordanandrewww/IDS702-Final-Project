@@ -246,6 +246,18 @@ plot(model_rq1)
 ```
 
 ```{r}
+p1 <- ggplot(music_data_1, aes(x = Hours.per.day)) +
+geom_histogram(bins = 30, color = "black") +
+labs(
+x = "Hours of music listening per day",
+y = "Count",
+title = "Distribution of Hours.per.day"
+)
+
+p1
+```
+
+```{r}
 # checking for multicollinearity
 vif(model_rq1, type = "predictor")
 ```
@@ -255,27 +267,6 @@ vif(model_rq1, type = "predictor")
 ```
 
 # **Log Transformation of Outcome Variable RQ1**
-
-```{r}
-p1 <- ggplot(music_data_1, aes(x = Hours.per.day)) +
-geom_histogram(bins = 30, color = "black") +
-labs(
-x = "Hours of music listening per day",
-y = "Count",
-title = "Distribution of Hours.per.day"
-)
-
-p2 <- ggplot(music_data_1, aes(x = log_hours)) +
-geom_histogram(bins = 30, color = "black") +
-labs(
-x = "log(Hours.per.day + 0.1)",
-y = "Count",
-title = "Distribution of log-transformed Hours.per.day"
-)
-
-p1
-p2
-```
 
 ```{r}
 # build log-transformed outcome
@@ -322,6 +313,19 @@ plot(model_rq1_log)
 
 
 
+```
+
+```{r}
+
+p2 <- ggplot(music_data_1, aes(x = log_hours)) +
+geom_histogram(bins = 30, color = "black") +
+labs(
+x = "log(Hours.per.day + 0.1)",
+y = "Count",
+title = "Distribution of log-transformed Hours.per.day"
+)
+
+p2
 ```
 
 ```{r}
@@ -380,8 +384,7 @@ theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
 This boxplot compares the distribution of daily music listening hours across streaming platforms.\
-Spotify and YouTube Music users show wider variability and more high-hour outliers, whereas Pandora users report consistently lower listening times.
-This descriptive comparison provides initial evidence that listening behavior may differ by platform, motivating the inclusion of streaming service in the regression model.
+Spotify and YouTube Music users show wider variability and more high-hour outliers, whereas Pandora users report consistently lower listening times. This descriptive comparison provides initial evidence that listening behavior may differ by platform, motivating the inclusion of streaming service in the regression model.
 
 ```{r}
 # Raw relationship between depression and music listening time across streaming platforms
