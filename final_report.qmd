@@ -1,0 +1,43 @@
+---
+title: "Final Report"
+format: html
+editor: visual
+---
+
+# Data
+
+## Data Background
+
+The data used in this analysis comes from the Music and Mental Health (MxMH) Survey Results hosted on Kaggle. The dataset was collected through an online Google Form that was distributed via social media and public forums. It contains 736 respondents (rows) and includes variables on demographic characteristics (such as age), music-listening habits (hours per day, streaming platform, frequency of listening to certain genres), and self-reported mental-health scores for anxiety, depression, insomnia, and OCD (rated 0-10). The data is cross-sectional and self-reported, meaning it is suitable for identifying associations/correlations but not establishing causal effects.
+
+## Data Cleaning
+
+Our data cleaning process began with an assessment of missing values across all columns. This revealed 107 null entries in the BPM column and a single null entry in the Age column. After looking further into the BPM data collection, we discovered that it was meant to represent the “Beats per minute of favorite genre.” However, rows with the same reported favorite genre displayed inconsistent BPM values, indicating that participants did not interpret or answer the question reliably. Combined with the large number of missing entries, this inconsistency made the variable unsuitable for analysis, so we dropped the BPM column entirely. The single row with a missing Age value was also removed to maintain completeness for demographic modeling.
+
+Next, we examined the dataset for implausible or erroneous entries. During this process, we identified a respondent who reported being 89 years old and listening to music for 24 hours per day, and they were doing so while working. Because this combination is not physically possible and would exert undue influence on any model involving hours per day, we removed this outlier from the dataset.
+
+We then reviewed all variables designed to accept only binary “Yes” or “No” responses. Several of these columns contained values outside of the allowed set, such as misspellings, alternative phrasing, or blank entries. To maintain consistency in these binary predictors, we filtered out any rows that did not provide valid “Yes” or “No” answers across all such variables, resulting in the removal of nine additional rows.
+
+After this, we checked the music effects variable and found seven cases where respondents left this question blank. Because an empty string does not constitute a valid category and this variable is used in later modeling, we removed these seven rows as well.
+
+For analyses involving streaming services, we examined the primary streaming service column and identified two types of unusable entries: blank responses and the explicit answer “I do not use a streaming service.” Because our first research question specifically compares listening patterns across streaming platforms, respondents without a platform could not be meaningfully included in that analysis. Therefore, for the dataset used in RQ1, we removed all rows with missing streaming-service information as well as those who reported not using any streaming service.
+
+Finally, to prepare the binary outcome for our second research question, we created a high depression variable that flags individuals with elevated symptom levels. Because the average depression score in the dataset was 4.82 and the median was 5, we designated respondents with a score of 6 or higher as experiencing “high depression.” This threshold represents a meaningful distinction between typical responses and substantially elevated symptom reports, allowing us to model the likelihood of more severe depression symptoms.
+
+# Models
+
+## Research Question 1: “How does the number of hours spent listening to music per day vary by depression status and primary streaming service?”
+
+To investigate how the number of hours spent listening to music per day varies based on depression symptoms and primary streaming service, we fit a multiple linear regression model using hours per day as the continuous response variable. Linear regression is appropriate for this question because the goal is to estimate how the average listening duration changes across different levels of depression and across streaming platforms, while adjusting for potential confounders. We also included an interaction term between depression and primary streaming service, which tests whether the association between self-reported depression symptoms and daily listening time differs by the platform a respondent uses.
+
+Beyond the primary predictors of depression and primary streaming service, we included a set of covariates to reduce potential confounding and isolate the effects of depression and steaming service on listening time. These covariates were selected because they relate to both music-listening behavior and mental-health-related characteristics without making the model too busy. These covariates include age, while working (whether the respondent listens while working), instrumentalist (yes/no), composer (yes/no), exploratory (whether they tend to explore new music), foreign languages (whether they tend to listen to music in foreign languages), and three mental health related variables (anxiety, insomnia, OCD, all self-reported on a scale of 0-10). We also included two music-related behavioral factors, favorite genre and music effects, to account for genre preferences and how individuals perceive music impacts their emotions. Including these variables helps adjust for individual differences in music engagement, mental-health comorbidity, and daily listening contexts that could otherwise bias the estimated relationships.
+
+Our model, which follows the linear regression framework, relies on the standard assumptions of linearity, independence of observations, homoscedasticity, and normally distributed residuals. We also assumed that there was no multicollinearity among predictors, and all of these assumptions were assessed via diagnostic plots/tests.
+
+## Research Question 2: “Does the number of hours spent listening to music each day increase the likelihood of reporting high depression symptoms?”
+
+For our second research question, which sought to determine if the number of hours spent listening to music each day increases the likelihood of reporting high depression symptoms, we fit a logistic regression model with a binary outcome. Logistic regression is appropriate because the response variable, high depression, classifies respondents as either above or below a threshold level of self-reported depressive symptoms, and the model estimates how the log-odds of being in the high-depression category change with daily listening time.
+
+Outside of our outcome variable of high depression and our primary independent variable, daily hours spent listening to music, we also included several covariates. Specifically, we adjusted for age, indicators of music engagement (instrumentalist and composer), co-occurring mental-health conditions (anxiety, insomnia, and OCD), and two global music-use characteristics (favorite genre and music effects). These variables may influence both how much an individual listens to music and their underlying likelihood of experiencing elevated depressive symptoms, thereby helping reduce confounding effects.
+
+Logistic regression, and therefore our model, assumes independent observations, linearity of continuous predictors on the log-odds scale, and the absence of multicollinearity, all of which were checked via plots and tests.
