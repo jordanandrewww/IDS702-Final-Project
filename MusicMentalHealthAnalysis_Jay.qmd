@@ -602,8 +602,13 @@ grid.arrange(p_before, p_after, ncol = 2)
 # this will be the dataset used for our first research question
 music_data_2 <- music_data_clean
 
+mean(music_data_2$Depression, na.rm = TRUE)
+
+median(music_data_2$Depression, na.rm = TRUE)
+
+
 # create high_depression as 1 if Depression >= threshold, 0 otherwise
-music_data_2$high_depression <- ifelse(music_data_2$Depression >= 7, 1, 0)
+music_data_2$high_depression <- ifelse(music_data_2$Depression >= 6, 1, 0)
 
 # Fit logistic regression including all relevant predictors
 model2 <- glm(
@@ -714,7 +719,7 @@ pROC::roc(music_data_2$high_depression, probs,
 ```{r}
 probs <- predict(model2, type = "response")
 
-pred_class <- ifelse(probs > 0.325, 1, 0)
+pred_class <- ifelse(probs > 0.393, 1, 0)
 pred_class <- factor(pred_class, levels = c(0,1))
 
 caret::confusionMatrix(
@@ -973,7 +978,7 @@ cooks <- cooks.distance(model_rq1_log)
 cutoff <- 4 / length(cooks)
 
 # Keep only points below cutoff
-music_data_1_no_outlier <- music_data_1[cooks < cutoff, ]
+music_data_1_no_outlier <- music_data_1[cooks < cutoff,]
 
 model_rq1_log_no_out <- lm(
   log_hours ~ Depression * Primary.streaming.service +
