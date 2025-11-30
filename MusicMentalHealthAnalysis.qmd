@@ -343,32 +343,13 @@ music_data_2$high_depression <- ifelse(music_data_2$Depression >= 6, 1, 0)
 model2 <- glm(
   high_depression ~ Hours.per.day +
     Age +
-    While.working +
     Instrumentalist +
     Composer +
-    Exploratory +
-    Foreign.languages +
     Anxiety +
     Insomnia +
     OCD +
     Fav.genre +
-    Music.effects +
-    freq_Classical +
-    freq_Country +
-    freq_EDM +
-    freq_Folk +
-    freq_Gospel +
-    freq_Hiphop +
-    freq_Jazz +
-    freq_Kpop +
-    freq_Latin +
-    freq_Lofi +
-    freq_Metal +
-    freq_Pop +
-    freq_RB +
-    freq_Rap +
-    freq_Rock +
-    freq_Videogamemusic,
+    Music.effects,
   data = music_data_2,
   family = binomial
 )
@@ -448,7 +429,7 @@ pROC::roc(music_data_2$high_depression, probs,
 ```{r}
 probs <- predict(model2, type = "response")
 
-pred_class <- ifelse(probs > 0.325, 1, 0)
+pred_class <- ifelse(probs > 0.456, 1, 0)
 pred_class <- factor(pred_class, levels = c(0,1))
 
 caret::confusionMatrix(
@@ -466,32 +447,13 @@ caret::confusionMatrix(
 model2_red <- glm(
   high_depression ~
     Age +
-    While.working +
     Instrumentalist +
     Composer +
-    Exploratory +
-    Foreign.languages +
     Anxiety +
     Insomnia +
     OCD +
     Fav.genre +
-    Music.effects +
-    freq_Classical +
-    freq_Country +
-    freq_EDM +
-    freq_Folk +
-    freq_Gospel +
-    freq_Hiphop +
-    freq_Jazz +
-    freq_Kpop +
-    freq_Latin +
-    freq_Lofi +
-    freq_Metal +
-    freq_Pop +
-    freq_RB +
-    freq_Rap +
-    freq_Rock +
-    freq_Videogamemusic,
+    Music.effects,
   data = music_data_2,
   family = binomial
 )
