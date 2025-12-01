@@ -4,6 +4,216 @@ format: html
 editor: visual
 ---
 
+```{r setup-packages, include=FALSE}
+# ============================================================
+# Load required libraries
+# ============================================================
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(car)                  # Diagnostics (VIF, CR plots)
+library(broom)                # Tidying model output
+library(kableExtra)           # Table formatting
+library(gridExtra)            # Grid for combining plots
+library(pROC)                 # ROC curves
+library(caret)                # Confusion matrix
+library(ResourceSelection)    # Hosmer–Lemeshow test
+
+# ============================================================
+# Load raw dataset
+# ============================================================
+music_data <- read.csv("data/mxmh_survey_results.csv")
+
+# ============================================================
+# Define variable groups used throughout cleaning and modeling
+# ============================================================
+yn_cols <- c(
+  "While.working",
+  "Instrumentalist",
+  "Composer",
+  "Exploratory",
+  "Foreign.languages"
+)
+
+freq_cols <- c(
+  "Frequency..Classical.",
+  "Frequency..Country.",
+  "Frequency..EDM.",
+  "Frequency..Folk.",
+  "Frequency..Gospel.",
+  "Frequency..Hip.hop.",
+  "Frequency..Jazz.",
+  "Frequency..K.pop.",
+  "Frequency..Latin.",
+  "Frequency..Lofi.",
+  "Frequency..Metal.",
+  "Frequency..Pop.",
+  "Frequency..R.B.",
+  "Frequency..Rap.",
+  "Frequency..Rock.",
+  "Frequency..Video.game.music."
+)
+
+# ============================================================
+# Data cleaning steps
+# These follow the description in the "Data Cleaning" section
+# ============================================================
+
+# Drop BPM column due to missingness + poor interpretability
+music_data <- music_data %>% select(-any_of("BPM"))
+
+# Remove the single row with missing Age
+music_data <- music_data %>% filter(!is.na(Age))
+
+# Remove unrealistic 89-year-old listening 24 hours/day while working
+music_data <- music_data %>%
+  filter(!(Age == 89 & Hours.per.day == 24))
+
+# Restrict Yes/No columns to only valid "Yes"/"No" responses
+allowed_yn <- c("Yes", "No")
+
+music_data <- music_data %>%
+  filter(if_all(all_of(yn_cols), ~ .x %in% allowed_yn))
+
+# Remove rows with blank responses in Music.effects
+music_data <- music_data %>% filter(Music.effects != "")
+
+# Keep only frequency columns that exist in the dataset
+freq_cols_present <- freq_cols[freq_cols %in% colnames(music_data)]
+
+# Clean frequency variable names: convert to "freq_*"
+if (length(freq_cols_present) > 0) {
+  music_data <- music_data %>%
+    rename_with(
+      .cols = all_of(freq_cols_present),
+      .fn = ~ gsub("Frequency\\.\\.", "freq_", .x) %>% 
+             gsub("\\.", "", .)
+    )
+}
+
+# Save a clean copy for RQ2 processing later
+music_data_clean <- music_data
+
+# ============================================================
+# RQ1 — Prepare dataset and fit multiple model specifications
+# ============================================================
+
+# Keep only respondents with a valid streaming service
+music_data_1 <- music_data_clean %>%
+  filter(
+    Primary.streaming.service != "",
+    Primary.streaming.service != "I do not use a streaming service."
+  )
+
+# Create transformed outcome variables
+music_data_1 <- music_data_1 %>%
+  mutate(
+    log_hours   = log(Hours.per.day + 0.1),   # Used in main log model
+    log_hours_1 = log(Hours.per.day + 1)      # Alternative log transform
+  )
+
+# ------------------------------------------------------------
+# MODEL A — Raw-scale model (no transformation)
+# ------------------------------------------------------------
+model_rq1_raw <- lm(
+  Hours.per.day ~ Depression * Primary.streaming.service +
+    Age + While.working + Instrumentalist + Composer + Exploratory +
+    Foreign.languages + Anxiety + Insomnia + OCD + Fav.genre + Music.effects +
+    freq_Classical + freq_Country + freq_EDM + freq_Folk + freq_Gospel +
+    freq_Hiphop + freq_Jazz + freq_Kpop + freq_Latin + freq_Lofi +
+    freq_Metal + freq_Pop + freq_RB + freq_Rap + freq_Rock + freq_Videogamemusic,
+  data = music_data_1
+)
+
+# ------------------------------------------------------------
+# MODEL B — Log-transformed model (primary model)
+# ------------------------------------------------------------
+model_rq1_log <- lm(
+  log_hours ~ Depression * Primary.streaming.service +
+    Age + While.working + Instrumentalist + Composer + Exploratory +
+    Foreign.languages + Anxiety + Insomnia + OCD + Fav.genre + Music.effects +
+    freq_Classical + freq_Country + freq_EDM + freq_Folk + freq_Gospel +
+    freq_Hiphop + freq_Jazz + freq_Kpop + freq_Latin + freq_Lofi +
+    freq_Metal + freq_Pop + freq_RB + freq_Rap + freq_Rock + freq_Videogamemusic,
+  data = music_data_1
+)
+
+# ------------------------------------------------------------
+# MODEL C — Log model + Removing influential observations
+# ------------------------------------------------------------
+cooks <- cooks.distance(model_rq1_log)
+cutoff <- 4 / length(cooks)      # Conventional Cook's D threshold
+
+music_data_1_no_outlier <- music_data_1[cooks < cutoff, ]
+
+model_rq1_log_no_out <- lm(
+  log_hours ~ Depression * Primary.streaming.service +
+    Age + While.working + Instrumentalist + Composer + Exploratory +
+    Foreign.languages + Anxiety + Insomnia + OCD + Fav.genre + Music.effects +
+    freq_Classical + freq_Country + freq_EDM + freq_Folk + freq_Gospel +
+    freq_Hiphop + freq_Jazz + freq_Kpop + freq_Latin + freq_Lofi +
+    freq_Metal + freq_Pop + freq_RB + freq_Rap + freq_Rock + freq_Videogamemusic,
+  data = music_data_1_no_outlier
+)
+
+# ------------------------------------------------------------
+# MODEL D — Alternative log transform: log(Hours + 1)
+# ------------------------------------------------------------
+model_rq1_log1 <- lm(
+  log_hours_1 ~ Depression * Primary.streaming.service +
+    Age + While.working + Instrumentalist + Composer +
+    Exploratory + Foreign.languages +
+    Anxiety + Insomnia + OCD + Fav.genre + Music.effects +
+    freq_Classical + freq_Country + freq_EDM + freq_Folk +
+    freq_Gospel + freq_Hiphop + freq_Jazz + freq_Kpop +
+    freq_Latin + freq_Lofi + freq_Metal + freq_Pop +
+    freq_RB + freq_Rap + freq_Rock + freq_Videogamemusic,
+  data = music_data_1
+)
+
+# ------------------------------------------------------------
+# MODEL E — Simplified model with fewer predictors
+# ------------------------------------------------------------
+model_rq1_simple <- lm(
+  log_hours_1 ~ Depression * Primary.streaming.service +
+    Age + Anxiety + Insomnia + OCD,
+  data = music_data_1
+)
+
+# ============================================================
+# RQ2 — Prepare dataset and fit logistic regression models
+# ============================================================
+
+music_data_2 <- music_data_clean %>%
+  mutate(
+    high_depression = ifelse(Depression >= 6, 1, 0)  # Binary outcome
+  )
+
+# Full logistic regression model
+model2 <- glm(
+  high_depression ~ Hours.per.day +
+    Age + While.working + Instrumentalist + Composer + Exploratory +
+    Foreign.languages + Anxiety + Insomnia + OCD + Fav.genre + Music.effects +
+    freq_Classical + freq_Country + freq_EDM + freq_Folk + freq_Gospel +
+    freq_Hiphop + freq_Jazz + freq_Kpop + freq_Latin + freq_Lofi +
+    freq_Metal + freq_Pop + freq_RB + freq_Rap + freq_Rock + freq_Videogamemusic,
+  data = music_data_2,
+  family = binomial
+)
+
+# Reduced model excluding Hours.per.day (for comparison)
+model2_red <- glm(
+  high_depression ~
+    Age + While.working + Instrumentalist + Composer + Exploratory +
+    Foreign.languages + Anxiety + Insomnia + OCD + Fav.genre + Music.effects +
+    freq_Classical + freq_Country + freq_EDM + freq_Folk + freq_Gospel +
+    freq_Hiphop + freq_Jazz + freq_Kpop + freq_Latin + freq_Lofi +
+    freq_Metal + freq_Pop + freq_RB + freq_Rap + freq_Rock + freq_Videogamemusic,
+  data = music_data_2,
+  family = binomial
+)
+```
+
 # Data
 
 ## Data Background
@@ -34,6 +244,77 @@ Beyond the primary predictors of depression and primary streaming service, we in
 
 Our model, which follows the linear regression framework, relies on the standard assumptions of linearity, independence of observations, homoscedasticity, and normally distributed residuals. We also assumed that there was no multicollinearity among predictors, and all of these assumptions were assessed via diagnostic plots/tests.
 
+### Assessment and changes
+
+For RQ1, we first fit a linear regression model using the raw outcome, Hours of music listening per day. Standard diagnostic plots for this initial model (residuals versus fitted values and the normal Q–Q plot; it showed clear right–skew and heteroskedasticity in the residuals, driven largely by a small number of participants with very high listening times. The histogram of Hours per day also confirmed that the outcome was highly right–skewed. Together, these diagnostics suggested that the linearity and constant–variance assumptions were not well satisfied on the original scale.
+
+To address this, we applied a log transformation to the outcome and re–fit the model with\
+\[ \log(\text{Hours per day} + 0.1) \] as the response. On the log scale, the residual–versus–fitted plot and Q–Q plot showed substantially more symmetric and homoscedastic residuals, and the histogram of the transformed outcome indicated a much more balanced distribution. These improvements suggested that the log–transformed model better met the assumptions of linear regression. We also used variance inflation factors (VIFs) to check for multicollinearity among predictors and did not find evidence of extreme collinearity.
+
+Next, we examined influential observations using Cook’s distance from the log–scale model. We flagged observations with Cook’s distance above the conventional cutoff of (4/n) as potentially influential, and then refit the log–transformed model after removing this small set of high–influence points. Comparing Cook’s distance before and after removing these observations shows that the remaining data have much fewer overly influential points. The updated residual diagnostics also looked cleaner, and the main conclusions about the effects of depression and streaming platform were unchanged.
+
+We additionally compared several alternative specifications for RQ1: the raw–scale model, the log–transformed model, the log–transformed model after removing influential observations, an alternative log transformation (\log(x+1)), and a simplified model with only a subset of covariates. Using adjusted (R\^2) and AIC (Table 1), the log–transformed model with influential points removed and the full set of controls provided the best balance between model fit and interpretability. For that reason, we report this specification as our primary RQ1 model, and the regression summary table for this model (including estimates, standard errors, confidence intervals, and (p)–values) appears in Table 2.
+
+```{r table1, echo=FALSE, message=FALSE, warning=FALSE}
+# Table 1
+
+comp_tbl <- data.frame(
+Model = c("Raw model", "Log transform", "Log transform + remove outliers"),
+Adj_R2 = c(
+summary(model_rq1_raw)$adj.r.squared,
+summary(model_rq1_log)$adj.r.squared,
+summary(model_rq1_log_no_out)$adj.r.squared
+),
+AIC = c(
+AIC(model_rq1_raw),
+AIC(model_rq1_log),
+AIC(model_rq1_log_no_out)
+)
+)
+
+kable(
+comp_tbl,
+booktabs = TRUE,
+caption = "Table 1. Model comparison for RQ1 using adjusted R-squared and AIC."
+) %>%
+kable_styling(position = "center", full_width = FALSE)
+
+```
+
+```{r table2, echo=FALSE, message=FALSE, warning=FALSE}
+# Table 2
+
+tbl_rq1 <- tidy(
+model_rq1_log_no_out,
+conf.int = TRUE,
+conf.level = 0.95
+) %>%
+mutate(
+estimate  = round(estimate, 3),
+std.error = round(std.error, 3),
+conf.low  = round(conf.low, 3),
+conf.high = round(conf.high, 3),
+p.value   = ifelse(p.value < 0.001, "<0.001",
+sprintf("%.3f", p.value))
+) %>%
+rename(
+Term       = term,
+Estimate   = estimate,
+`Std Error`= std.error,
+`2.5% CI`  = conf.low,
+`97.5% CI` = conf.high,
+`p-value`  = p.value
+)
+
+kable(
+tbl_rq1,
+booktabs = TRUE,
+caption = "Table 2. Final linear regression model for RQ1 (log-hours with influential points removed)."
+) %>%
+kable_styling(position = "center", full_width = FALSE)
+
+```
+
 ## Research Question 2: “Does the number of hours spent listening to music each day increase the likelihood of reporting high depression symptoms?”
 
 For our second research question, which sought to determine if the number of hours spent listening to music each day increases the likelihood of reporting high depression symptoms, we fit a logistic regression model with a binary outcome. Logistic regression is appropriate because the response variable, high depression, classifies respondents as either above or below a threshold level of self-reported depressive symptoms, and the model estimates how the log-odds of being in the high-depression category change with daily listening time.
@@ -41,3 +322,72 @@ For our second research question, which sought to determine if the number of hou
 Outside of our outcome variable of high depression and our primary independent variable, daily hours spent listening to music, we also included several covariates. Specifically, we adjusted for age, indicators of music engagement (instrumentalist and composer), co-occurring mental-health conditions (anxiety, insomnia, and OCD), and two global music-use characteristics (favorite genre and music effects). These variables may influence both how much an individual listens to music and their underlying likelihood of experiencing elevated depressive symptoms, thereby helping reduce confounding effects.
 
 Logistic regression, and therefore our model, assumes independent observations, linearity of continuous predictors on the log-odds scale, and the absence of multicollinearity, all of which were checked via plots and tests.
+
+### Assessment and changes
+
+For RQ2, we modeled a binary outcome indicating “high depression” (depression score ≥ 6) using logistic regression, with daily listening time (Hours per day) as our primary predictor. Because logistic regression assumes that continuous predictors have a linear relationship with the log–odds of the outcome, we began by checking this assumption for Hours per day using a component–plus–residual (partial residual) plot. This plot did not reveal strong curvature or systematic departures from linearity, so we retained Hours per day in linear form.
+
+We then examined several additional diagnostics. First, we used VIFs to assess multicollinearity among the predictors and did not detect problematic levels of collinearity. Second, we evaluated overall model fit with a Hosmer–Lemeshow goodness–of–fit test, which did not indicate severe lack of fit. We also inspected deviance residuals versus fitted values the residuals showed no extreme patterns, suggesting that the model captured the main structure in the data reasonably well. To identify potentially influential points, we looked at Cook’s distance for the logistic model and at hat values (leverage). A small number of observations had relatively high leverage or Cook’s distance, but refitting the model after excluding them did not materially change our key conclusions, so we kept them in the final analysis.
+
+To assess predictive performance, we computed a confusion matrix based on the conventional 0.5 probability threshold as well as an alternative threshold suggested by the ROC curve. The ROC curve and associated AUC indicated that the model has some ability to distinguish between respondents with and without high depression, although predictive accuracy is far from perfect. Using the ROC–based threshold (approximately 0.39) improved the balance between sensitivity and specificity, which is reflected in the updated confusion matrix.
+
+Finally, we compared the full model, which includes Hours per day, with a reduced model that omits this variable. A likelihood ratio test and AIC showed only a modest improvement in fit when Hours per day was included, suggesting that listening time has at best a relatively small association with the probability of being in the high–depression group. However, because our main research question focuses on the role of daily listening time, we retain the full model as our primary specification. The corresponding regression results on the odds–ratio scale (including odds ratios, standard errors, confidence intervals, and (p)–values) are summarized in Table 3.
+
+```{r table3, echo=FALSE, message=FALSE, warning=FALSE}
+# Table 3
+
+tbl_rq2 <- tidy(
+model2,
+conf.int   = TRUE,
+conf.level = 0.95,
+exponentiate = TRUE
+) %>%
+mutate(
+estimate  = round(estimate, 2),
+std.error = round(std.error, 2),
+conf.low  = round(conf.low, 2),
+conf.high = round(conf.high, 2),
+p.value   = ifelse(p.value < 0.001, "<0.001",
+sprintf("%.3f", p.value))
+) %>%
+rename(
+Term         = term,
+`Odds Ratio` = estimate,
+`Std Error`  = std.error,
+`2.5% CI`    = conf.low,
+`97.5% CI`   = conf.high,
+`p-value`    = p.value
+)
+
+kable(
+tbl_rq2,
+booktabs = TRUE,
+caption = "Table 3. Logistic regression model for RQ2 (odds ratios with 95% confidence intervals)."
+) %>%
+kable_styling(position = "center", full_width = FALSE)
+
+
+```
+
+## Limitations and next steps
+
+Our analysis has several important limitations that should be kept in mind when interpreting the results.
+
+1.  **Cross–sectional data and lack of causality.** The survey is cross–sectional, so we can only describe associations between music listening and depression symptoms. We cannot determine whether listening more music causes changes in depression, whether depression leads people to change their listening habits, or whether both are driven by unobserved factors.
+
+2.  **Self–reported measures and measurement error.** All variables are self–reported, including mental–health scores and estimated hours of listening per day. Respondents may misremember or round their answers, and stigma around mental health could lead to under–reporting or over–reporting of symptoms. These kinds of measurement errors could attenuate or distort the estimated relationships.
+
+3.  **Sparse categories and unstable estimates.** Several genre and listening–frequency categories, as well as some streaming platforms, are represented by relatively few respondents. Coefficients for these small groups are therefore imprecise and have wide confidence intervals, which limits our ability to draw firm conclusions about specific genres or platforms.
+
+4.  **Complex models with many predictors.** Both the linear and logistic regression models include a large number of covariates relative to the sample size. This increases the risk of overfitting and makes it harder to detect small but real effects. Although our diagnostics did not reveal severe problems, more parsimonious models or regularization methods could provide more stable estimates.
+
+5.  **Limited ability to model nonlinearity and thresholds.** While we checked basic linearity assumptions and used a log transformation for RQ1, our models still assume relatively simple relationships between predictors and outcomes. If the effect of listening time on depression is strongly nonlinear (for example, only very high listening hours being associated with worse symptoms), our models may not fully capture that pattern.
+
+In future work, several steps could improve this analysis:
+
+-   **Collect longitudinal data.** Following the same individuals over time would allow us to investigate how changes in listening behavior relate to subsequent changes in depression symptoms and to make more credible causal claims.
+-   **Improve measurement and sample design.** Using validated clinical instruments for depression and more precise time–use measures (e.g., time–use diaries or app–based tracking) would reduce measurement error. Oversampling under–represented genres and platforms would also help stabilize estimates for those groups.
+-   **Explore more flexible modeling approaches.** With a larger sample, we could fit models that allow for nonlinear effects of listening time (e.g., spline terms or generalized additive models) and use regularization methods (such as ridge or lasso) to handle the large set of predictors. These approaches could reveal more nuanced patterns while reducing overfitting.
+-   **Incorporate additional covariates.** If available, adding variables capturing life stressors, social support, or treatment history could help separate the role of music listening from other determinants of mental health.
+
+These limitations mean that our findings should be interpreted as descriptive patterns in this sample, rather than definitive evidence about the causal effect of music listening on depression. Nonetheless, the analysis provides a useful starting point for understanding how music–listening habits and mental–health symptoms co–vary in this population.
