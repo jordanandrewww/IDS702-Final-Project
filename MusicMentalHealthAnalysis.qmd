@@ -202,6 +202,58 @@ music_data_1 %>%
 # Question 1: How does the number of hours spent listening to music per day vary by depression status and primary streaming service?
 
 # fit our linear regression model
+model_rq1_raw <- lm(
+  Hours.per.day ~ Depression * Primary.streaming.service +
+    Age +
+    While.working +
+    Instrumentalist +
+    Composer +
+    Exploratory +
+    Foreign.languages +
+    Anxiety +
+    Insomnia +
+    OCD +
+    Fav.genre +
+    Music.effects +
+    freq_Classical +
+    freq_Country +
+    freq_EDM +
+    freq_Folk +
+    freq_Gospel +
+    freq_Hiphop +
+    freq_Jazz +
+    freq_Kpop +
+    freq_Latin +
+    freq_Lofi +
+    freq_Metal +
+    freq_Pop +
+    freq_RB +
+    freq_Rap +
+    freq_Rock +
+    freq_Videogamemusic,
+  data = music_data_1
+)
+
+summary(model_rq1_raw)
+
+```
+
+```{r}
+plot(model_rq1_raw)
+```
+```{r}
+# checking for multicollinearity
+vif(model_rq1_raw, type = "predictor")
+```
+
+
+
+
+# **Model with Intentional/Relevant Predictors RQ1**
+
+```{r}
+
+# fit our linear regression model
 model_rq1 <- lm(
   Hours.per.day ~ Depression * Primary.streaming.service +
     Age +
@@ -282,6 +334,18 @@ plot(model_rq1_log)
 
 ```
 ```{r}
+# Cook's distance for linear regression (RQ1)
+cooks <- cooks.distance(model_rq1_log)
+
+plot(cooks, type = "h",
+     main = "Influential points measured by Cook’s distance",
+     ylab = "Cook's distance",
+     xlab = "Index")
+abline(h = 4/length(cooks), col = "red", lty = 2)
+
+# Identify influential observations
+which(cooks > 0.04)
+
 # Removing the three main outliers shown in the diagnostic plots
 music_data_1_subset <- music_data_1[!(rownames(music_data_1) %in% c("407", "345", "537")), ]
 

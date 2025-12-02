@@ -88,6 +88,44 @@ music_data_1 <- music_data_1 %>%
 # ------------------------------------------------------------
 # MODEL A — Raw-scale model (no transformation)
 # ------------------------------------------------------------
+
+# fit our linear regression model
+model_rq1_raw <- lm(
+  Hours.per.day ~ Depression * Primary.streaming.service +
+    Age +
+    While.working +
+    Instrumentalist +
+    Composer +
+    Exploratory +
+    Foreign.languages +
+    Anxiety +
+    Insomnia +
+    OCD +
+    Fav.genre +
+    Music.effects +
+    freq_Classical +
+    freq_Country +
+    freq_EDM +
+    freq_Folk +
+    freq_Gospel +
+    freq_Hiphop +
+    freq_Jazz +
+    freq_Kpop +
+    freq_Latin +
+    freq_Lofi +
+    freq_Metal +
+    freq_Pop +
+    freq_RB +
+    freq_Rap +
+    freq_Rock +
+    freq_Videogamemusic,
+  data = music_data_1
+)
+
+# ------------------------------------------------------------
+# MODEL B — Model with Relevant Predictors
+# ------------------------------------------------------------
+
 # fit our linear regression model
 model_rq1 <- lm(
   Hours.per.day ~ Depression * Primary.streaming.service +
@@ -106,7 +144,7 @@ model_rq1 <- lm(
 )
 
 # ------------------------------------------------------------
-# MODEL B — Log-transformed model (primary model)
+# MODEL C — Log-transformed model (primary model)
 # ------------------------------------------------------------
 # build log-transformed outcome
 music_data_1 <- music_data_1 %>%
@@ -130,7 +168,7 @@ model_rq1_log <- lm(
 )
 
 # ------------------------------------------------------------
-# MODEL C — Log model + Removing outlier observations
+# MODEL  — Log model + Removing outlier observations
 # ------------------------------------------------------------
 # Removing the three main outliers shown in the diagnostic plots
 music_data_1_subset <- music_data_1[!(rownames(music_data_1) %in% c("407", "345", "537")), ]
@@ -223,31 +261,53 @@ Beyond the primary predictors of depression and primary streaming service, we in
 
 Our model, which follows the linear regression framework, relies on the standard assumptions of linearity, independence of observations, homoscedasticity, and normally distributed residuals. We also assumed that there was no multicollinearity among predictors, and all of these assumptions were assessed via diagnostic plots/tests.
 
-### Assessment and changes
+## Research Question 2: “Does the number of hours spent listening to music each day increase the likelihood of reporting high depression symptoms?”
 
-For RQ1, we first fit a linear regression model using the raw outcome, Hours of music listening per day. Standard diagnostic plots for this initial model (residuals versus fitted values and the normal Q–Q plot; it showed clear right–skew and heteroscedasticity in the residuals, driven largely by a small number of participants with very high listening times. The histogram of Hours per day also confirmed that the outcome was highly right–skewed. Together, these diagnostics suggested that the linearity and constant–variance assumptions were not well satisfied on the original scale.
+For our second research question, which sought to determine if the number of hours spent listening to music each day increases the likelihood of reporting high depression symptoms, we fit a logistic regression model with a binary outcome. Logistic regression is appropriate because the response variable, high depression, classifies respondents as either above or below a threshold level of self-reported depressive symptoms, and the model estimates how the log-odds of being in the high-depression category change with daily listening time.
 
-To address this, we applied a log transformation to the outcome and re–fit the model with\
-\[ \log(\text{Hours per day} + 0.1) \] as the response. On the log scale, the residual–versus–fitted plot and Q–Q plot showed substantially more symmetric and homoscedastic residuals, and the histogram of the transformed outcome indicated a much more balanced distribution. These improvements suggested that the log–transformed model better met the assumptions of linear regression. We also used variance inflation factors (VIFs) to check for multicollinearity among predictors and did not find evidence of extreme collinearity.
+Outside of our outcome variable of high depression and our primary independent variable, daily hours spent listening to music, we also included several covariates. Specifically, we adjusted for age, indicators of music engagement (instrumentalist and composer), co-occurring mental-health conditions (anxiety, insomnia, and OCD), and two global music-use characteristics (favorite genre and music effects). These variables may influence both how much an individual listens to music and their underlying likelihood of experiencing elevated depressive symptoms, thereby helping reduce confounding effects.
 
-Next, we examined influential observations using Cook’s distance from the log–scale model. We flagged observations with Cook’s distance above the conventional cutoff of (4/n) as potentially influential, and then refit the log–transformed model after removing this small set of high–influence points. Comparing Cook’s distance before and after removing these observations shows that the remaining data have much fewer overly influential points. The updated residual diagnostics also looked cleaner, and the main conclusions about the effects of depression and streaming platform were unchanged.
+Logistic regression, and therefore our model, assumes independent observations, linearity of continuous predictors on the log-odds scale, and the absence of multicollinearity, all of which were checked via plots and tests.
 
-We additionally compared several alternative specifications for RQ1: the raw–scale model, the log–transformed model, the log–transformed model after removing influential observations, an alternative log transformation (\log(x+1)), and a simplified model with only a subset of covariates. Using adjusted (R\^2) and AIC (Table 1), the log–transformed model with influential points removed and the full set of controls provided the best balance between model fit and interpretability. For that reason, we report this specification as our primary RQ1 model, and the regression summary table for this model (including estimates, standard errors, confidence intervals, and (p)–values) appears in Table 2.
+# Assessment and changes
+
+## Research Question 1
+
+The first model we fit for RQ1 was a linear regression model that regressed the raw outcome of hours of music listening per day on all available predictors in the data set.
+
+After fitting this initial model, we first examined the standard diagnostic plots: Residuals vs Fitted, Normal Q-Q, Scale-Location, and Residuals vs. Leverage. The Residuals vs Fitted plot revealed a strong violation of homoscedasticity, with the points forming a funnel-shape, and a small violation of linearity, where the red smoothing line curved upward rather than remaining flat. The Normal Q–Q plot showed noticeable departures from the 45 degree line, especially in the upper tail, a clear strong violation of normality. The Scale–Location plot further confirmed heteroskedasticity, with residual spread increasing at higher fitted values. Finally, the Residuals vs. Leverage plot identified several influential observations with large residuals and unusually high leverage, suggesting they were exerting disproportionate influence on the fitted model.
+
+After examining the diagnostic plots, we assessed multicollinearity using GVIF values, which adjust for the degrees of freedom of multi-level categorical variables. For most predictors, including age, musician traits, mental-health indicators, and the genre-frequency variables, the adjusted GVIF1/(2⋅Df)^{1/(2·Df)}1/(2⋅Df) values were all close to 1.1-1.3, indicating low multicollinearity and no immediate concern for inflation of variance. The interaction term between depression and primary streaming service also showed a modest adjusted GVIF value of approximately 1.10, further supporting stability in these estimates.
+
+One exception was favorite genre, a 16-level categorical variable, which produced a very large raw GVIF (≈ 2400). However, its adjusted value, GVIF1/(2⋅Df)^{1/(2·Df)}1/(2⋅Df) ≈ 1.30, fell well within acceptable thresholds, since high raw GVIF numbers are expected for factors with many degrees of freedom. No predictors exhibited adjusted GVIF values approaching levels (≈ 2 or 3) that would indicate problematic multicollinearity.
+
+Because the full model included many weakly justified predictors, we fit a reduced model to improve parsimony and check whether the diagnostic issues were caused by unnecessary complexity. We also inspected a histogram of hours per day, which was strongly right-skewed, suggesting structural issues with the outcome itself. The reduced model produced essentially the same adjusted R² (≈0.16) and similar residual behavior, with persistent violations of linearity, homoscedasticity, and normality, plus influential points. This showed that removing predictors did not improve model fit and that the underlying outcome distribution, not just model complexity, was driving the diagnostic problems.
+
+To address this we applied a log transformation to the outcome and re–fit the model with\
+\[ \log(\text{Hours per day} + 0.1) \] as the response. On the log scale, the Residuals vs fitted plot and Q–Q plot showed substantially more symmetric and homoscedastic residuals, and the histogram of the transformed outcome indicated a much more balanced distribution. These improvements suggested that the log–transformed model better met the assumptions of linear regression. We also used variance inflation factors (VIFs) to check for multicollinearity among predictors and did not find strong evidence of a violation.
+
+To evaluate influential observations, we computed Cook’s distance for the log-transformed RQ1 model and examined the corresponding plot. We also inspected the residual and leverage diagnostic plots for outliers. Combining these approaches, we identified **three extreme points** to remove: two points were flagged as outliers in both the diagnostic plots and Cook’s distance, and one additional point appeared as an outlier only in the diagnostic plots. After removing these three extreme points , we refit the log-transformed model. The residuals are now more symmetrically distributed (Min = -1.84, Max = 1.80, Median ≈ 0), and the residual standard error decreased to 0.625, indicating improved model fit.
+
+Several predictors remain significant, including Depression, Primary streaming service, While working, Instrumentalist, Composer, Insomnia, and select favorite genres, with interactions between Depression and streaming platform also holding. The adjusted R^2 increased to 0.220, showing that the log transformation and removal of influential points slightly improved the explained variance.
+
+Table 1 presents a comparison of the models for RQ1 using adjusted R2R^2R2 and AIC. The raw model explained about 19\\% of the variance but had a high AIC, reflecting poorer fit. Reducing predictors slightly lowered adjusted \$R\^2\$ but improved AIC marginally. Applying the log transformation improved both adjusted \$R\^2\$ (to 0.232) and AIC (to 1309), indicating better model performance. Finally, removing the three outliers slightly reduced adjusted \$R\^2\$ to 0.220 but further lowered AIC to 1260, suggesting a more parsimonious and stable model. Overall, the log-transformed model with outliers removed balances interpretability, fit, and the influence of extreme points, and became our primary model for question 1.
 
 ```{r table1, echo=FALSE, message=FALSE, warning=FALSE}
 # Table 1
 
 comp_tbl <- data.frame(
-Model = c("Raw model", "Log transform", "Log transform + remove outliers"),
+Model = c("Raw model", "Reduced model", "Log transform", "Log transform + remove outliers"),
 Adj_R2 = c(
 summary(model_rq1_raw)$adj.r.squared,
+summary(model_rq1)$adj.r.squared,
 summary(model_rq1_log)$adj.r.squared,
-summary(model_rq1_log_no_out)$adj.r.squared
+summary(model_rq1_log_final)$adj.r.squared
 ),
 AIC = c(
 AIC(model_rq1_raw),
+AIC(model_rq1),
 AIC(model_rq1_log),
-AIC(model_rq1_log_no_out)
+AIC(model_rq1_log_final)
 )
 )
 
@@ -294,15 +354,7 @@ kable_styling(position = "center", full_width = FALSE)
 
 ```
 
-## Research Question 2: “Does the number of hours spent listening to music each day increase the likelihood of reporting high depression symptoms?”
-
-For our second research question, which sought to determine if the number of hours spent listening to music each day increases the likelihood of reporting high depression symptoms, we fit a logistic regression model with a binary outcome. Logistic regression is appropriate because the response variable, high depression, classifies respondents as either above or below a threshold level of self-reported depressive symptoms, and the model estimates how the log-odds of being in the high-depression category change with daily listening time.
-
-Outside of our outcome variable of high depression and our primary independent variable, daily hours spent listening to music, we also included several covariates. Specifically, we adjusted for age, indicators of music engagement (instrumentalist and composer), co-occurring mental-health conditions (anxiety, insomnia, and OCD), and two global music-use characteristics (favorite genre and music effects). These variables may influence both how much an individual listens to music and their underlying likelihood of experiencing elevated depressive symptoms, thereby helping reduce confounding effects.
-
-Logistic regression, and therefore our model, assumes independent observations, linearity of continuous predictors on the log-odds scale, and the absence of multicollinearity, all of which were checked via plots and tests.
-
-### Assessment and changes
+## Research Question 2
 
 For RQ2, we modeled a binary outcome indicating “high depression” (depression score ≥ 6) using logistic regression, with daily listening time (Hours per day) as our primary predictor. Because logistic regression assumes that continuous predictors have a linear relationship with the log–odds of the outcome, we began by checking this assumption for Hours per day using a component–plus–residual (partial residual) plot. This plot did not reveal strong curvature or systematic departures from linearity, so we retained Hours per day in linear form.
 
