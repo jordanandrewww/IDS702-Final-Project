@@ -25,36 +25,6 @@ library(ResourceSelection)    # Hosmer–Lemeshow test
 music_data <- read.csv("data/mxmh_survey_results.csv")
 
 # ============================================================
-# Define variable groups used throughout cleaning and modeling
-# ============================================================
-yn_cols <- c(
-  "While.working",
-  "Instrumentalist",
-  "Composer",
-  "Exploratory",
-  "Foreign.languages"
-)
-
-freq_cols <- c(
-  "Frequency..Classical.",
-  "Frequency..Country.",
-  "Frequency..EDM.",
-  "Frequency..Folk.",
-  "Frequency..Gospel.",
-  "Frequency..Hip.hop.",
-  "Frequency..Jazz.",
-  "Frequency..K.pop.",
-  "Frequency..Latin.",
-  "Frequency..Lofi.",
-  "Frequency..Metal.",
-  "Frequency..Pop.",
-  "Frequency..R.B.",
-  "Frequency..Rap.",
-  "Frequency..Rock.",
-  "Frequency..Video.game.music."
-)
-
-# ============================================================
 # Data cleaning steps
 # These follow the description in the "Data Cleaning" section
 # ============================================================
@@ -98,86 +68,89 @@ music_data_clean <- music_data
 # RQ1 — Prepare dataset and fit multiple model specifications
 # ============================================================
 
-# Keep only respondents with a valid streaming service
-music_data_1 <- music_data_clean %>%
-  filter(
-    Primary.streaming.service != "",
-    Primary.streaming.service != "I do not use a streaming service."
-  )
+# Question 1: How does the number of hours spent listening to music per day vary by depression status and primary streaming service?
 
-# Create transformed outcome variables
+# this will be the dataset used for our first research question
+music_data_1 <- music_data_clean
+
+# removing the row where Primary.streaming.service is empty
 music_data_1 <- music_data_1 %>%
-  mutate(
-    log_hours   = log(Hours.per.day + 0.1),   # Used in main log model
-    log_hours_1 = log(Hours.per.day + 1)      # Alternative log transform
-  )
+  filter(Primary.streaming.service != "")
+
+music_data_1 %>%
+  filter(Primary.streaming.service == "I do not use a streaming service.")
+
+# removing the rows where participants stated they do not use a streaming service
+music_data_1 <- music_data_1 %>%
+  filter(Primary.streaming.service != "I do not use a streaming service.")
+
 
 # ------------------------------------------------------------
 # MODEL A — Raw-scale model (no transformation)
 # ------------------------------------------------------------
-model_rq1_raw <- lm(
+# fit our linear regression model
+model_rq1 <- lm(
   Hours.per.day ~ Depression * Primary.streaming.service +
-    Age + While.working + Instrumentalist + Composer + Exploratory +
-    Foreign.languages + Anxiety + Insomnia + OCD + Fav.genre + Music.effects +
-    freq_Classical + freq_Country + freq_EDM + freq_Folk + freq_Gospel +
-    freq_Hiphop + freq_Jazz + freq_Kpop + freq_Latin + freq_Lofi +
-    freq_Metal + freq_Pop + freq_RB + freq_Rap + freq_Rock + freq_Videogamemusic,
+    Age +
+    While.working +
+    Instrumentalist +
+    Composer +
+    Exploratory +
+    Foreign.languages +
+    Anxiety +
+    Insomnia +
+    OCD +
+    Fav.genre +
+    Music.effects,
   data = music_data_1
 )
 
 # ------------------------------------------------------------
 # MODEL B — Log-transformed model (primary model)
 # ------------------------------------------------------------
+# build log-transformed outcome
+music_data_1 <- music_data_1 %>%
+  mutate(log_hours = log(Hours.per.day + 0.1))
+
+# run log-transform
 model_rq1_log <- lm(
   log_hours ~ Depression * Primary.streaming.service +
-    Age + While.working + Instrumentalist + Composer + Exploratory +
-    Foreign.languages + Anxiety + Insomnia + OCD + Fav.genre + Music.effects +
-    freq_Classical + freq_Country + freq_EDM + freq_Folk + freq_Gospel +
-    freq_Hiphop + freq_Jazz + freq_Kpop + freq_Latin + freq_Lofi +
-    freq_Metal + freq_Pop + freq_RB + freq_Rap + freq_Rock + freq_Videogamemusic,
+    Age +
+    While.working +
+    Instrumentalist +
+    Composer +
+    Exploratory +
+    Foreign.languages +
+    Anxiety +
+    Insomnia +
+    OCD +
+    Fav.genre +
+    Music.effects,
   data = music_data_1
 )
 
 # ------------------------------------------------------------
-# MODEL C — Log model + Removing influential observations
+# MODEL C — Log model + Removing outlier observations
 # ------------------------------------------------------------
-cooks <- cooks.distance(model_rq1_log)
-cutoff <- 4 / length(cooks)      # Conventional Cook's D threshold
+# Removing the three main outliers shown in the diagnostic plots
+music_data_1_subset <- music_data_1[!(rownames(music_data_1) %in% c("407", "345", "537")), ]
 
-music_data_1_no_outlier <- music_data_1[cooks < cutoff, ]
-
-model_rq1_log_no_out <- lm(
+# Refitting the model
+# run log-transform
+model_rq1_log_final <- lm(
   log_hours ~ Depression * Primary.streaming.service +
-    Age + While.working + Instrumentalist + Composer + Exploratory +
-    Foreign.languages + Anxiety + Insomnia + OCD + Fav.genre + Music.effects +
-    freq_Classical + freq_Country + freq_EDM + freq_Folk + freq_Gospel +
-    freq_Hiphop + freq_Jazz + freq_Kpop + freq_Latin + freq_Lofi +
-    freq_Metal + freq_Pop + freq_RB + freq_Rap + freq_Rock + freq_Videogamemusic,
-  data = music_data_1_no_outlier
-)
-
-# ------------------------------------------------------------
-# MODEL D — Alternative log transform: log(Hours + 1)
-# ------------------------------------------------------------
-model_rq1_log1 <- lm(
-  log_hours_1 ~ Depression * Primary.streaming.service +
-    Age + While.working + Instrumentalist + Composer +
-    Exploratory + Foreign.languages +
-    Anxiety + Insomnia + OCD + Fav.genre + Music.effects +
-    freq_Classical + freq_Country + freq_EDM + freq_Folk +
-    freq_Gospel + freq_Hiphop + freq_Jazz + freq_Kpop +
-    freq_Latin + freq_Lofi + freq_Metal + freq_Pop +
-    freq_RB + freq_Rap + freq_Rock + freq_Videogamemusic,
-  data = music_data_1
-)
-
-# ------------------------------------------------------------
-# MODEL E — Simplified model with fewer predictors
-# ------------------------------------------------------------
-model_rq1_simple <- lm(
-  log_hours_1 ~ Depression * Primary.streaming.service +
-    Age + Anxiety + Insomnia + OCD,
-  data = music_data_1
+    Age +
+    While.working +
+    Instrumentalist +
+    Composer +
+    Exploratory +
+    Foreign.languages +
+    Anxiety +
+    Insomnia +
+    OCD +
+    Fav.genre +
+    Music.effects,
+  data = music_data_1_subset
 )
 
 # ============================================================
@@ -189,14 +162,17 @@ music_data_2 <- music_data_clean %>%
     high_depression = ifelse(Depression >= 6, 1, 0)  # Binary outcome
   )
 
-# Full logistic regression model
+# Fit logistic regression including all relevant predictors
 model2 <- glm(
   high_depression ~ Hours.per.day +
-    Age + While.working + Instrumentalist + Composer + Exploratory +
-    Foreign.languages + Anxiety + Insomnia + OCD + Fav.genre + Music.effects +
-    freq_Classical + freq_Country + freq_EDM + freq_Folk + freq_Gospel +
-    freq_Hiphop + freq_Jazz + freq_Kpop + freq_Latin + freq_Lofi +
-    freq_Metal + freq_Pop + freq_RB + freq_Rap + freq_Rock + freq_Videogamemusic,
+    Age +
+    Instrumentalist +
+    Composer +
+    Anxiety +
+    Insomnia +
+    OCD +
+    Fav.genre +
+    Music.effects,
   data = music_data_2,
   family = binomial
 )
@@ -204,11 +180,14 @@ model2 <- glm(
 # Reduced model excluding Hours.per.day (for comparison)
 model2_red <- glm(
   high_depression ~
-    Age + While.working + Instrumentalist + Composer + Exploratory +
-    Foreign.languages + Anxiety + Insomnia + OCD + Fav.genre + Music.effects +
-    freq_Classical + freq_Country + freq_EDM + freq_Folk + freq_Gospel +
-    freq_Hiphop + freq_Jazz + freq_Kpop + freq_Latin + freq_Lofi +
-    freq_Metal + freq_Pop + freq_RB + freq_Rap + freq_Rock + freq_Videogamemusic,
+    Age +
+    Instrumentalist +
+    Composer +
+    Anxiety +
+    Insomnia +
+    OCD +
+    Fav.genre +
+    Music.effects,
   data = music_data_2,
   family = binomial
 )
@@ -246,7 +225,7 @@ Our model, which follows the linear regression framework, relies on the standard
 
 ### Assessment and changes
 
-For RQ1, we first fit a linear regression model using the raw outcome, Hours of music listening per day. Standard diagnostic plots for this initial model (residuals versus fitted values and the normal Q–Q plot; it showed clear right–skew and heteroskedasticity in the residuals, driven largely by a small number of participants with very high listening times. The histogram of Hours per day also confirmed that the outcome was highly right–skewed. Together, these diagnostics suggested that the linearity and constant–variance assumptions were not well satisfied on the original scale.
+For RQ1, we first fit a linear regression model using the raw outcome, Hours of music listening per day. Standard diagnostic plots for this initial model (residuals versus fitted values and the normal Q–Q plot; it showed clear right–skew and heteroscedasticity in the residuals, driven largely by a small number of participants with very high listening times. The histogram of Hours per day also confirmed that the outcome was highly right–skewed. Together, these diagnostics suggested that the linearity and constant–variance assumptions were not well satisfied on the original scale.
 
 To address this, we applied a log transformation to the outcome and re–fit the model with\
 \[ \log(\text{Hours per day} + 0.1) \] as the response. On the log scale, the residual–versus–fitted plot and Q–Q plot showed substantially more symmetric and homoscedastic residuals, and the histogram of the transformed outcome indicated a much more balanced distribution. These improvements suggested that the log–transformed model better met the assumptions of linear regression. We also used variance inflation factors (VIFs) to check for multicollinearity among predictors and did not find evidence of extreme collinearity.
