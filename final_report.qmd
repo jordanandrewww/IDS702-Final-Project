@@ -29,6 +29,33 @@ music_data <- read.csv("data/mxmh_survey_results.csv")
 # These follow the description in the "Data Cleaning" section
 # ============================================================
 
+yn_cols <- c(
+  "While.working",
+  "Instrumentalist",
+  "Composer",
+  "Exploratory",
+  "Foreign.languages"
+)
+
+freq_cols <- c(
+  "Frequency..Classical.",
+  "Frequency..Country.",
+  "Frequency..EDM.",
+  "Frequency..Folk.",
+  "Frequency..Gospel.",
+  "Frequency..Hip.hop.",
+  "Frequency..Jazz.",
+  "Frequency..K.pop.",
+  "Frequency..Latin.",
+  "Frequency..Lofi.",
+  "Frequency..Metal.",
+  "Frequency..Pop.",
+  "Frequency..R.B.",
+  "Frequency..Rap.",
+  "Frequency..Rock.",
+  "Frequency..Video.game.music."
+)
+
 # Drop BPM column due to missingness + poor interpretability
 music_data <- music_data %>% select(-any_of("BPM"))
 
@@ -277,20 +304,17 @@ The first model we fit for RQ1 was a linear regression model that regressed the 
 
 After fitting this initial model, we first examined the standard diagnostic plots: Residuals vs Fitted, Normal Q-Q, Scale-Location, and Residuals vs. Leverage. The Residuals vs Fitted plot revealed a strong violation of homoscedasticity, with the points forming a funnel-shape, and a small violation of linearity, where the red smoothing line curved upward rather than remaining flat. The Normal Q–Q plot showed noticeable departures from the 45 degree line, especially in the upper tail, a clear strong violation of normality. The Scale–Location plot further confirmed heteroskedasticity, with residual spread increasing at higher fitted values. Finally, the Residuals vs. Leverage plot identified several influential observations with large residuals and unusually high leverage, suggesting they were exerting disproportionate influence on the fitted model.
 
-After examining the diagnostic plots, we assessed multicollinearity using GVIF values, which adjust for the degrees of freedom of multi-level categorical variables. For most predictors, including age, musician traits, mental-health indicators, and the genre-frequency variables, the adjusted GVIF1/(2⋅Df)^{1/(2·Df)}1/(2⋅Df) values were all close to 1.1-1.3, indicating low multicollinearity and no immediate concern for inflation of variance. The interaction term between depression and primary streaming service also showed a modest adjusted GVIF value of approximately 1.10, further supporting stability in these estimates.
+After examining the diagnostic plots, we assessed multicollinearity using GVIF values, which adjust for the degrees of freedom of multi-level categorical variables. For most predictors, including age, musician traits, mental-health indicators, and the genre-frequency variables, the adjusted $\text{GVIF}^{1/(2 \cdot \text{Df})}$ values were all close to 1.1-1.3, indicating low multicollinearity and no immediate concern for inflation of variance. The interaction term between depression and primary streaming service also showed a modest adjusted GVIF value of approximately 1.10, further supporting stability in these estimates.
 
-One exception was favorite genre, a 16-level categorical variable, which produced a very large raw GVIF (≈ 2400). However, its adjusted value, GVIF1/(2⋅Df)^{1/(2·Df)}1/(2⋅Df) ≈ 1.30, fell well within acceptable thresholds, since high raw GVIF numbers are expected for factors with many degrees of freedom. No predictors exhibited adjusted GVIF values approaching levels (≈ 2 or 3) that would indicate problematic multicollinearity.
+One exception was favorite genre, a 16-level categorical variable, which produced a very large raw GVIF (≈ 2400). However, its adjusted value, $\text{GVIF}^{1/(2 \cdot \text{Df})} \approx 1.30$, fell well within acceptable thresholds, since high raw GVIF numbers are expected for factors with many degrees of freedom. No predictors exhibited adjusted GVIF values approaching levels (≈ 2 or 3) that would indicate problematic multicollinearity.
 
 Because the full model included many weakly justified predictors, we fit a reduced model to improve parsimony and check whether the diagnostic issues were caused by unnecessary complexity. We also inspected a histogram of hours per day, which was strongly right-skewed, suggesting structural issues with the outcome itself. The reduced model produced essentially the same adjusted R² (≈0.16) and similar residual behavior, with persistent violations of linearity, homoscedasticity, and normality, plus influential points. This showed that removing predictors did not improve model fit and that the underlying outcome distribution, not just model complexity, was driving the diagnostic problems.
 
-To address this we applied a log transformation to the outcome and re–fit the model with\
-\[ \log(\text{Hours per day} + 0.1) \] as the response. On the log scale, the Residuals vs fitted plot and Q–Q plot showed substantially more symmetric and homoscedastic residuals, and the histogram of the transformed outcome indicated a much more balanced distribution. These improvements suggested that the log–transformed model better met the assumptions of linear regression. We also used variance inflation factors (VIFs) to check for multicollinearity among predictors and did not find strong evidence of a violation.
+To address this we applied a log transformation to the outcome and re–fit the model with $\log(\text{Hours per day} + 0.1)$ as the response. On the log scale, the Residuals vs fitted plot and Q–Q plot showed substantially more symmetric and homoscedastic residuals, and the histogram of the transformed outcome indicated a much more balanced distribution. These improvements suggested that the log–transformed model better met the assumptions of linear regression. We also used variance inflation factors (VIFs) to check for multicollinearity among predictors and did not find strong evidence of a violation.
 
 To evaluate influential observations, we computed Cook’s distance for the log-transformed RQ1 model and examined the corresponding plot. We also inspected the residual and leverage diagnostic plots for outliers. Combining these approaches, we identified **three extreme points** to remove: two points were flagged as outliers in both the diagnostic plots and Cook’s distance, and one additional point appeared as an outlier only in the diagnostic plots. After removing these three extreme points , we refit the log-transformed model. The residuals are now more symmetrically distributed (Min = -1.84, Max = 1.80, Median ≈ 0), and the residual standard error decreased to 0.625, indicating improved model fit.
 
-Several predictors remain significant, including Depression, Primary streaming service, While working, Instrumentalist, Composer, Insomnia, and select favorite genres, with interactions between Depression and streaming platform also holding. The adjusted R^2 increased to 0.220, showing that the log transformation and removal of influential points slightly improved the explained variance.
-
-Table 1 presents a comparison of the models for RQ1 using adjusted R2R^2R2 and AIC. The raw model explained about 19\\% of the variance but had a high AIC, reflecting poorer fit. Reducing predictors slightly lowered adjusted \$R\^2\$ but improved AIC marginally. Applying the log transformation improved both adjusted \$R\^2\$ (to 0.232) and AIC (to 1309), indicating better model performance. Finally, removing the three outliers slightly reduced adjusted \$R\^2\$ to 0.220 but further lowered AIC to 1260, suggesting a more parsimonious and stable model. Overall, the log-transformed model with outliers removed balances interpretability, fit, and the influence of extreme points, and became our primary model for question 1.
+Several predictors remain significant, including Depression, Primary streaming service, While working, Instrumentalist, Composer, Insomnia, and select favorite genres, with interactions between Depression and streaming platform also holding. The adjusted $R^2$ increased to 0.220, showing that the log transformation and removal of influential points slightly improved the explained variance.
 
 ```{r table1, echo=FALSE, message=FALSE, warning=FALSE}
 # Table 1
@@ -320,11 +344,13 @@ kable_styling(position = "center", full_width = FALSE)
 
 ```
 
+Table 1 presents a comparison of the models for RQ1 using adjusted R2R\^2R2 and AIC. The raw model explained about $19\%$ of the variance but had a high AIC, reflecting poorer fit. Reducing predictors slightly lowered adjusted $R^2$ but improved AIC marginally. Applying the log transformation improved both adjusted $R^2$ (to 0.232) and AIC (to 1309), indicating better model performance. Finally, removing the three outliers slightly reduced adjusted $R^2$ to 0.220 but further lowered AIC to 1260, suggesting a more parsimonious and stable model. Overall, the log-transformed model with outliers removed balances interpretability, fit, and the influence of extreme points, and became our primary model for question 1.
+
 ```{r table2, echo=FALSE, message=FALSE, warning=FALSE}
 # Table 2
 
 tbl_rq1 <- tidy(
-model_rq1_log_no_out,
+model_rq1_log_final,
 conf.int = TRUE,
 conf.level = 0.95
 ) %>%
@@ -353,6 +379,8 @@ caption = "Table 2. Final linear regression model for RQ1 (log-hours with influe
 kable_styling(position = "center", full_width = FALSE)
 
 ```
+
+Table 2 shows
 
 ## Research Question 2
 

@@ -341,11 +341,12 @@ plot(cooks, type = "h",
      main = "Influential points measured by Cook’s distance",
      ylab = "Cook's distance",
      xlab = "Index")
-abline(h = 4/length(cooks), col = "red", lty = 2)
 
 # Identify influential observations
 which(cooks > 0.04)
 
+```
+```{r}
 # Removing the three main outliers shown in the diagnostic plots
 music_data_1_subset <- music_data_1[!(rownames(music_data_1) %in% c("407", "345", "537")), ]
 
@@ -368,8 +369,8 @@ model_rq1_log_final <- lm(
 )
 
 summary(model_rq1_log_final)
-
 ```
+
 ```{r}
 # Diagnostic plots for the final model, after log transformation and removal of outliers
 plot(model_rq1_log_final)
