@@ -1,8 +1,24 @@
 ---
-title: "Final Report"
+title: "Music Mental Health Analysis"
+subtitle: "Jordan Andrew"
 format: html
+execute:
+  echo: false
+  message: false
+  warning: false
 editor: visual
 ---
+
+```{=html}
+<style>
+.panel-fill, .panel, .quarto-float, .callout, .cell-output-display, .cell > .cell-output-stdout {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+</style>
+```
+
+------------------------------------------------------------------------
 
 ```{r setup-packages, include=FALSE}
 # ============================================================
@@ -302,28 +318,73 @@ Logistic regression, and therefore our model, assumes independent observations, 
 
 The first model we fit for RQ1 was a linear regression model that regressed the raw outcome of hours of music listening per day on all available predictors in the data set.
 
-After fitting this initial model, we first examined the standard diagnostic plots: Residuals vs Fitted, Normal Q-Q, Scale-Location, and Residuals vs. Leverage. The Residuals vs Fitted plot revealed a strong violation of homoscedasticity, with the points forming a funnel-shape, and a small violation of linearity, where the red smoothing line curved upward rather than remaining flat. The Normal Q–Q plot showed noticeable departures from the 45 degree line, especially in the upper tail, a clear strong violation of normality. The Scale–Location plot further confirmed heteroskedasticity, with residual spread increasing at higher fitted values. Finally, the Residuals vs. Leverage plot identified several influential observations with large residuals and unusually high leverage, suggesting they were exerting disproportionate influence on the fitted model.
+```{r}
+# Set plotting window to 2x2
+par(mfrow = c(2, 2))
+
+# Produce all 4 diagnostic plots
+plot(model_rq1_raw)
+
+# (Optional) Reset layout
+par(mfrow = c(1, 1))
+
+```
+
+After fitting this initial model, we first examined the standard diagnostic plots, as shown above: Residuals vs Fitted, Normal Q-Q, Scale-Location, and Residuals vs. Leverage. The Residuals vs Fitted plot revealed a strong violation of homoscedasticity, with the points forming a funnel-shape, and a small violation of linearity, where the red smoothing line curved upward rather than remaining flat. The Normal Q–Q plot showed noticeable departures from the 45 degree line, especially in the upper tail, a clear strong violation of normality. The Scale–Location plot further confirmed heteroscedasticity, with residual spread increasing at higher fitted values. Finally, the Residuals vs. Leverage plot identified several influential observations with large residuals and unusually high leverage, suggesting they were exerting disproportionate influence on the fitted model.
 
 After examining the diagnostic plots, we assessed multicollinearity using GVIF values, which adjust for the degrees of freedom of multi-level categorical variables. For most predictors, including age, musician traits, mental-health indicators, and the genre-frequency variables, the adjusted $\text{GVIF}^{1/(2 \cdot \text{Df})}$ values were all close to 1.1-1.3, indicating low multicollinearity and no immediate concern for inflation of variance. The interaction term between depression and primary streaming service also showed a modest adjusted GVIF value of approximately 1.10, further supporting stability in these estimates.
 
 One exception was favorite genre, a 16-level categorical variable, which produced a very large raw GVIF (≈ 2400). However, its adjusted value, $\text{GVIF}^{1/(2 \cdot \text{Df})} \approx 1.30$, fell well within acceptable thresholds, since high raw GVIF numbers are expected for factors with many degrees of freedom. No predictors exhibited adjusted GVIF values approaching levels (≈ 2 or 3) that would indicate problematic multicollinearity.
 
-Because the full model included many weakly justified predictors, we fit a reduced model to improve parsimony and check whether the diagnostic issues were caused by unnecessary complexity. We also inspected a histogram of hours per day, which was strongly right-skewed, suggesting structural issues with the outcome itself. The reduced model produced essentially the same adjusted R² (≈0.16) and similar residual behavior, with persistent violations of linearity, homoscedasticity, and normality, plus influential points. This showed that removing predictors did not improve model fit and that the underlying outcome distribution, not just model complexity, was driving the diagnostic problems.
+```{r p1-plot, fig.width=4, fig.height=3}
+p1 <- ggplot(music_data_1, aes(x = Hours.per.day)) +
+geom_histogram(bins = 30, color = "black") +
+labs(
+x = "Hours of music listening per day",
+y = "Count",
+title = "Distribution of Hours.per.day"
+)
+
+## ---- fig.width=4, fig.height=3 ----
+p1
+
+```
+
+Because the full model included many weakly justified predictors, we fit a reduced model to improve parsimony and check whether the diagnostic issues were caused by unnecessary complexity. We also inspected a histogram of hours per day, pictured above, which was strongly right-skewed, suggesting structural issues with the outcome itself. The reduced model produced essentially the same adjusted R² (≈0.16) and similar residual behavior, with persistent violations of linearity, homoscedasticity, and normality, plus influential points. This showed that removing predictors did not improve model fit and that the underlying outcome distribution, not just model complexity, was driving the diagnostic problems.
 
 ```{r}
-# diagnostic plots for log-transformed model
-plot(model_rq1_log)
+
+# Set plotting window to 2x2
+par(mfrow = c(2, 2))
+
+# Produce all 4 diagnostic plots
+plot(model_rq1_log_final)
+
+# (Optional) Reset layout
+par(mfrow = c(1, 1))
 
 # we can see that violations of homoscedasticity and normality have improved (no more strong violations)
 ```
 
 To address this we applied a log transformation to the outcome and re–fit the model with $\log(\text{Hours per day} + 0.1)$ as the response. On the log scale, the Residuals vs fitted plot and Q–Q plot showed substantially more symmetric and homoscedastic residuals (as shown above) and the histogram of the transformed outcome indicated a much more balanced distribution. These improvements suggested that the log–transformed model better met the assumptions of linear regression. We also used variance inflation factors (VIFs) to check for multicollinearity among predictors and did not find strong evidence of a violation.
 
+```{r, fig.width=4, fig.height=3}
+# Cook's distance for linear regression (RQ1)
+cooks <- cooks.distance(model_rq1_log)
+
+plot(cooks, type = "h",
+     main = "Influential points measured by Cook’s distance",
+     ylab = "Cook's distance",
+     xlab = "Index",
+     cex.main = 0.8)
+```
+
 To evaluate influential observations, we computed Cook’s distance for the log-transformed RQ1 model and examined the corresponding plot. We also inspected the residual and leverage diagnostic plots for outliers. Combining these approaches, we identified three extreme points to remove: two points were flagged as outliers in both the diagnostic plots and Cook’s distance, and one additional point appeared as an outlier only in the diagnostic plots. After removing these three extreme points , we refit the log-transformed model. The residuals are now more symmetrically distributed (Min = -1.84, Max = 1.80, Median ≈ 0), and the residual standard error decreased to 0.625, indicating improved model fit.
 
 Several predictors remain significant, including Depression, Primary streaming service, While working, Instrumentalist, Composer, Insomnia, and select favorite genres, with interactions between Depression and streaming platform also holding. The adjusted $R^2$ increased to 0.220, showing that the log transformation and removal of influential points slightly improved the explained variance.
 
-```{r table1, echo=FALSE, message=FALSE, warning=FALSE}
+```{r table1, echo=FALSE, message=FALSE, warning=FALSE, fig.margin=FALSE, fig.cap="", out.extra='style="padding:0;margin:0;"'}
+
 # Table 1
 
 comp_tbl <- data.frame(
@@ -342,12 +403,14 @@ AIC(model_rq1_log_final)
 )
 )
 
-kable(
-comp_tbl,
-booktabs = TRUE,
-caption = "Table 1. Model comparison for RQ1 using adjusted R-squared and AIC."
-) %>%
-kable_styling(position = "center", full_width = FALSE)
+kable(comp_tbl, booktabs = TRUE,
+      caption = "Table 1. Model comparison for RQ1 using adjusted R-squared and AIC.") %>%
+  kable_styling(
+    position = "center",
+    full_width = FALSE,
+    latex_options = c("hold_position", "striped"),
+    font_size = 9
+  )
 
 ```
 
@@ -381,7 +444,7 @@ Estimate   = estimate,
 kable(
 tbl_rq1,
 booktabs = TRUE,
-caption = "Table 2. Final linear regression model for RQ1 (log-hours with influential points removed)."
+caption = "Table 2: Final linear regression model for RQ1 (log-hours with influential points removed)."
 ) %>%
 kable_styling(position = "center", full_width = FALSE)
 
@@ -393,15 +456,129 @@ Listening while working has the largest coefficient in the model ($\hat{\beta} =
 
 ## Research Question 2
 
-For RQ2, we modeled a binary outcome indicating “high depression” (depression score ≥ 6) using logistic regression, with daily listening time (Hours per day) as our primary predictor. Because logistic regression assumes that continuous predictors have a linear relationship with the log–odds of the outcome, we began by checking this assumption for Hours per day using a component–plus–residual (partial residual) plot. This plot did not reveal strong curvature or systematic departures from linearity, as the pink line was fitted very tightly to the blue, so we retained Hours per day in linear form.
+For RQ2, we modeled a binary outcome indicating “high depression” (depression score ≥ 6) using logistic regression, with daily listening time (Hours per day) as our primary predictor.
+
+```{r, fig.width=4, fig.height=3}
+# Partial residual plot for our main predictor (Hours.per.day)
+
+# This checks linearity of Hours.per.day with log-odds.
+crPlot(model2, "Hours.per.day")
+```
+
+Because logistic regression assumes that continuous predictors have a linear relationship with the log–odds of the outcome, we began by checking this assumption for Hours per day using a component–plus–residual (partial residual) plot. This plot did not reveal strong curvature or systematic departures from linearity, as the pink line was fitted very tightly to the blue, so we retained Hours per day in linear form.
 
 We then examined several additional diagnostics. First, we used VIFs to assess multicollinearity among the predictors and did not detect problematic levels of collinearity. Second, we evaluated overall model fit with a Hosmer–Lemeshow goodness–of–fit test, which revealed a p-value greater than 0.05 (0.1641), meaning the test indicates no substantial issue with the fitting of the model.
 
 We calculated leverage values using the hat matrix and identified several observations above the common threshold of $2\bar{h}$. However, high leverage alone is not sufficient evidence to remove points in logistic regression, particularly in models with many categorical predictors. Because these cases did not show extreme Pearson residuals either, we retained all observations for the final model.
 
-To assess predictive performance, we computed an initial confusion matrix based on the conventional 0.5 probability threshold. The initial confusion matrix showed 277 true negatives, 243 true positives, 95 false negatives, and 103 false positives, yielding an overall accuracy of 0.724. Sensitivity was 0.719, meaning the model correctly identified about 72% of participants with high depression, while specificity was 0.729, indicating a similar rate of correct classification among low-depression participants. The model’s precision (0.702) and F1 score (0.711) suggested moderate predictive performance but also revealed room for improvement, particularly in reducing false negatives.
+```{r}
+library(dplyr)
+library(knitr)
+library(kableExtra)
 
-To further assess model performance, we examined the ROC curve and computed the AUC. The model achieved an AUC of 0.797, indicating strong discriminative ability. The optimal classification threshold was identified as 0.456, which balances sensitivity and specificity more effectively than the default 0.50 cutoff. At this optimized threshold, we recomputed the confusion matrix, and sensitivity increased from 0.719 to 0.775, meaning the model detected a larger proportion of high-depression cases, while specificity remained reasonably high at 0.705. Overall accuracy also improved from 0.724 to 0.738, and the F1 score increased from 0.711 to 0.736, demonstrating that threshold adjustment meaningfully enhanced the model’s ability to classify high depression symptoms.
+# Predictions
+probs <- predict(model2, type = "response")
+pred_class <- factor(ifelse(probs > 0.5, 1, 0), levels = c(0,1))
+
+# Confusion matrix
+cm <- caret::confusionMatrix(
+  table(pred_class, music_data_2$high_depression),
+  positive = "1",
+  mode = "everything"
+)
+
+# Build a wide (fat) table
+tbl_cm_wide <- tibble(
+  `TN` = cm$table[1,1],
+  `FP` = cm$table[1,2],
+  `FN` = cm$table[2,1],
+  `TP` = cm$table[2,2],
+  `Accuracy` = cm$overall["Accuracy"],
+  `Kappa` = cm$overall["Kappa"],
+  `Sensitivity` = cm$byClass["Sensitivity"],
+  `Specificity` = cm$byClass["Specificity"],
+  `Precision` = cm$byClass["Pos Pred Value"],
+  `Recall` = cm$byClass["Sensitivity"],
+  `F1` = cm$byClass["F1"],
+  `Balanced Accuracy` = cm$byClass["Balanced Accuracy"]
+) %>%
+  mutate(across(everything(), ~ round(as.numeric(.), 3)))
+
+kable(
+  tbl_cm_wide,
+  booktabs = TRUE,
+  caption = "Table 3: Confusion Matrix and Classification Metrics"
+) %>%
+  kable_styling(position = "center", full_width = FALSE)
+
+
+
+```
+
+To assess predictive performance, we computed an initial confusion matrix (Table 3) based on the conventional 0.5 probability threshold. The initial confusion matrix showed 277 true negatives, 243 true positives, 95 false negatives, and 103 false positives, yielding an overall accuracy of 0.724. Sensitivity was 0.719, meaning the model correctly identified about 72% of participants with high depression, while specificity was 0.729, indicating a similar rate of correct classification among low-depression participants. The model’s precision (0.702) and F1 score (0.711) suggested moderate predictive performance but also revealed room for improvement, particularly in reducing false negatives.
+
+```{r, fig.width=4, fig.height=3}
+invisible(
+  suppressMessages(
+    suppressWarnings(
+      pROC::roc(
+        music_data_2$high_depression,
+        probs,
+        print.thres = "best",
+        print.auc = TRUE,
+        legacy.axes = TRUE,
+        plot = TRUE
+      )
+    )
+  )
+)
+```
+
+To further assess model performance, we examined the ROC curve and computed the AUC. The model achieved an AUC of 0.797, indicating strong discriminative ability. The optimal classification threshold was identified as 0.456, which balances sensitivity and specificity more effectively than the default 0.50 cutoff.
+
+```{r}
+library(dplyr)
+library(knitr)
+library(kableExtra)
+
+# Predictions with new threshold
+probs <- predict(model2, type = "response")
+pred_class <- factor(ifelse(probs > 0.456, 1, 0), levels = c(0,1))
+
+# Confusion matrix object
+cm <- caret::confusionMatrix(
+  table(pred_class, music_data_2$high_depression),
+  positive = "1",
+  mode = "everything"
+)
+
+# Build wide (fat) table
+tbl_cm_wide <- tibble(
+  `TN` = cm$table[1,1],
+  `FP` = cm$table[1,2],
+  `FN` = cm$table[2,1],
+  `TP` = cm$table[2,2],
+  `Accuracy`  = cm$overall["Accuracy"],
+  `Kappa`     = cm$overall["Kappa"],
+  `Sensitivity` = cm$byClass["Sensitivity"],
+  `Specificity` = cm$byClass["Specificity"],
+  `Precision`   = cm$byClass["Pos Pred Value"],
+  `Recall`      = cm$byClass["Sensitivity"],
+  `F1`          = cm$byClass["F1"],
+  `Balanced Accuracy` = cm$byClass["Balanced Accuracy"]
+) %>%
+  mutate(across(everything(), ~ round(as.numeric(.), 3)))
+
+kable(
+  tbl_cm_wide,
+  booktabs = TRUE,
+  caption = "Table 4: Confusion Matrix and Classification Metrics (Threshold = 0.456)."
+) %>%
+  kable_styling(position = "center", full_width = FALSE)
+
+```
+
+At this optimized threshold, we recomputed the confusion matrix (Table 4), and sensitivity increased from 0.719 to 0.775, meaning the model detected a larger proportion of high-depression cases, while specificity remained reasonably high at 0.705. Overall accuracy also improved from 0.724 to 0.738, and the F1 score increased from 0.711 to 0.736, demonstrating that threshold adjustment meaningfully enhanced the model’s ability to classify high depression symptoms.
 
 Finally, we tested whether hours per day meaningfully improved the logistic regression model by comparing the full model to a reduced model that excluded this predictor. A likelihood ratio test showed no significant improvement from adding hours per day $(\chi^2(1) = 2.23,\; p = 0.135)$, indicating that daily music-listening hours do not provide additional explanatory power for predicting high depression symptoms once other factors are accounted for. Model fit indices aligned with this result: the AIC values for the reduced and full models were nearly identical (839.39 vs. 839.16), confirming that including hours per day does not meaningfully enhance model performance. However, because our research question specifically examines the role of daily listening time, we retain the full model as our primary specification.
 
@@ -434,14 +611,14 @@ Term         = term,
 kable(
 tbl_rq2,
 booktabs = TRUE,
-caption = "Table 3. Logistic regression model for RQ2 (odds ratios with 95% confidence intervals)."
+caption = "Table 5: Logistic regression model for RQ2 (odds ratios with 95% confidence intervals)."
 ) %>%
 kable_styling(position = "center", full_width = FALSE)
 
 
 ```
 
-Table 3 summarizes the corresponding regression results on the odds–ratio scale, including odds ratios, standard errors, confidence intervals, and p–values. Daily hours spent listening to music showed no significant association with high depression (OR = 1.05, 95% CI: 0.99–1.12, $p = 0.140$), indicating that each additional hour of listening time does not meaningfully change the odds of reporting elevated depression symptoms. Age was also non-significant (OR = 0.99, 95% CI: 0.97–1.00, $p = 0.134$), suggesting that depression levels did not vary systematically across ages in this sample.
+Table 5 summarizes the corresponding regression results on the odds–ratio scale, including odds ratios, standard errors, confidence intervals, and p–values. Daily hours spent listening to music showed no significant association with high depression (OR = 1.05, 95% CI: 0.99–1.12, $p = 0.140$), indicating that each additional hour of listening time does not meaningfully change the odds of reporting elevated depression symptoms. Age was also non-significant (OR = 0.99, 95% CI: 0.97–1.00, $p = 0.134$), suggesting that depression levels did not vary systematically across ages in this sample.
 
 The only strong and consistent predictors were mental–health variables already closely tied to depression. Anxiety had a large, significant effect (OR = 1.40, 95% CI: 1.30–1.51, $p < 0.001$), meaning that each one-unit increase in anxiety score increased the odds of high depression by approximately 40%. Insomnia also significantly increased risk (OR = 1.17, 95% CI: 1.10–1.24, $p < 0.001$). OCD symptoms were not significant (OR = 0.97, $p = 0.424$).
 
@@ -449,25 +626,26 @@ Neither musician status (Instrumentalist or Composer) nor any favorite–genre c
 
 Overall, the model indicates that depression symptoms are most strongly predicted by other co-occurring mental–health indicators (anxiety and insomnia), whereas hours of music listening, demographic variables, musician traits, and musical preferences show no meaningful association with elevated depression levels.
 
-## Limitations and next steps
+## Limitations
 
 Our analysis has several important limitations that should be kept in mind when interpreting the results.
 
-1.  **Cross–sectional data and lack of causality.** The survey is cross–sectional, so we can only describe associations between music listening and depression symptoms. We cannot determine whether listening more music causes changes in depression, whether depression leads people to change their listening habits, or whether both are driven by unobserved factors.
+-   **Self-reported and cross-sectional data:** All variables in the dataset, including mental-health symptoms and daily listening habits, were self-reported. This introduces potential measurement error due to inaccurate recall, inconsistent interpretation of questions, or social desirability bias. Additionally, because the data is cross-sectional, we cannot determine temporal ordering or causality. For instance, even if hours of listening were associated with depression, we cannot know whether listening more contributes to symptoms or whether individuals with higher depression simply listen to more music.
 
-2.  **Self–reported measures and measurement error.** All variables are self–reported, including mental–health scores and estimated hours of listening per day. Respondents may misremember or round their answers, and stigma around mental health could lead to under–reporting or over–reporting of symptoms. These kinds of measurement errors could attenuate or distort the estimated relationships.
+-   **Limited measurement of key variables:** Several important constructs were captured using single questions (for example, music effects, listening to music while working, and favorite genre), which restricts measurement precision. Some mental-health scores may also overlap conceptually, as illnesses like anxiety and insomnia strongly correlate with depression. This makes it difficult to isolate unique events even when multicollinearity diagnostics appear acceptable.
 
-3.  **Sparse categories and unstable estimates.** Several genre and listening–frequency categories, as well as some streaming platforms, are represented by relatively few respondents. Coefficients for these small groups are therefore imprecise and have wide confidence intervals, which limits our ability to draw firm conclusions about specific genres or platforms.
+-   **Simplified representation of music behavior:** Daily hours of listening is an extremely limited measure of music engagement. It does not capture when people listen (morning vs. late night), how they listen (active vs. passive), why they listen (mood regulation, entertainment, background noise), or what they listen to within genres, all of which could meaningfully relate to mental-health outcomes. Similarly, "primary streaming service" does not capture multi-platform use or variability in content algorithms.
 
-4.  **Complex models with many predictors.** Both the linear and logistic regression models include a large number of covariates relative to the sample size. This increases the risk of overfitting and makes it harder to detect small but real effects. Although our diagnostics did not reveal severe problems, more parsimonious models or regularization methods could provide more stable estimates.
+-   **Missing potential confounders:** Several important correlated variables of depression, like socioeconomic status, employment, physical health, sleep patterns, chronic stress, and academic workload, were not measured. Their absence means our model may suffer from omitted-variable bias, limiting the interpretability of estimated relationships.
 
-5.  **Limited ability to model nonlinearity and thresholds.** While we checked basic linearity assumptions and used a log transformation for RQ1, our models still assume relatively simple relationships between predictors and outcomes. If the effect of listening time on depression is strongly nonlinear (for example, only very high listening hours being associated with worse symptoms), our models may not fully capture that pattern.
+## Future Work
 
-In future work, several steps could improve this analysis:
+To strengthen the results and analysis, several steps could be taken in future research:
 
--   **Collect longitudinal data.** Following the same individuals over time would allow us to investigate how changes in listening behavior relate to subsequent changes in depression symptoms and to make more credible causal claims.
--   **Improve measurement and sample design.** Using validated clinical instruments for depression and more precise time–use measures (e.g., time–use diaries or app–based tracking) would reduce measurement error. Oversampling under–represented genres and platforms would also help stabilize estimates for those groups.
--   **Explore more flexible modeling approaches.** With a larger sample, we could fit models that allow for nonlinear effects of listening time (e.g., spline terms or generalized additive models) and use regularization methods (such as ridge or lasso) to handle the large set of predictors. These approaches could reveal more nuanced patterns while reducing overfitting.
--   **Incorporate additional covariates.** If available, adding variables capturing life stressors, social support, or treatment history could help separate the role of music listening from other determinants of mental health.
+-   **Collect richer and more detailed data:** Future studies would benefit from using validated multi-item psychological scales, such as PHQ-9 for depression or GAD-7 for anxiety, rather than the single self-reported questions on a scale of 0-10. Incorporating more granular measures of music engagement, such as listening context, emotional motivation, time-of-day patterns, or track-level characteristics, would also allow for more accurate modeling of how different aspects of music behavior relate to mental-health outcomes.
+-   **Use longitudinal or experimental study designs:** Because the current dataset is cross-sectional, it cannot speak to temporal ordering or causal relationships. Longitudinal surveys could help determine whether music-listening habits change before shifts in mood or vice-versa. Experimental designs, such as one that involves assigning participants to specific listening conditions, would further clarify causal pathways.
+-   **Apply more flexible modeling approaches:** Although linear and logistic regression provided interpretable results, more flexible models that are outside the scope of this class, like generalized additive models, random forests, or gradient-boosted trees, could capture non-linear relationships and interactions that traditional parametric models may miss. These models could also improve predictive accuracy, especially if supplemented with richer features.
+-   **Address unmeasured confounders and broaden co-variates:** Adding variables related to sleep quality, stress, socioeconomic status, work or academic pressure, or physical health would reduce omitted-variable bias. These variables are often meaningful predictors of depression and may help clarify whether music-listening habits have independent effects.
+-   **Expand the scope of musical data:** Streaming-platform logs or acoustic features from tracks (tempo, energy, valence, etc.) would enable more detailed analysis of how specific music properties or listening patterns relate to mental-health symptoms. This would move the analysis beyond total hours per day and allow for deeper behavioral insights.
 
 These limitations mean that our findings should be interpreted as descriptive patterns in this sample, rather than definitive evidence about the causal effect of music listening on depression. Nonetheless, the analysis provides a useful starting point for understanding how music–listening habits and mental–health symptoms co–vary in this population.

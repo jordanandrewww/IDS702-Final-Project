@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Music Mental Health Analysis</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="final_report_files/libs/clipboard/clipboard.min.js"></script>
+<script src="final_report_files/libs/quarto-html/quarto.js"></script>
+<script src="final_report_files/libs/quarto-html/popper.min.js"></script>
+<script src="final_report_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="final_report_files/libs/quarto-html/anchor.min.js"></script>
+<link href="final_report_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="final_report_files/libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="final_report_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="final_report_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="final_report_files/libs/bootstrap/bootstrap-c0367b04c37547644fece4185067e4a7.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="final_report_files/libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="final_report_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Music Mental Health Analysis</h1>
+<p class="subtitle lead">Jordan Andrew</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<style>
+.panel-fill, .panel, .quarto-float, .callout, .cell-output-display, .cell > .cell-output-stdout {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+</style>
+<hr>
+<section id="data" class="level1">
+<h1>Data</h1>
+<section id="data-background" class="level2">
+<h2 class="anchored" data-anchor-id="data-background">Data Background</h2>
+<p>The data used in this analysis comes from the Music and Mental Health (MxMH) Survey Results hosted on Kaggle. The dataset was collected through an online Google Form that was distributed via social media and public forums. It contains 736 respondents (rows) and includes variables on demographic characteristics (such as age), music-listening habits (hours per day, streaming platform, frequency of listening to certain genres), and self-reported mental-health scores for anxiety, depression, insomnia, and OCD (rated 0-10). The data is cross-sectional and self-reported, meaning it is suitable for identifying associations/correlations but not establishing causal effects.</p>
+</section>
+<section id="data-cleaning" class="level2">
+<h2 class="anchored" data-anchor-id="data-cleaning">Data Cleaning</h2>
+<p>Our data cleaning process began with an assessment of missing values across all columns. This revealed 107 null entries in the BPM column and a single null entry in the Age column. After looking further into the BPM data collection, we discovered that it was meant to represent the “Beats per minute of favorite genre.” However, rows with the same reported favorite genre displayed inconsistent BPM values, indicating that participants did not interpret or answer the question reliably. Combined with the large number of missing entries, this inconsistency made the variable unsuitable for analysis, so we dropped the BPM column entirely. The single row with a missing Age value was also removed to maintain completeness for demographic modeling.</p>
+<p>Next, we examined the dataset for implausible or erroneous entries. During this process, we identified a respondent who reported being 89 years old and listening to music for 24 hours per day, and they were doing so while working. Because this combination is not physically possible and would exert undue influence on any model involving hours per day, we removed this outlier from the dataset.</p>
+<p>We then reviewed all variables designed to accept only binary “Yes” or “No” responses. Several of these columns contained values outside of the allowed set, such as misspellings, alternative phrasing, or blank entries. To maintain consistency in these binary predictors, we filtered out any rows that did not provide valid “Yes” or “No” answers across all such variables, resulting in the removal of nine additional rows.</p>
+<p>After this, we checked the music effects variable and found seven cases where respondents left this question blank. Because an empty string does not constitute a valid category and this variable is used in later modeling, we removed these seven rows as well.</p>
+<p>For analyses involving streaming services, we examined the primary streaming service column and identified two types of unusable entries: blank responses and the explicit answer “I do not use a streaming service.” Because our first research question specifically compares listening patterns across streaming platforms, respondents without a platform could not be meaningfully included in that analysis. Therefore, for the dataset used in RQ1, we removed all rows with missing streaming-service information as well as those who reported not using any streaming service.</p>
+<p>Finally, to prepare the binary outcome for our second research question, we created a high depression variable that flags individuals with elevated symptom levels. Because the average depression score in the dataset was 4.82 and the median was 5, we designated respondents with a score of 6 or higher as experiencing “high depression.” This threshold represents a meaningful distinction between typical responses and substantially elevated symptom reports, allowing us to model the likelihood of more severe depression symptoms.</p>
+</section>
+</section>
+<section id="models" class="level1">
+<h1>Models</h1>
+<section id="research-question-1-how-does-the-number-of-hours-spent-listening-to-music-per-day-vary-by-depression-status-and-primary-streaming-service" class="level2">
+<h2 class="anchored" data-anchor-id="research-question-1-how-does-the-number-of-hours-spent-listening-to-music-per-day-vary-by-depression-status-and-primary-streaming-service">Research Question 1: “How does the number of hours spent listening to music per day vary by depression status and primary streaming service?”</h2>
+<p>To investigate how the number of hours spent listening to music per day varies based on depression symptoms and primary streaming service, we fit a multiple linear regression model using hours per day as the continuous response variable. Linear regression is appropriate for this question because the goal is to estimate how the average listening duration changes across different levels of depression and across streaming platforms, while adjusting for potential confounders. We also included an interaction term between depression and primary streaming service, which tests whether the association between self-reported depression symptoms and daily listening time differs by the platform a respondent uses.</p>
+<p>Beyond the primary predictors of depression and primary streaming service, we included a set of covariates to reduce potential confounding and isolate the effects of depression and steaming service on listening time. These covariates were selected because they relate to both music-listening behavior and mental-health-related characteristics without making the model too busy. These covariates include age, while working (whether the respondent listens while working), instrumentalist (yes/no), composer (yes/no), exploratory (whether they tend to explore new music), foreign languages (whether they tend to listen to music in foreign languages), and three mental health related variables (anxiety, insomnia, OCD, all self-reported on a scale of 0-10). We also included two music-related behavioral factors, favorite genre and music effects, to account for genre preferences and how individuals perceive music impacts their emotions. Including these variables helps adjust for individual differences in music engagement, mental-health comorbidity, and daily listening contexts that could otherwise bias the estimated relationships.</p>
+<p>Our model, which follows the linear regression framework, relies on the standard assumptions of linearity, independence of observations, homoscedasticity, and normally distributed residuals. We also assumed that there was no multicollinearity among predictors, and all of these assumptions were assessed via diagnostic plots/tests.</p>
+</section>
+<section id="research-question-2-does-the-number-of-hours-spent-listening-to-music-each-day-increase-the-likelihood-of-reporting-high-depression-symptoms" class="level2">
+<h2 class="anchored" data-anchor-id="research-question-2-does-the-number-of-hours-spent-listening-to-music-each-day-increase-the-likelihood-of-reporting-high-depression-symptoms">Research Question 2: “Does the number of hours spent listening to music each day increase the likelihood of reporting high depression symptoms?”</h2>
+<p>For our second research question, which sought to determine if the number of hours spent listening to music each day increases the likelihood of reporting high depression symptoms, we fit a logistic regression model with a binary outcome. Logistic regression is appropriate because the response variable, high depression, classifies respondents as either above or below a threshold level of self-reported depressive symptoms, and the model estimates how the log-odds of being in the high-depression category change with daily listening time.</p>
+<p>Outside of our outcome variable of high depression and our primary independent variable, daily hours spent listening to music, we also included several covariates. Specifically, we adjusted for age, indicators of music engagement (instrumentalist and composer), co-occurring mental-health conditions (anxiety, insomnia, and OCD), and two global music-use characteristics (favorite genre and music effects). These variables may influence both how much an individual listens to music and their underlying likelihood of experiencing elevated depressive symptoms, thereby helping reduce confounding effects.</p>
+<p>Logistic regression, and therefore our model, assumes independent observations, linearity of continuous predictors on the log-odds scale, and the absence of multicollinearity, all of which were checked via plots and tests.</p>
+</section>
+</section>
+<section id="assessment-and-changes" class="level1">
+<h1>Assessment and changes</h1>
+<section id="research-question-1" class="level2">
+<h2 class="anchored" data-anchor-id="research-question-1">Research Question 1</h2>
+<p>The first model we fit for RQ1 was a linear regression model that regressed the raw outcome of hours of music listening per day on all available predictors in the data set.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="final_report_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>After fitting this initial model, we first examined the standard diagnostic plots, as shown above: Residuals vs Fitted, Normal Q-Q, Scale-Location, and Residuals vs.&nbsp;Leverage. The Residuals vs Fitted plot revealed a strong violation of homoscedasticity, with the points forming a funnel-shape, and a small violation of linearity, where the red smoothing line curved upward rather than remaining flat. The Normal Q–Q plot showed noticeable departures from the 45 degree line, especially in the upper tail, a clear strong violation of normality. The Scale–Location plot further confirmed heteroscedasticity, with residual spread increasing at higher fitted values. Finally, the Residuals vs.&nbsp;Leverage plot identified several influential observations with large residuals and unusually high leverage, suggesting they were exerting disproportionate influence on the fitted model.</p>
+<p>After examining the diagnostic plots, we assessed multicollinearity using GVIF values, which adjust for the degrees of freedom of multi-level categorical variables. For most predictors, including age, musician traits, mental-health indicators, and the genre-frequency variables, the adjusted <span class="math inline">\(\text{GVIF}^{1/(2 \cdot \text{Df})}\)</span> values were all close to 1.1-1.3, indicating low multicollinearity and no immediate concern for inflation of variance. The interaction term between depression and primary streaming service also showed a modest adjusted GVIF value of approximately 1.10, further supporting stability in these estimates.</p>
+<p>One exception was favorite genre, a 16-level categorical variable, which produced a very large raw GVIF (≈ 2400). However, its adjusted value, <span class="math inline">\(\text{GVIF}^{1/(2 \cdot \text{Df})} \approx 1.30\)</span>, fell well within acceptable thresholds, since high raw GVIF numbers are expected for factors with many degrees of freedom. No predictors exhibited adjusted GVIF values approaching levels (≈ 2 or 3) that would indicate problematic multicollinearity.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="final_report_files/figure-html/p1-plot-1.png" class="img-fluid figure-img" width="384"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Because the full model included many weakly justified predictors, we fit a reduced model to improve parsimony and check whether the diagnostic issues were caused by unnecessary complexity. We also inspected a histogram of hours per day, pictured above, which was strongly right-skewed, suggesting structural issues with the outcome itself. The reduced model produced essentially the same adjusted R² (≈0.16) and similar residual behavior, with persistent violations of linearity, homoscedasticity, and normality, plus influential points. This showed that removing predictors did not improve model fit and that the underlying outcome distribution, not just model complexity, was driving the diagnostic problems.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="final_report_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>To address this we applied a log transformation to the outcome and re–fit the model with <span class="math inline">\(\log(\text{Hours per day} + 0.1)\)</span> as the response. On the log scale, the Residuals vs fitted plot and Q–Q plot showed substantially more symmetric and homoscedastic residuals (as shown above) and the histogram of the transformed outcome indicated a much more balanced distribution. These improvements suggested that the log–transformed model better met the assumptions of linear regression. We also used variance inflation factors (VIFs) to check for multicollinearity among predictors and did not find strong evidence of a violation.</p>
+<p>To evaluate influential observations, we computed Cook’s distance for the log-transformed RQ1 model and examined the corresponding plot. We also inspected the residual and leverage diagnostic plots for outliers. Combining these approaches, we identified three extreme points to remove: two points were flagged as outliers in both the diagnostic plots and Cook’s distance, and one additional point appeared as an outlier only in the diagnostic plots. After removing these three extreme points , we refit the log-transformed model. The residuals are now more symmetrically distributed (Min = -1.84, Max = 1.80, Median ≈ 0), and the residual standard error decreased to 0.625, indicating improved model fit.</p>
+<p>Several predictors remain significant, including Depression, Primary streaming service, While working, Instrumentalist, Composer, Insomnia, and select favorite genres, with interactions between Depression and streaming platform also holding. The adjusted <span class="math inline">\(R^2\)</span> increased to 0.220, showing that the log transformation and removal of influential points slightly improved the explained variance.</p>
+<div class="cell" data-fig.margin="false">
+<div class="cell-output-display">
+<table class="table caption-top table-sm table-striped small" data-quarto-postprocess="true">
+<caption>Table 1. Model comparison for RQ1 using adjusted R-squared and AIC.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Model</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Adj_R2</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">AIC</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Raw model</td>
+<td style="text-align: right;">0.1938095</td>
+<td style="text-align: right;">3173.908</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Reduced model</td>
+<td style="text-align: right;">0.1579996</td>
+<td style="text-align: right;">3158.997</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Log transform</td>
+<td style="text-align: right;">0.2324734</td>
+<td style="text-align: right;">1309.501</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Log transform + remove outliers</td>
+<td style="text-align: right;">0.2198529</td>
+<td style="text-align: right;">1260.190</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>Table 1 presents a comparison of the models for RQ1 using adjusted R2R^2R2 and AIC. The raw model explained about <span class="math inline">\(19\%\)</span> of the variance but had a high AIC, reflecting poorer fit. Reducing predictors slightly lowered adjusted <span class="math inline">\(R^2\)</span> but improved AIC marginally. Applying the log transformation improved both adjusted <span class="math inline">\(R^2\)</span> (to 0.232) and AIC (to 1309), indicating better model performance. Finally, removing the three outliers slightly reduced adjusted <span class="math inline">\(R^2\)</span> to 0.220 but further lowered AIC to 1260, suggesting a more parsimonious and stable model. Overall, the log-transformed model with outliers removed balances interpretability, fit, and the influence of extreme points, and became our primary model for question 1.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table caption-top table-sm table-striped small" data-quarto-postprocess="true">
+<caption>Table 2: Final linear regression model for RQ1 (log-hours with influential points removed).</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Term</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Estimate</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Std Error</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">statistic</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">p-value</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">2.5% CI</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">97.5% CI</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">-0.133</td>
+<td style="text-align: right;">0.237</td>
+<td style="text-align: right;">-0.5611308</td>
+<td style="text-align: left;">0.575</td>
+<td style="text-align: right;">-0.597</td>
+<td style="text-align: right;">0.332</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Depression</td>
+<td style="text-align: right;">0.106</td>
+<td style="text-align: right;">0.032</td>
+<td style="text-align: right;">3.2931047</td>
+<td style="text-align: left;">0.001</td>
+<td style="text-align: right;">0.043</td>
+<td style="text-align: right;">0.169</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Primary.streaming.serviceOther streaming service</td>
+<td style="text-align: right;">0.696</td>
+<td style="text-align: right;">0.245</td>
+<td style="text-align: right;">2.8455457</td>
+<td style="text-align: left;">0.005</td>
+<td style="text-align: right;">0.216</td>
+<td style="text-align: right;">1.177</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Primary.streaming.servicePandora</td>
+<td style="text-align: right;">0.776</td>
+<td style="text-align: right;">0.355</td>
+<td style="text-align: right;">2.1878891</td>
+<td style="text-align: left;">0.029</td>
+<td style="text-align: right;">0.079</td>
+<td style="text-align: right;">1.472</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Primary.streaming.serviceSpotify</td>
+<td style="text-align: right;">0.577</td>
+<td style="text-align: right;">0.197</td>
+<td style="text-align: right;">2.9249186</td>
+<td style="text-align: left;">0.004</td>
+<td style="text-align: right;">0.189</td>
+<td style="text-align: right;">0.964</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Primary.streaming.serviceYouTube Music</td>
+<td style="text-align: right;">0.625</td>
+<td style="text-align: right;">0.216</td>
+<td style="text-align: right;">2.8988409</td>
+<td style="text-align: left;">0.004</td>
+<td style="text-align: right;">0.202</td>
+<td style="text-align: right;">1.048</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Age</td>
+<td style="text-align: right;">-0.005</td>
+<td style="text-align: right;">0.003</td>
+<td style="text-align: right;">-2.0325505</td>
+<td style="text-align: left;">0.043</td>
+<td style="text-align: right;">-0.010</td>
+<td style="text-align: right;">0.000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">While.workingYes</td>
+<td style="text-align: right;">0.605</td>
+<td style="text-align: right;">0.065</td>
+<td style="text-align: right;">9.3626702</td>
+<td style="text-align: left;">&lt;0.001</td>
+<td style="text-align: right;">0.478</td>
+<td style="text-align: right;">0.732</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">InstrumentalistYes</td>
+<td style="text-align: right;">-0.160</td>
+<td style="text-align: right;">0.063</td>
+<td style="text-align: right;">-2.5549132</td>
+<td style="text-align: left;">0.011</td>
+<td style="text-align: right;">-0.283</td>
+<td style="text-align: right;">-0.037</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ComposerYes</td>
+<td style="text-align: right;">0.152</td>
+<td style="text-align: right;">0.075</td>
+<td style="text-align: right;">2.0181945</td>
+<td style="text-align: left;">0.044</td>
+<td style="text-align: right;">0.004</td>
+<td style="text-align: right;">0.300</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ExploratoryYes</td>
+<td style="text-align: right;">0.072</td>
+<td style="text-align: right;">0.061</td>
+<td style="text-align: right;">1.1673916</td>
+<td style="text-align: left;">0.244</td>
+<td style="text-align: right;">-0.049</td>
+<td style="text-align: right;">0.192</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Foreign.languagesYes</td>
+<td style="text-align: right;">0.060</td>
+<td style="text-align: right;">0.054</td>
+<td style="text-align: right;">1.1261125</td>
+<td style="text-align: left;">0.261</td>
+<td style="text-align: right;">-0.045</td>
+<td style="text-align: right;">0.165</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Anxiety</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">0.011</td>
+<td style="text-align: right;">0.0427548</td>
+<td style="text-align: left;">0.966</td>
+<td style="text-align: right;">-0.022</td>
+<td style="text-align: right;">0.023</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Insomnia</td>
+<td style="text-align: right;">0.026</td>
+<td style="text-align: right;">0.009</td>
+<td style="text-align: right;">2.8836975</td>
+<td style="text-align: left;">0.004</td>
+<td style="text-align: right;">0.008</td>
+<td style="text-align: right;">0.044</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">OCD</td>
+<td style="text-align: right;">0.019</td>
+<td style="text-align: right;">0.010</td>
+<td style="text-align: right;">1.9530351</td>
+<td style="text-align: left;">0.051</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">0.037</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fav.genreCountry</td>
+<td style="text-align: right;">0.149</td>
+<td style="text-align: right;">0.168</td>
+<td style="text-align: right;">0.8892265</td>
+<td style="text-align: left;">0.374</td>
+<td style="text-align: right;">-0.180</td>
+<td style="text-align: right;">0.479</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Fav.genreEDM</td>
+<td style="text-align: right;">0.248</td>
+<td style="text-align: right;">0.149</td>
+<td style="text-align: right;">1.6591055</td>
+<td style="text-align: left;">0.098</td>
+<td style="text-align: right;">-0.046</td>
+<td style="text-align: right;">0.542</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fav.genreFolk</td>
+<td style="text-align: right;">0.094</td>
+<td style="text-align: right;">0.161</td>
+<td style="text-align: right;">0.5845425</td>
+<td style="text-align: left;">0.559</td>
+<td style="text-align: right;">-0.223</td>
+<td style="text-align: right;">0.411</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Fav.genreGospel</td>
+<td style="text-align: right;">0.060</td>
+<td style="text-align: right;">0.317</td>
+<td style="text-align: right;">0.1889684</td>
+<td style="text-align: left;">0.850</td>
+<td style="text-align: right;">-0.562</td>
+<td style="text-align: right;">0.682</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fav.genreHip hop</td>
+<td style="text-align: right;">0.134</td>
+<td style="text-align: right;">0.153</td>
+<td style="text-align: right;">0.8818361</td>
+<td style="text-align: left;">0.378</td>
+<td style="text-align: right;">-0.165</td>
+<td style="text-align: right;">0.434</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Fav.genreJazz</td>
+<td style="text-align: right;">0.403</td>
+<td style="text-align: right;">0.175</td>
+<td style="text-align: right;">2.3074706</td>
+<td style="text-align: left;">0.021</td>
+<td style="text-align: right;">0.060</td>
+<td style="text-align: right;">0.747</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fav.genreK pop</td>
+<td style="text-align: right;">-0.072</td>
+<td style="text-align: right;">0.175</td>
+<td style="text-align: right;">-0.4120588</td>
+<td style="text-align: left;">0.680</td>
+<td style="text-align: right;">-0.417</td>
+<td style="text-align: right;">0.272</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Fav.genreLatin</td>
+<td style="text-align: right;">0.954</td>
+<td style="text-align: right;">0.457</td>
+<td style="text-align: right;">2.0872769</td>
+<td style="text-align: left;">0.037</td>
+<td style="text-align: right;">0.056</td>
+<td style="text-align: right;">1.851</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fav.genreLofi</td>
+<td style="text-align: right;">0.060</td>
+<td style="text-align: right;">0.227</td>
+<td style="text-align: right;">0.2636701</td>
+<td style="text-align: left;">0.792</td>
+<td style="text-align: right;">-0.386</td>
+<td style="text-align: right;">0.506</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Fav.genreMetal</td>
+<td style="text-align: right;">0.132</td>
+<td style="text-align: right;">0.126</td>
+<td style="text-align: right;">1.0502311</td>
+<td style="text-align: left;">0.294</td>
+<td style="text-align: right;">-0.115</td>
+<td style="text-align: right;">0.378</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fav.genrePop</td>
+<td style="text-align: right;">-0.117</td>
+<td style="text-align: right;">0.120</td>
+<td style="text-align: right;">-0.9754466</td>
+<td style="text-align: left;">0.330</td>
+<td style="text-align: right;">-0.354</td>
+<td style="text-align: right;">0.119</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Fav.genreR&amp;B</td>
+<td style="text-align: right;">0.128</td>
+<td style="text-align: right;">0.153</td>
+<td style="text-align: right;">0.8348958</td>
+<td style="text-align: left;">0.404</td>
+<td style="text-align: right;">-0.173</td>
+<td style="text-align: right;">0.429</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fav.genreRap</td>
+<td style="text-align: right;">0.283</td>
+<td style="text-align: right;">0.176</td>
+<td style="text-align: right;">1.6140922</td>
+<td style="text-align: left;">0.107</td>
+<td style="text-align: right;">-0.061</td>
+<td style="text-align: right;">0.628</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Fav.genreRock</td>
+<td style="text-align: right;">0.097</td>
+<td style="text-align: right;">0.115</td>
+<td style="text-align: right;">0.8419446</td>
+<td style="text-align: left;">0.400</td>
+<td style="text-align: right;">-0.129</td>
+<td style="text-align: right;">0.322</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fav.genreVideo game music</td>
+<td style="text-align: right;">-0.266</td>
+<td style="text-align: right;">0.156</td>
+<td style="text-align: right;">-1.7049786</td>
+<td style="text-align: left;">0.089</td>
+<td style="text-align: right;">-0.573</td>
+<td style="text-align: right;">0.040</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Music.effectsNo effect</td>
+<td style="text-align: right;">0.017</td>
+<td style="text-align: right;">0.063</td>
+<td style="text-align: right;">0.2704797</td>
+<td style="text-align: left;">0.787</td>
+<td style="text-align: right;">-0.106</td>
+<td style="text-align: right;">0.140</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Music.effectsWorsen</td>
+<td style="text-align: right;">-0.106</td>
+<td style="text-align: right;">0.175</td>
+<td style="text-align: right;">-0.6037773</td>
+<td style="text-align: left;">0.546</td>
+<td style="text-align: right;">-0.450</td>
+<td style="text-align: right;">0.238</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Depression:Primary.streaming.serviceOther streaming service</td>
+<td style="text-align: right;">-0.165</td>
+<td style="text-align: right;">0.043</td>
+<td style="text-align: right;">-3.8441528</td>
+<td style="text-align: left;">&lt;0.001</td>
+<td style="text-align: right;">-0.250</td>
+<td style="text-align: right;">-0.081</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Depression:Primary.streaming.servicePandora</td>
+<td style="text-align: right;">-0.207</td>
+<td style="text-align: right;">0.067</td>
+<td style="text-align: right;">-3.1180379</td>
+<td style="text-align: left;">0.002</td>
+<td style="text-align: right;">-0.338</td>
+<td style="text-align: right;">-0.077</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Depression:Primary.streaming.serviceSpotify</td>
+<td style="text-align: right;">-0.103</td>
+<td style="text-align: right;">0.033</td>
+<td style="text-align: right;">-3.0904123</td>
+<td style="text-align: left;">0.002</td>
+<td style="text-align: right;">-0.169</td>
+<td style="text-align: right;">-0.038</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Depression:Primary.streaming.serviceYouTube Music</td>
+<td style="text-align: right;">-0.140</td>
+<td style="text-align: right;">0.038</td>
+<td style="text-align: right;">-3.6613614</td>
+<td style="text-align: left;">&lt;0.001</td>
+<td style="text-align: right;">-0.215</td>
+<td style="text-align: right;">-0.065</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>Table 2 shows that depression is associated with higher listening time (<span class="math inline">\(\hat{\beta} = 0.106, p = 0.001\)</span>), but this effect is reduced for users of major streaming platforms, as indicated by the negative interaction terms (e.g., Spotify: <span class="math inline">\(\hat{\beta} = -0.103, p = 0.002\)</span>; YouTube Music: <span class="math inline">\(\hat{\beta} = -0.140, p &lt; 0.001\)</span>). Several platforms also have positive main effects: Spotify (<span class="math inline">\(\hat{\beta} = 0.577, p = 0.004\)</span>), YouTube Music (<span class="math inline">\(\hat{\beta} = 0.625, p = 0.004\)</span>), Pandora (<span class="math inline">\(\hat{\beta} = 0.776, p = 0.029\)</span>), and Other services (<span class="math inline">\(\hat{\beta} = 0.696, p = 0.005\)</span>). All of these predict higher log-hours relative to the baseline streaming category, Apple Music.</p>
+<p>Listening while working has the largest coefficient in the model (<span class="math inline">\(\hat{\beta} = 0.605, p &lt; 0.001\)</span>), indicating substantially higher daily listening. Additional significant predictors include insomnia (<span class="math inline">\(\hat{\beta} = 0.026, p = 0.004\)</span>), being a composer (<span class="math inline">\(\hat{\beta} = 0.152, p = 0.044\)</span>), being an instrumentalist (<span class="math inline">\(\hat{\beta} = -0.160, p = 0.011\)</span>), age (<span class="math inline">\(\hat{\beta} = -0.005, p = 0.043\)</span>), and two favorite genres: Jazz (<span class="math inline">\(\hat{\beta} = 0.403, p = 0.021\)</span>) and Latin (<span class="math inline">\(\hat{\beta} = 0.954, p = 0.037\)</span>). Most remaining predictors have confidence intervals crossing zero, indicating no detectable association with listening time.</p>
+</section>
+<section id="research-question-2" class="level2">
+<h2 class="anchored" data-anchor-id="research-question-2">Research Question 2</h2>
+<p>For RQ2, we modeled a binary outcome indicating “high depression” (depression score ≥ 6) using logistic regression, with daily listening time (Hours per day) as our primary predictor.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="final_report_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="384"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Because logistic regression assumes that continuous predictors have a linear relationship with the log–odds of the outcome, we began by checking this assumption for Hours per day using a component–plus–residual (partial residual) plot. This plot did not reveal strong curvature or systematic departures from linearity, as the pink line was fitted very tightly to the blue, so we retained Hours per day in linear form.</p>
+<p>We then examined several additional diagnostics. First, we used VIFs to assess multicollinearity among the predictors and did not detect problematic levels of collinearity. Second, we evaluated overall model fit with a Hosmer–Lemeshow goodness–of–fit test, which revealed a p-value greater than 0.05 (0.1641), meaning the test indicates no substantial issue with the fitting of the model.</p>
+<p>We calculated leverage values using the hat matrix and identified several observations above the common threshold of <span class="math inline">\(2\bar{h}\)</span>. However, high leverage alone is not sufficient evidence to remove points in logistic regression, particularly in models with many categorical predictors. Because these cases did not show extreme Pearson residuals either, we retained all observations for the final model.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table caption-top table-sm table-striped small" data-quarto-postprocess="true">
+<caption>Table 3: Confusion Matrix and Classification Metrics</caption>
+<thead>
+<tr class="header">
+<th style="text-align: right;" data-quarto-table-cell-role="th">TN</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">FP</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">FN</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">TP</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Accuracy</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Kappa</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Sensitivity</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Specificity</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Precision</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Recall</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">F1</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Balanced Accuracy</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">277</td>
+<td style="text-align: right;">95</td>
+<td style="text-align: right;">103</td>
+<td style="text-align: right;">243</td>
+<td style="text-align: right;">0.724</td>
+<td style="text-align: right;">0.447</td>
+<td style="text-align: right;">0.719</td>
+<td style="text-align: right;">0.729</td>
+<td style="text-align: right;">0.702</td>
+<td style="text-align: right;">0.719</td>
+<td style="text-align: right;">0.711</td>
+<td style="text-align: right;">0.724</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>To assess predictive performance, we computed an initial confusion matrix (Table 3) based on the conventional 0.5 probability threshold. The initial confusion matrix showed 277 true negatives, 243 true positives, 95 false negatives, and 103 false positives, yielding an overall accuracy of 0.724. Sensitivity was 0.719, meaning the model correctly identified about 72% of participants with high depression, while specificity was 0.729, indicating a similar rate of correct classification among low-depression participants. The model’s precision (0.702) and F1 score (0.711) suggested moderate predictive performance but also revealed room for improvement, particularly in reducing false negatives.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="final_report_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="384"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>To further assess model performance, we examined the ROC curve and computed the AUC. The model achieved an AUC of 0.797, indicating strong discriminative ability. The optimal classification threshold was identified as 0.456, which balances sensitivity and specificity more effectively than the default 0.50 cutoff.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table caption-top table-sm table-striped small" data-quarto-postprocess="true">
+<caption>Table 4: Confusion Matrix and Classification Metrics (Threshold = 0.456).</caption>
+<thead>
+<tr class="header">
+<th style="text-align: right;" data-quarto-table-cell-role="th">TN</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">FP</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">FN</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">TP</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Accuracy</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Kappa</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Sensitivity</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Specificity</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Precision</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Recall</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">F1</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Balanced Accuracy</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">268</td>
+<td style="text-align: right;">76</td>
+<td style="text-align: right;">112</td>
+<td style="text-align: right;">262</td>
+<td style="text-align: right;">0.738</td>
+<td style="text-align: right;">0.478</td>
+<td style="text-align: right;">0.775</td>
+<td style="text-align: right;">0.705</td>
+<td style="text-align: right;">0.701</td>
+<td style="text-align: right;">0.775</td>
+<td style="text-align: right;">0.736</td>
+<td style="text-align: right;">0.74</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>At this optimized threshold, we recomputed the confusion matrix (Table 4), and sensitivity increased from 0.719 to 0.775, meaning the model detected a larger proportion of high-depression cases, while specificity remained reasonably high at 0.705. Overall accuracy also improved from 0.724 to 0.738, and the F1 score increased from 0.711 to 0.736, demonstrating that threshold adjustment meaningfully enhanced the model’s ability to classify high depression symptoms.</p>
+<p>Finally, we tested whether hours per day meaningfully improved the logistic regression model by comparing the full model to a reduced model that excluded this predictor. A likelihood ratio test showed no significant improvement from adding hours per day <span class="math inline">\((\chi^2(1) = 2.23,\; p = 0.135)\)</span>, indicating that daily music-listening hours do not provide additional explanatory power for predicting high depression symptoms once other factors are accounted for. Model fit indices aligned with this result: the AIC values for the reduced and full models were nearly identical (839.39 vs.&nbsp;839.16), confirming that including hours per day does not meaningfully enhance model performance. However, because our research question specifically examines the role of daily listening time, we retain the full model as our primary specification.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table caption-top table-sm table-striped small" data-quarto-postprocess="true">
+<caption>Table 5: Logistic regression model for RQ2 (odds ratios with 95% confidence intervals).</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Term</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Odds Ratio</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Std Error</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">statistic</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">p-value</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">2.5% CI</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">97.5% CI</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">0.08</td>
+<td style="text-align: right;">0.52</td>
+<td style="text-align: right;">-4.8161509</td>
+<td style="text-align: left;">&lt;0.001</td>
+<td style="text-align: right;">0.03</td>
+<td style="text-align: right;">0.22</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Hours.per.day</td>
+<td style="text-align: right;">1.05</td>
+<td style="text-align: right;">0.03</td>
+<td style="text-align: right;">1.4764301</td>
+<td style="text-align: left;">0.140</td>
+<td style="text-align: right;">0.99</td>
+<td style="text-align: right;">1.12</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Age</td>
+<td style="text-align: right;">0.99</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">-1.4976696</td>
+<td style="text-align: left;">0.134</td>
+<td style="text-align: right;">0.97</td>
+<td style="text-align: right;">1.00</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">InstrumentalistYes</td>
+<td style="text-align: right;">0.94</td>
+<td style="text-align: right;">0.22</td>
+<td style="text-align: right;">-0.2893564</td>
+<td style="text-align: left;">0.772</td>
+<td style="text-align: right;">0.61</td>
+<td style="text-align: right;">1.43</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ComposerYes</td>
+<td style="text-align: right;">1.13</td>
+<td style="text-align: right;">0.26</td>
+<td style="text-align: right;">0.4570654</td>
+<td style="text-align: left;">0.648</td>
+<td style="text-align: right;">0.68</td>
+<td style="text-align: right;">1.87</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Anxiety</td>
+<td style="text-align: right;">1.40</td>
+<td style="text-align: right;">0.04</td>
+<td style="text-align: right;">8.6830117</td>
+<td style="text-align: left;">&lt;0.001</td>
+<td style="text-align: right;">1.30</td>
+<td style="text-align: right;">1.51</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Insomnia</td>
+<td style="text-align: right;">1.17</td>
+<td style="text-align: right;">0.03</td>
+<td style="text-align: right;">5.0936882</td>
+<td style="text-align: left;">&lt;0.001</td>
+<td style="text-align: right;">1.10</td>
+<td style="text-align: right;">1.24</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">OCD</td>
+<td style="text-align: right;">0.97</td>
+<td style="text-align: right;">0.03</td>
+<td style="text-align: right;">-0.7990682</td>
+<td style="text-align: left;">0.424</td>
+<td style="text-align: right;">0.91</td>
+<td style="text-align: right;">1.04</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Fav.genreCountry</td>
+<td style="text-align: right;">0.57</td>
+<td style="text-align: right;">0.59</td>
+<td style="text-align: right;">-0.9522194</td>
+<td style="text-align: left;">0.341</td>
+<td style="text-align: right;">0.17</td>
+<td style="text-align: right;">1.79</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fav.genreEDM</td>
+<td style="text-align: right;">1.18</td>
+<td style="text-align: right;">0.53</td>
+<td style="text-align: right;">0.3036052</td>
+<td style="text-align: left;">0.761</td>
+<td style="text-align: right;">0.41</td>
+<td style="text-align: right;">3.37</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Fav.genreFolk</td>
+<td style="text-align: right;">0.79</td>
+<td style="text-align: right;">0.53</td>
+<td style="text-align: right;">-0.4380352</td>
+<td style="text-align: left;">0.661</td>
+<td style="text-align: right;">0.28</td>
+<td style="text-align: right;">2.26</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fav.genreGospel</td>
+<td style="text-align: right;">0.20</td>
+<td style="text-align: right;">1.30</td>
+<td style="text-align: right;">-1.2446057</td>
+<td style="text-align: left;">0.213</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">1.99</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Fav.genreHip hop</td>
+<td style="text-align: right;">2.54</td>
+<td style="text-align: right;">0.54</td>
+<td style="text-align: right;">1.7321500</td>
+<td style="text-align: left;">0.083</td>
+<td style="text-align: right;">0.90</td>
+<td style="text-align: right;">7.49</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fav.genreJazz</td>
+<td style="text-align: right;">0.72</td>
+<td style="text-align: right;">0.61</td>
+<td style="text-align: right;">-0.5339638</td>
+<td style="text-align: left;">0.593</td>
+<td style="text-align: right;">0.21</td>
+<td style="text-align: right;">2.42</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Fav.genreK pop</td>
+<td style="text-align: right;">0.41</td>
+<td style="text-align: right;">0.61</td>
+<td style="text-align: right;">-1.4771463</td>
+<td style="text-align: left;">0.140</td>
+<td style="text-align: right;">0.12</td>
+<td style="text-align: right;">1.32</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fav.genreLatin</td>
+<td style="text-align: right;">1.01</td>
+<td style="text-align: right;">1.58</td>
+<td style="text-align: right;">0.0063683</td>
+<td style="text-align: left;">0.995</td>
+<td style="text-align: right;">0.03</td>
+<td style="text-align: right;">32.42</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Fav.genreLofi</td>
+<td style="text-align: right;">1.98</td>
+<td style="text-align: right;">0.83</td>
+<td style="text-align: right;">0.8259485</td>
+<td style="text-align: left;">0.409</td>
+<td style="text-align: right;">0.42</td>
+<td style="text-align: right;">11.47</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fav.genreMetal</td>
+<td style="text-align: right;">1.17</td>
+<td style="text-align: right;">0.42</td>
+<td style="text-align: right;">0.3797032</td>
+<td style="text-align: left;">0.704</td>
+<td style="text-align: right;">0.51</td>
+<td style="text-align: right;">2.70</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Fav.genrePop</td>
+<td style="text-align: right;">0.66</td>
+<td style="text-align: right;">0.41</td>
+<td style="text-align: right;">-1.0317028</td>
+<td style="text-align: left;">0.302</td>
+<td style="text-align: right;">0.30</td>
+<td style="text-align: right;">1.46</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fav.genreR&amp;B</td>
+<td style="text-align: right;">0.73</td>
+<td style="text-align: right;">0.55</td>
+<td style="text-align: right;">-0.5711555</td>
+<td style="text-align: left;">0.568</td>
+<td style="text-align: right;">0.24</td>
+<td style="text-align: right;">2.13</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Fav.genreRap</td>
+<td style="text-align: right;">0.63</td>
+<td style="text-align: right;">0.62</td>
+<td style="text-align: right;">-0.7514045</td>
+<td style="text-align: left;">0.452</td>
+<td style="text-align: right;">0.18</td>
+<td style="text-align: right;">2.09</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fav.genreRock</td>
+<td style="text-align: right;">1.30</td>
+<td style="text-align: right;">0.38</td>
+<td style="text-align: right;">0.6954891</td>
+<td style="text-align: left;">0.487</td>
+<td style="text-align: right;">0.62</td>
+<td style="text-align: right;">2.77</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Fav.genreVideo game music</td>
+<td style="text-align: right;">0.57</td>
+<td style="text-align: right;">0.49</td>
+<td style="text-align: right;">-1.1384220</td>
+<td style="text-align: left;">0.255</td>
+<td style="text-align: right;">0.21</td>
+<td style="text-align: right;">1.50</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Music.effectsNo effect</td>
+<td style="text-align: right;">1.11</td>
+<td style="text-align: right;">0.21</td>
+<td style="text-align: right;">0.4851821</td>
+<td style="text-align: left;">0.628</td>
+<td style="text-align: right;">0.73</td>
+<td style="text-align: right;">1.69</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Music.effectsWorsen</td>
+<td style="text-align: right;">2.60</td>
+<td style="text-align: right;">0.60</td>
+<td style="text-align: right;">1.5973620</td>
+<td style="text-align: left;">0.110</td>
+<td style="text-align: right;">0.84</td>
+<td style="text-align: right;">9.14</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>Table 5 summarizes the corresponding regression results on the odds–ratio scale, including odds ratios, standard errors, confidence intervals, and p–values. Daily hours spent listening to music showed no significant association with high depression (OR = 1.05, 95% CI: 0.99–1.12, <span class="math inline">\(p = 0.140\)</span>), indicating that each additional hour of listening time does not meaningfully change the odds of reporting elevated depression symptoms. Age was also non-significant (OR = 0.99, 95% CI: 0.97–1.00, <span class="math inline">\(p = 0.134\)</span>), suggesting that depression levels did not vary systematically across ages in this sample.</p>
+<p>The only strong and consistent predictors were mental–health variables already closely tied to depression. Anxiety had a large, significant effect (OR = 1.40, 95% CI: 1.30–1.51, <span class="math inline">\(p &lt; 0.001\)</span>), meaning that each one-unit increase in anxiety score increased the odds of high depression by approximately 40%. Insomnia also significantly increased risk (OR = 1.17, 95% CI: 1.10–1.24, <span class="math inline">\(p &lt; 0.001\)</span>). OCD symptoms were not significant (OR = 0.97, <span class="math inline">\(p = 0.424\)</span>).</p>
+<p>Neither musician status (Instrumentalist or Composer) nor any favorite–genre category significantly predicted high depression, as all confidence intervals crossed 1.0. Although ``Music effects: worsen’’ had a relatively large odds ratio (OR = 2.60), the estimate was imprecise (95% CI: 0.84–9.14, <span class="math inline">\(p = 0.110\)</span>) and therefore not statistically reliable.</p>
+<p>Overall, the model indicates that depression symptoms are most strongly predicted by other co-occurring mental–health indicators (anxiety and insomnia), whereas hours of music listening, demographic variables, musician traits, and musical preferences show no meaningful association with elevated depression levels.</p>
+</section>
+<section id="limitations-and-next-steps" class="level2">
+<h2 class="anchored" data-anchor-id="limitations-and-next-steps">Limitations and next steps</h2>
+<p>Our analysis has several important limitations that should be kept in mind when interpreting the results.</p>
+<ol type="1">
+<li><p><strong>Cross–sectional data and lack of causality.</strong> The survey is cross–sectional, so we can only describe associations between music listening and depression symptoms. We cannot determine whether listening more music causes changes in depression, whether depression leads people to change their listening habits, or whether both are driven by unobserved factors.</p></li>
+<li><p><strong>Self–reported measures and measurement error.</strong> All variables are self–reported, including mental–health scores and estimated hours of listening per day. Respondents may misremember or round their answers, and stigma around mental health could lead to under–reporting or over–reporting of symptoms. These kinds of measurement errors could attenuate or distort the estimated relationships.</p></li>
+<li><p><strong>Sparse categories and unstable estimates.</strong> Several genre and listening–frequency categories, as well as some streaming platforms, are represented by relatively few respondents. Coefficients for these small groups are therefore imprecise and have wide confidence intervals, which limits our ability to draw firm conclusions about specific genres or platforms.</p></li>
+<li><p><strong>Complex models with many predictors.</strong> Both the linear and logistic regression models include a large number of covariates relative to the sample size. This increases the risk of overfitting and makes it harder to detect small but real effects. Although our diagnostics did not reveal severe problems, more parsimonious models or regularization methods could provide more stable estimates.</p></li>
+<li><p><strong>Limited ability to model nonlinearity and thresholds.</strong> While we checked basic linearity assumptions and used a log transformation for RQ1, our models still assume relatively simple relationships between predictors and outcomes. If the effect of listening time on depression is strongly nonlinear (for example, only very high listening hours being associated with worse symptoms), our models may not fully capture that pattern.</p></li>
+</ol>
+<p>In future work, several steps could improve this analysis:</p>
+<ul>
+<li><strong>Collect longitudinal data.</strong> Following the same individuals over time would allow us to investigate how changes in listening behavior relate to subsequent changes in depression symptoms and to make more credible causal claims.</li>
+<li><strong>Improve measurement and sample design.</strong> Using validated clinical instruments for depression and more precise time–use measures (e.g., time–use diaries or app–based tracking) would reduce measurement error. Oversampling under–represented genres and platforms would also help stabilize estimates for those groups.</li>
+<li><strong>Explore more flexible modeling approaches.</strong> With a larger sample, we could fit models that allow for nonlinear effects of listening time (e.g., spline terms or generalized additive models) and use regularization methods (such as ridge or lasso) to handle the large set of predictors. These approaches could reveal more nuanced patterns while reducing overfitting.</li>
+<li><strong>Incorporate additional covariates.</strong> If available, adding variables capturing life stressors, social support, or treatment history could help separate the role of music listening from other determinants of mental health.</li>
+</ul>
+<p>These limitations mean that our findings should be interpreted as descriptive patterns in this sample, rather than definitive evidence about the causal effect of music listening on depression. Nonetheless, the analysis provides a useful starting point for understanding how music–listening habits and mental–health symptoms co–vary in this population.</p>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

@@ -376,23 +376,6 @@ summary(model_rq1_log_final)
 plot(model_rq1_log_final)
 ```
 
-```{r}
-# Cook's distance for linear regression (RQ1)
-cooks <- cooks.distance(model_rq1_log)
-
-plot(cooks, type = "h",
-     main = "Influential points measured by Cook’s distance",
-     ylab = "Cook's distance",
-     xlab = "Index")
-abline(h = 4/length(cooks), col = "red", lty = 2)
-
-# Identify influential observations
-which(cooks > (4/length(cooks)))
-```
-```{r}
-
-```
-
 # **Research Question 2**
 
 ```{r}
@@ -445,6 +428,14 @@ crPlot(model2, "Hours.per.day")
 ```{r}
 vif(model2)
 ```
+# **Goodness-of-fit (Hosmer-Lemeshow test)** 
+
+```{r}
+# This test compares observed and expected frequencies of the outcome.
+ResourceSelection::hoslem.test(model2$y, fitted(model2))
+
+```
+
 ## Pearson residuals vs fitted plot##
 ```{r}
 plot(model2, which = 1)
@@ -455,14 +446,6 @@ plot(model2, which = 1)
 ```{r}
 hatvalues <- hatvalues(model2)
 which(hatvalues > (2*mean(hatvalues)))
-
-```
-
-# **Goodness-of-fit (Hosmer-Lemeshow test)** 
-
-```{r}
-# This test compares observed and expected frequencies of the outcome.
-ResourceSelection::hoslem.test(model2$y, fitted(model2))
 
 ```
 
