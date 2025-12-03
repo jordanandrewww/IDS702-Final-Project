@@ -445,6 +445,10 @@ crPlot(model2, "Hours.per.day")
 ```{r}
 vif(model2)
 ```
+## Pearson residuals vs fitted plot##
+```{r}
+plot(model2, which = 1)
+```
 
 # **Checking for high leverage points**
 
