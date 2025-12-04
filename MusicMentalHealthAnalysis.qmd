@@ -528,3 +528,11 @@ AIC(model2)
 exp(cbind(OR = coef(model2), confint(model2)))
 
 ```
+## Final number of rows for each subset of data (RQ1 and RQ2)
+
+```{r}
+nrow(music_data_1_subset)
+nrow(music_data_2)
+```
+
+

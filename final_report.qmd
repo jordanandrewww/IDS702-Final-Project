@@ -9,15 +9,6 @@ execute:
 editor: visual
 ---
 
-```{=html}
-<style>
-.panel-fill, .panel, .quarto-float, .callout, .cell-output-display, .cell > .cell-output-stdout {
-  padding: 0 !important;
-  margin: 0 !important;
-}
-</style>
-```
-
 ------------------------------------------------------------------------
 
 ```{r setup-packages, include=FALSE}
@@ -35,6 +26,7 @@ library(pROC)                 # ROC curves
 library(caret)                # Confusion matrix
 library(ResourceSelection)    # Hosmer–Lemeshow test
 
+
 # ============================================================
 # Load raw dataset
 # ============================================================
@@ -44,6 +36,8 @@ music_data <- read.csv("data/mxmh_survey_results.csv")
 # Data cleaning steps
 # These follow the description in the "Data Cleaning" section
 # ============================================================
+
+music_data$Fav.genre <- gsub("R&B", "R and B", music_data$Fav.genre)
 
 yn_cols <- c(
   "While.working",
@@ -274,6 +268,26 @@ model2_red <- glm(
 )
 ```
 
+# Stakeholder
+
+The primary stakeholder for this memo is the Director of University Counseling & Wellness Services, who oversees mental-health outreach and student support strategy on campus. This stakeholder has some familiarity with data dashboards and survey-based evidence but does not work directly with statistical modeling, so they require clear interpretations rather than technical detail. They care about this analysis because understanding whether music-listening patterns are meaningfully related to depressive symptoms can help determine whether such questions should be incorporated into screening tools, campus wellness initiatives, or early-intervention outreach.
+
+# Executive Summary
+
+This analysis examines how music-listening behaviors relate to depression symptoms using survey data from 718 respondents. We address two questions: (1) whether daily listening time varies based on depression levels and streaming platforms, and (2) whether the number of hours spent listening to music each day predicts the likelihood of reporting high depression symptoms.
+
+For the first question, we find that individuals with higher depression scores tend to listen to more music, although this pattern differs across streaming platforms. Listening while working, insomnia symptoms, musician traits, and certain genre preferences were stronger and more consistent predictors of listening time than depression alone. For the second question, our logistic regression model shows that daily listening hours do not meaningfully increase the odds of being in a high-depression category once other factors are taken into account. Instead, anxiety and insomnia serve as the strongest predictors of elevated depression symptoms.
+
+Overall, although depression is associated with slightly higher listening time, daily music-listening hours are not a reliable indicator of high depression risk. Co-occurring mental-health symptoms provide far more informative predictive value than listening duration.
+
+# Problem Motivation
+
+As music streaming becomes a dominant part of daily life, understanding how listening behaviors relate to mental well-being has become increasingly important for mental-health professionals, wellness product teams, and sleep researchers. 
+
+
+
+
+
 # Data
 
 ## Data Background
@@ -414,39 +428,44 @@ kable(comp_tbl, booktabs = TRUE,
 
 ```
 
-Table 1 presents a comparison of the models for RQ1 using adjusted R2R\^2R2 and AIC. The raw model explained about $19\%$ of the variance but had a high AIC, reflecting poorer fit. Reducing predictors slightly lowered adjusted $R^2$ but improved AIC marginally. Applying the log transformation improved both adjusted $R^2$ (to 0.232) and AIC (to 1309), indicating better model performance. Finally, removing the three outliers slightly reduced adjusted $R^2$ to 0.220 but further lowered AIC to 1260, suggesting a more parsimonious and stable model. Overall, the log-transformed model with outliers removed balances interpretability, fit, and the influence of extreme points, and became our primary model for question 1.
+Table 1 presents a comparison of the models for RQ1 using adjusted $R^2$ and AIC. The raw model explained about $19\%$ of the variance but had a high AIC, reflecting poorer fit. Reducing predictors slightly lowered adjusted $R^2$ but improved AIC marginally. Applying the log transformation improved both adjusted $R^2$ (to 0.232) and AIC (to 1309), indicating better model performance. Finally, removing the three outliers slightly reduced adjusted $R^2$ to 0.220 but further lowered AIC to 1260, suggesting a more parsimonious and stable model. Overall, the log-transformed model with outliers removed balances interpretability, fit, and the influence of extreme points, and became our primary model for question 1.
 
 ```{r table2, echo=FALSE, message=FALSE, warning=FALSE}
 # Table 2
 
 tbl_rq1 <- tidy(
-model_rq1_log_final,
-conf.int = TRUE,
-conf.level = 0.95
+  model_rq1_log_final,
+  conf.int = TRUE,
+  conf.level = 0.95
 ) %>%
-mutate(
-estimate  = round(estimate, 3),
-std.error = round(std.error, 3),
-conf.low  = round(conf.low, 3),
-conf.high = round(conf.high, 3),
-p.value   = ifelse(p.value < 0.001, "<0.001",
-sprintf("%.3f", p.value))
-) %>%
-rename(
-Term       = term,
-Estimate   = estimate,
-`Std Error`= std.error,
-`2.5% CI`  = conf.low,
-`97.5% CI` = conf.high,
-`p-value`  = p.value
-)
+  mutate(
+    estimate  = round(estimate, 3),
+    std.error = round(std.error, 3),
+    conf.low  = round(conf.low, 3),
+    conf.high = round(conf.high, 3),
+    p.value   = ifelse(p.value < 0.001, "<0.001",
+                       sprintf("%.3f", p.value))
+  ) %>%
+  rename(
+    Term        = term,
+    Estimate    = estimate,
+    `Std Error` = std.error,
+    `2.5% CI`   = conf.low,
+    `97.5% CI`  = conf.high,
+    `p-value`   = p.value
+  ) %>%
+  mutate(
+    Term = gsub("\\(", "\\\\(", Term),
+    Term = gsub("\\)", "\\\\)", Term)
+  )
 
 kable(
-tbl_rq1,
-booktabs = TRUE,
-caption = "Table 2: Final linear regression model for RQ1 (log-hours with influential points removed)."
+  tbl_rq1,
+  booktabs = TRUE,
+  caption = "Table 2: Final linear regression model for RQ1 (log-hours with influential points removed)."
 ) %>%
-kable_styling(position = "center", full_width = FALSE)
+  kable_styling(position = "center", full_width = FALSE)
+
 
 ```
 
@@ -582,8 +601,7 @@ At this optimized threshold, we recomputed the confusion matrix (Table 4), and s
 
 Finally, we tested whether hours per day meaningfully improved the logistic regression model by comparing the full model to a reduced model that excluded this predictor. A likelihood ratio test showed no significant improvement from adding hours per day $(\chi^2(1) = 2.23,\; p = 0.135)$, indicating that daily music-listening hours do not provide additional explanatory power for predicting high depression symptoms once other factors are accounted for. Model fit indices aligned with this result: the AIC values for the reduced and full models were nearly identical (839.39 vs. 839.16), confirming that including hours per day does not meaningfully enhance model performance. However, because our research question specifically examines the role of daily listening time, we retain the full model as our primary specification.
 
-```{r table3, echo=FALSE, message=FALSE, warning=FALSE}
-# Table 3
+```{r table5, echo=FALSE, message=FALSE, warning=FALSE}
 
 tbl_rq2 <- tidy(
 model2,
@@ -596,7 +614,7 @@ estimate  = round(estimate, 2),
 std.error = round(std.error, 2),
 conf.low  = round(conf.low, 2),
 conf.high = round(conf.high, 2),
-p.value   = ifelse(p.value < 0.001, "<0.001",
+p.value   = ifelse(p.value < 0.001, "p<0.001",
 sprintf("%.3f", p.value))
 ) %>%
 rename(
@@ -611,7 +629,7 @@ Term         = term,
 kable(
 tbl_rq2,
 booktabs = TRUE,
-caption = "Table 5: Logistic regression model for RQ2 (odds ratios with 95% confidence intervals)."
+caption = "Table 5: Logistic regression model for RQ2 (odds ratios with 95 percent confidence intervals)."
 ) %>%
 kable_styling(position = "center", full_width = FALSE)
 

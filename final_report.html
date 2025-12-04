@@ -94,12 +94,6 @@ window.Quarto = {
 </header>
 
 
-<style>
-.panel-fill, .panel, .quarto-float, .callout, .cell-output-display, .cell > .cell-output-stdout {
-  padding: 0 !important;
-  margin: 0 !important;
-}
-</style>
 <hr>
 <section id="data" class="level1">
 <h1>Data</h1>
@@ -169,6 +163,15 @@ window.Quarto = {
 </div>
 </div>
 <p>To address this we applied a log transformation to the outcome and re–fit the model with <span class="math inline">\(\log(\text{Hours per day} + 0.1)\)</span> as the response. On the log scale, the Residuals vs fitted plot and Q–Q plot showed substantially more symmetric and homoscedastic residuals (as shown above) and the histogram of the transformed outcome indicated a much more balanced distribution. These improvements suggested that the log–transformed model better met the assumptions of linear regression. We also used variance inflation factors (VIFs) to check for multicollinearity among predictors and did not find strong evidence of a violation.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="final_report_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="384"></p>
+</figure>
+</div>
+</div>
+</div>
 <p>To evaluate influential observations, we computed Cook’s distance for the log-transformed RQ1 model and examined the corresponding plot. We also inspected the residual and leverage diagnostic plots for outliers. Combining these approaches, we identified three extreme points to remove: two points were flagged as outliers in both the diagnostic plots and Cook’s distance, and one additional point appeared as an outlier only in the diagnostic plots. After removing these three extreme points , we refit the log-transformed model. The residuals are now more symmetrically distributed (Min = -1.84, Max = 1.80, Median ≈ 0), and the residual standard error decreased to 0.625, indicating improved model fit.</p>
 <p>Several predictors remain significant, including Depression, Primary streaming service, While working, Instrumentalist, Composer, Insomnia, and select favorite genres, with interactions between Depression and streaming platform also holding. The adjusted <span class="math inline">\(R^2\)</span> increased to 0.220, showing that the log transformation and removal of influential points slightly improved the explained variance.</p>
 <div class="cell" data-fig.margin="false">
@@ -209,7 +212,7 @@ window.Quarto = {
 
 </div>
 </div>
-<p>Table 1 presents a comparison of the models for RQ1 using adjusted R2R^2R2 and AIC. The raw model explained about <span class="math inline">\(19\%\)</span> of the variance but had a high AIC, reflecting poorer fit. Reducing predictors slightly lowered adjusted <span class="math inline">\(R^2\)</span> but improved AIC marginally. Applying the log transformation improved both adjusted <span class="math inline">\(R^2\)</span> (to 0.232) and AIC (to 1309), indicating better model performance. Finally, removing the three outliers slightly reduced adjusted <span class="math inline">\(R^2\)</span> to 0.220 but further lowered AIC to 1260, suggesting a more parsimonious and stable model. Overall, the log-transformed model with outliers removed balances interpretability, fit, and the influence of extreme points, and became our primary model for question 1.</p>
+<p>Table 1 presents a comparison of the models for RQ1 using adjusted <span class="math inline">\(R^2\)</span> and AIC. The raw model explained about <span class="math inline">\(19\%\)</span> of the variance but had a high AIC, reflecting poorer fit. Reducing predictors slightly lowered adjusted <span class="math inline">\(R^2\)</span> but improved AIC marginally. Applying the log transformation improved both adjusted <span class="math inline">\(R^2\)</span> (to 0.232) and AIC (to 1309), indicating better model performance. Finally, removing the three outliers slightly reduced adjusted <span class="math inline">\(R^2\)</span> to 0.220 but further lowered AIC to 1260, suggesting a more parsimonious and stable model. Overall, the log-transformed model with outliers removed balances interpretability, fit, and the influence of extreme points, and became our primary model for question 1.</p>
 <div class="cell">
 <div class="cell-output-display">
 <table class="table caption-top table-sm table-striped small" data-quarto-postprocess="true">
@@ -227,7 +230,7 @@ window.Quarto = {
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: left;">\(Intercept\)</td>
 <td style="text-align: right;">-0.133</td>
 <td style="text-align: right;">0.237</td>
 <td style="text-align: right;">-0.5611308</td>
@@ -461,7 +464,7 @@ window.Quarto = {
 <td style="text-align: right;">0.119</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Fav.genreR&amp;B</td>
+<td style="text-align: left;">Fav.genreR and B</td>
 <td style="text-align: right;">0.128</td>
 <td style="text-align: right;">0.153</td>
 <td style="text-align: right;">0.8348958</td>
@@ -566,7 +569,7 @@ window.Quarto = {
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="final_report_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="384"></p>
+<p><img src="final_report_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="384"></p>
 </figure>
 </div>
 </div>
@@ -620,7 +623,7 @@ window.Quarto = {
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="final_report_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="384"></p>
+<p><img src="final_report_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="384"></p>
 </figure>
 </div>
 </div>
@@ -672,7 +675,7 @@ window.Quarto = {
 <div class="cell">
 <div class="cell-output-display">
 <table class="table caption-top table-sm table-striped small" data-quarto-postprocess="true">
-<caption>Table 5: Logistic regression model for RQ2 (odds ratios with 95% confidence intervals).</caption>
+<caption>Table 5: Logistic regression model for RQ2 (odds ratios with 95 percent confidence intervals).</caption>
 <thead>
 <tr class="header">
 <th style="text-align: left;" data-quarto-table-cell-role="th">Term</th>
@@ -690,7 +693,7 @@ window.Quarto = {
 <td style="text-align: right;">0.08</td>
 <td style="text-align: right;">0.52</td>
 <td style="text-align: right;">-4.8161509</td>
-<td style="text-align: left;">&lt;0.001</td>
+<td style="text-align: left;">p&lt;0.001</td>
 <td style="text-align: right;">0.03</td>
 <td style="text-align: right;">0.22</td>
 </tr>
@@ -735,7 +738,7 @@ window.Quarto = {
 <td style="text-align: right;">1.40</td>
 <td style="text-align: right;">0.04</td>
 <td style="text-align: right;">8.6830117</td>
-<td style="text-align: left;">&lt;0.001</td>
+<td style="text-align: left;">p&lt;0.001</td>
 <td style="text-align: right;">1.30</td>
 <td style="text-align: right;">1.51</td>
 </tr>
@@ -744,7 +747,7 @@ window.Quarto = {
 <td style="text-align: right;">1.17</td>
 <td style="text-align: right;">0.03</td>
 <td style="text-align: right;">5.0936882</td>
-<td style="text-align: left;">&lt;0.001</td>
+<td style="text-align: left;">p&lt;0.001</td>
 <td style="text-align: right;">1.10</td>
 <td style="text-align: right;">1.24</td>
 </tr>
@@ -857,7 +860,7 @@ window.Quarto = {
 <td style="text-align: right;">1.46</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Fav.genreR&amp;B</td>
+<td style="text-align: left;">Fav.genreR and B</td>
 <td style="text-align: right;">0.73</td>
 <td style="text-align: right;">0.55</td>
 <td style="text-align: right;">-0.5711555</td>
@@ -921,22 +924,25 @@ window.Quarto = {
 <p>Neither musician status (Instrumentalist or Composer) nor any favorite–genre category significantly predicted high depression, as all confidence intervals crossed 1.0. Although ``Music effects: worsen’’ had a relatively large odds ratio (OR = 2.60), the estimate was imprecise (95% CI: 0.84–9.14, <span class="math inline">\(p = 0.110\)</span>) and therefore not statistically reliable.</p>
 <p>Overall, the model indicates that depression symptoms are most strongly predicted by other co-occurring mental–health indicators (anxiety and insomnia), whereas hours of music listening, demographic variables, musician traits, and musical preferences show no meaningful association with elevated depression levels.</p>
 </section>
-<section id="limitations-and-next-steps" class="level2">
-<h2 class="anchored" data-anchor-id="limitations-and-next-steps">Limitations and next steps</h2>
+<section id="limitations" class="level2">
+<h2 class="anchored" data-anchor-id="limitations">Limitations</h2>
 <p>Our analysis has several important limitations that should be kept in mind when interpreting the results.</p>
-<ol type="1">
-<li><p><strong>Cross–sectional data and lack of causality.</strong> The survey is cross–sectional, so we can only describe associations between music listening and depression symptoms. We cannot determine whether listening more music causes changes in depression, whether depression leads people to change their listening habits, or whether both are driven by unobserved factors.</p></li>
-<li><p><strong>Self–reported measures and measurement error.</strong> All variables are self–reported, including mental–health scores and estimated hours of listening per day. Respondents may misremember or round their answers, and stigma around mental health could lead to under–reporting or over–reporting of symptoms. These kinds of measurement errors could attenuate or distort the estimated relationships.</p></li>
-<li><p><strong>Sparse categories and unstable estimates.</strong> Several genre and listening–frequency categories, as well as some streaming platforms, are represented by relatively few respondents. Coefficients for these small groups are therefore imprecise and have wide confidence intervals, which limits our ability to draw firm conclusions about specific genres or platforms.</p></li>
-<li><p><strong>Complex models with many predictors.</strong> Both the linear and logistic regression models include a large number of covariates relative to the sample size. This increases the risk of overfitting and makes it harder to detect small but real effects. Although our diagnostics did not reveal severe problems, more parsimonious models or regularization methods could provide more stable estimates.</p></li>
-<li><p><strong>Limited ability to model nonlinearity and thresholds.</strong> While we checked basic linearity assumptions and used a log transformation for RQ1, our models still assume relatively simple relationships between predictors and outcomes. If the effect of listening time on depression is strongly nonlinear (for example, only very high listening hours being associated with worse symptoms), our models may not fully capture that pattern.</p></li>
-</ol>
-<p>In future work, several steps could improve this analysis:</p>
 <ul>
-<li><strong>Collect longitudinal data.</strong> Following the same individuals over time would allow us to investigate how changes in listening behavior relate to subsequent changes in depression symptoms and to make more credible causal claims.</li>
-<li><strong>Improve measurement and sample design.</strong> Using validated clinical instruments for depression and more precise time–use measures (e.g., time–use diaries or app–based tracking) would reduce measurement error. Oversampling under–represented genres and platforms would also help stabilize estimates for those groups.</li>
-<li><strong>Explore more flexible modeling approaches.</strong> With a larger sample, we could fit models that allow for nonlinear effects of listening time (e.g., spline terms or generalized additive models) and use regularization methods (such as ridge or lasso) to handle the large set of predictors. These approaches could reveal more nuanced patterns while reducing overfitting.</li>
-<li><strong>Incorporate additional covariates.</strong> If available, adding variables capturing life stressors, social support, or treatment history could help separate the role of music listening from other determinants of mental health.</li>
+<li><p><strong>Self-reported and cross-sectional data:</strong> All variables in the dataset, including mental-health symptoms and daily listening habits, were self-reported. This introduces potential measurement error due to inaccurate recall, inconsistent interpretation of questions, or social desirability bias. Additionally, because the data is cross-sectional, we cannot determine temporal ordering or causality. For instance, even if hours of listening were associated with depression, we cannot know whether listening more contributes to symptoms or whether individuals with higher depression simply listen to more music.</p></li>
+<li><p><strong>Limited measurement of key variables:</strong> Several important constructs were captured using single questions (for example, music effects, listening to music while working, and favorite genre), which restricts measurement precision. Some mental-health scores may also overlap conceptually, as illnesses like anxiety and insomnia strongly correlate with depression. This makes it difficult to isolate unique events even when multicollinearity diagnostics appear acceptable.</p></li>
+<li><p><strong>Simplified representation of music behavior:</strong> Daily hours of listening is an extremely limited measure of music engagement. It does not capture when people listen (morning vs.&nbsp;late night), how they listen (active vs.&nbsp;passive), why they listen (mood regulation, entertainment, background noise), or what they listen to within genres, all of which could meaningfully relate to mental-health outcomes. Similarly, “primary streaming service” does not capture multi-platform use or variability in content algorithms.</p></li>
+<li><p><strong>Missing potential confounders:</strong> Several important correlated variables of depression, like socioeconomic status, employment, physical health, sleep patterns, chronic stress, and academic workload, were not measured. Their absence means our model may suffer from omitted-variable bias, limiting the interpretability of estimated relationships.</p></li>
+</ul>
+</section>
+<section id="future-work" class="level2">
+<h2 class="anchored" data-anchor-id="future-work">Future Work</h2>
+<p>To strengthen the results and analysis, several steps could be taken in future research:</p>
+<ul>
+<li><strong>Collect richer and more detailed data:</strong> Future studies would benefit from using validated multi-item psychological scales, such as PHQ-9 for depression or GAD-7 for anxiety, rather than the single self-reported questions on a scale of 0-10. Incorporating more granular measures of music engagement, such as listening context, emotional motivation, time-of-day patterns, or track-level characteristics, would also allow for more accurate modeling of how different aspects of music behavior relate to mental-health outcomes.</li>
+<li><strong>Use longitudinal or experimental study designs:</strong> Because the current dataset is cross-sectional, it cannot speak to temporal ordering or causal relationships. Longitudinal surveys could help determine whether music-listening habits change before shifts in mood or vice-versa. Experimental designs, such as one that involves assigning participants to specific listening conditions, would further clarify causal pathways.</li>
+<li><strong>Apply more flexible modeling approaches:</strong> Although linear and logistic regression provided interpretable results, more flexible models that are outside the scope of this class, like generalized additive models, random forests, or gradient-boosted trees, could capture non-linear relationships and interactions that traditional parametric models may miss. These models could also improve predictive accuracy, especially if supplemented with richer features.</li>
+<li><strong>Address unmeasured confounders and broaden co-variates:</strong> Adding variables related to sleep quality, stress, socioeconomic status, work or academic pressure, or physical health would reduce omitted-variable bias. These variables are often meaningful predictors of depression and may help clarify whether music-listening habits have independent effects.</li>
+<li><strong>Expand the scope of musical data:</strong> Streaming-platform logs or acoustic features from tracks (tempo, energy, valence, etc.) would enable more detailed analysis of how specific music properties or listening patterns relate to mental-health symptoms. This would move the analysis beyond total hours per day and allow for deeper behavioral insights.</li>
 </ul>
 <p>These limitations mean that our findings should be interpreted as descriptive patterns in this sample, rather than definitive evidence about the causal effect of music listening on depression. Nonetheless, the analysis provides a useful starting point for understanding how music–listening habits and mental–health symptoms co–vary in this population.</p>
 </section>
