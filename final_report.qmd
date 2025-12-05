@@ -294,7 +294,7 @@ Given these findings, everyday listening patterns may carry a measurable signal 
 
 Across the full cleaned dataset (N = 645 Respondents for Model 1 and N = 718 Respondents for Model 2), several clear patterns emerged linking students’ music-listening habits with their self-reported mental-health symptoms. While these relationships cannot establish causality, they reveal meaningful behavioral patterns that could inform low-burden wellness screening.
 
-```{r, fig.cap="Daily Listening Time vs. Depression Score by Streaming Platform."}
+```{r, fig.cap="Daily Listening Time vs. Depression Score by Streaming Platform.", fig.width=5, fig.height=3}
 ggplot(music_data_1_subset,
        aes(x = Depression,
            y = Hours.per.day,
@@ -318,7 +318,7 @@ To understand what predicts how much students listen to music, we fit a multiple
 
 The final model used N = 645 respondents after filtering non-platform users and removing three influential outliers.
 
-```{r, fig.cap="Table 1: Significant Predictors from RQ1 Linear Model."}
+```{r, fig.cap="Table 1: Significant Predictors from RQ1 Linear Model (Original and Exponentiated Coefficients)."}
 library(broom)
 library(kableExtra)
 library(dplyr)
@@ -327,24 +327,56 @@ tbl_rq1_sig <- tidy(
   model_rq1_log_final,
   conf.int = TRUE
 ) %>%
-  filter(p.value < 0.05) %>%           # significant predictors only
+  filter(p.value < 0.05) %>%           
   mutate(
-    estimate  = round(estimate, 3),
-    std.error = round(std.error, 3),
-    conf.low  = round(conf.low, 3),
-    conf.high = round(conf.high, 3),
-    p.value   = ifelse(p.value < 0.001, "<0.001", sprintf("%.3f", p.value))
-  ) %>%
-  select(term, estimate, std.error, conf.low, conf.high, p.value)
+    # exponentiate coefficients + CI
+    exp_estimate = exp(estimate),
+    exp_low      = exp(conf.low),
+    exp_high     = exp(conf.high),
 
-kable(tbl_rq1_sig,
-      booktabs = TRUE) %>%
-  kable_styling(full_width = FALSE)
+    # round all columns appropriately
+    estimate     = round(estimate, 3),
+    std.error    = round(std.error, 3),
+    conf.low     = round(conf.low, 3),
+    conf.high    = round(conf.high, 3),
+    exp_estimate = round(exp_estimate, 3),
+    exp_low      = round(exp_low, 3),
+    exp_high     = round(exp_high, 3),
+    p.value      = ifelse(p.value < 0.001, "<0.001", sprintf("%.3f", p.value))
+  ) %>%
+  select(
+    term,
+    estimate,
+    exp_estimate,
+    std.error,
+    conf.low,
+    conf.high,
+    exp_low,
+    exp_high,
+    p.value
+  )
+
+kable(
+  tbl_rq1_sig,
+  booktabs = TRUE,
+  col.names = c(
+    "Term",
+    "Estimate (log scale)",
+    "Exp(Estimate)",
+    "Std Error",
+    "2.5% CI",
+    "97.5% CI",
+    "Exp(2.5% CI)",
+    "Exp(97.5% CI)",
+    "p-value"
+  )
+) %>%
+  kable_styling(full_width = FALSE, font_size = 9)
 ```
 
-INSERT ANALYSIS HERE
+The regression results in Table 1 show several clear factors associated with higher (or lower) daily listening time after adjusting for demographic and behavioral variables. Depression remains a meaningful predictor: each one-point increase in depression score corresponds to roughly an 11 percent increase in daily listening time, indicating that students with more severe symptoms tend to engage more with music throughout the day. Platform choice is also strongly associated with listening behavior. Compared with Apple Music users, students using Spotify, YouTube Music, Pandora, or other services listen between 78 percent and 117 percent more per day, suggesting large platform-based differences in engagement.
 
-These results show that log-transformed listening hours are shaped by depression symptoms, platform behavior, work context, and musical identity traits.
+Listening while working emerges as one of the strongest predictors in the model, with these students listening about 83 percent more per day than those who do not listen during work. Several individual characteristics also matter: composers listen about 16 percent more, whereas instrumentalists listen about 15 percent less. Insomnia shows a modest positive effect, with each point associated with a 2 to 3 percent increase in listening time. Finally, musical preferences appear relevant, as jazz listeners average roughly 50 percent more listening time and Latin listeners more than double the listening time of the reference group. Interaction terms indicate that the positive relationship between depression and listening time is weaker among students on most major platforms compared with Apple Music users. Together, these patterns highlight that emotional state, platform choice, and listening context all play meaningful roles in shaping how much music students consume daily.
 
 ## Indicators of High Depression Symptoms
 
@@ -369,7 +401,7 @@ kable(
   tbl_rq2_condensed,
   booktabs = TRUE
 ) %>%
-  kable_styling(full_width = FALSE)
+  kable_styling(full_width = FALSE, font_size = 9)
 ```
 
 Table 2 shows that daily listening hours are not a reliable standalone indicator of high depression. This table includes only predictors that are statistically significant (p values below 0.05), along with hours per day of listening time, since this was our primary independent variable of interest. The odds ratio for listening time is 1.05, which would mean that each additional hour of listening increases the odds of high depression by about 5 percent, but since the p-value is above our 0.05 threshold (at 0.140), we cannot say this is statistically significant.
@@ -482,7 +514,7 @@ par(mfrow = c(1, 1))
 
 To address this we applied a log transformation to the outcome and re–fit the model with $\log(\text{Hours per day} + 0.1)$ as the response. On the log scale, the Residuals vs fitted plot and Q–Q plot showed substantially more symmetric and homoscedastic residuals (as shown above) and the histogram of the transformed outcome indicated a much more balanced distribution. These improvements suggested that the log–transformed model better met the assumptions of linear regression. We also used variance inflation factors (VIFs) to check for multicollinearity among predictors and did not find strong evidence of a violation.
 
-```{r, fig.cap="Figure 5: Influential Points Measured by Cook's Distance.", fig.align='center'}
+```{r, fig.cap="Figure 5: Influential Points Measured by Cook's Distance.", fig.align='center', fig.width=4, fig.height=3}
 # Cook's distance for linear regression (RQ1)
 cooks <- cooks.distance(model_rq1_log)
 
@@ -559,7 +591,7 @@ tbl_rq1 <- tidy(
 kable(
   tbl_rq1,
   booktabs = TRUE) %>%
-  kable_styling(position = "center", full_width = FALSE)
+  kable_styling(position = "center", full_width = FALSE, font_size = 9)
 
 
 ```
@@ -621,7 +653,7 @@ tbl_cm_wide <- tibble(
 kable(
   tbl_cm_wide,
   booktabs = TRUE) %>%
-  kable_styling(position = "center", full_width = FALSE)
+  kable_styling(position = "center", full_width = FALSE, font_size = 9)
 
 
 
@@ -684,7 +716,7 @@ tbl_cm_wide <- tibble(
 kable(
   tbl_cm_wide,
   booktabs = TRUE) %>%
-  kable_styling(position = "center", full_width = FALSE)
+  kable_styling(position = "center", full_width = FALSE, font_size = 9)
 
 ```
 
@@ -720,7 +752,7 @@ Term         = term,
 kable(
 tbl_rq2,
 booktabs = TRUE) %>%
-kable_styling(position = "center", full_width = FALSE)
+kable_styling(position = "center", full_width = FALSE, font_size = 9)
 
 
 ```

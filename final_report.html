@@ -120,7 +120,7 @@ window.Quarto = {
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="final_report_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="final_report_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="480"></p>
 <figcaption>Daily Listening Time vs.&nbsp;Depression Score by Streaming Platform.</figcaption>
 </figure>
 </div>
@@ -134,10 +134,7 @@ window.Quarto = {
 <p>The final model used N = 645 respondents after filtering non-platform users and removing three influential outliers.</p>
 <div class="cell">
 <div class="cell-output-display">
-<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
-<caption>
-Table 1: Significant Predictors from RQ1 Linear Model
-</caption>
+<table class="table" style="font-size: 9px; width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:left;">
@@ -494,10 +491,7 @@ Depression:Primary.streaming.serviceYouTube Music
 <p>To assess whether music behavior can meaningfully signal elevated depression, we fit a logistic regression model predicting whether a student scored 6 or above on the depression scale using N = 718 respondents.</p>
 <div class="cell">
 <div class="cell-output-display">
-<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
-<caption>
-Table 2: Key Predictors from Logistic Regression (Odds Ratios)
-</caption>
+<table class="table" style="font-size: 9px; width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:left;">
@@ -625,7 +619,7 @@ Insomnia
 <section id="research-question-1" class="level2">
 <h2 class="anchored" data-anchor-id="research-question-1">Research Question 1</h2>
 <p>The first model we fit for RQ1 was a linear regression model that regressed the raw outcome of hours of music listening per day on all available predictors in the data set.</p>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -664,7 +658,7 @@ Insomnia
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="final_report_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="final_report_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="384"></p>
 <figcaption>Figure 5: Influential Points Measured by Cook’s Distance.</figcaption>
 </figure>
 </div>
@@ -672,12 +666,9 @@ Insomnia
 </div>
 <p>To evaluate influential observations, we computed Cook’s distance for the log-transformed RQ1 model and examined the corresponding plot (Figure 5). We also inspected the residual and leverage diagnostic plots for outliers. Combining these approaches, we identified three extreme points to remove: two points were flagged as outliers in both the diagnostic plots and Cook’s distance, and one additional point appeared as an outlier only in the diagnostic plots. After removing these three extreme points , we refit the log-transformed model. The residuals are now more symmetrically distributed (Min = -1.84, Max = 1.80, Median ≈ 0), and the residual standard error decreased to 0.625, indicating improved model fit.</p>
 <p>Several predictors remain significant, including Depression, Primary streaming service, While working, Instrumentalist, Composer, Insomnia, and select favorite genres, with interactions between Depression and streaming platform also holding. The adjusted <span class="math inline">\(R^2\)</span> increased to 0.220, showing that the log transformation and removal of influential points slightly improved the explained variance.</p>
-<div class="cell" data-fig.margin="false">
+<div class="cell">
 <div class="cell-output-display">
 <table class="table" style="font-size: 9px; width: auto !important; margin-left: auto; margin-right: auto;">
-<caption style="font-size: initial !important;">
-Table 3. Model comparison for RQ1 using adjusted R-squared and AIC.
-</caption>
 <thead>
 <tr>
 <th style="text-align:left;">
@@ -744,10 +735,7 @@ Log transform + remove outliers
 <p>Table 3 presents a comparison of the models for RQ1 using adjusted <span class="math inline">\(R^2\)</span> and AIC. The raw model explained about <span class="math inline">\(19\%\)</span> of the variance but had a high AIC, reflecting poorer fit. Reducing predictors slightly lowered adjusted <span class="math inline">\(R^2\)</span> but improved AIC marginally. Applying the log transformation improved both adjusted <span class="math inline">\(R^2\)</span> (to 0.232) and AIC (to 1309), indicating better model performance. Finally, removing the three outliers slightly reduced adjusted <span class="math inline">\(R^2\)</span> to 0.220 but further lowered AIC to 1260, suggesting a more parsimonious and stable model. Overall, the log-transformed model with outliers removed balances interpretability, fit, and the influence of extreme points, and became our primary model for question 1.</p>
 <div class="cell">
 <div class="cell-output-display">
-<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
-<caption>
-Table 4: Final linear regression model for RQ1 (log-hours with influential points removed).
-</caption>
+<table class="table" style="font-size: 9px; width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:left;">
@@ -1628,10 +1616,7 @@ Depression:Primary.streaming.serviceYouTube Music
 <p>We calculated leverage values using the hat matrix and identified several observations above the common threshold of <span class="math inline">\(2\bar{h}\)</span>. However, high leverage alone is not sufficient evidence to remove points in logistic regression, particularly in models with many categorical predictors. Because these cases did not show extreme Pearson residuals either, we retained all observations for the final model.</p>
 <div class="cell">
 <div class="cell-output-display">
-<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
-<caption>
-Table 5: Confusion Matrix and Classification Metrics
-</caption>
+<table class="table" style="font-size: 9px; width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:right;">
@@ -1730,10 +1715,7 @@ Balanced Accuracy
 <p>To further assess model performance, we examined the ROC curve (Figure 7) and computed the AUC. The model achieved an AUC of 0.797, indicating strong discriminative ability. The optimal classification threshold was identified as 0.456, which balances sensitivity and specificity more effectively than the default 0.50 cutoff.</p>
 <div class="cell">
 <div class="cell-output-display">
-<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
-<caption>
-Table 6: Confusion Matrix and Classification Metrics (Threshold = 0.456).
-</caption>
+<table class="table" style="font-size: 9px; width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:right;">
@@ -1822,10 +1804,7 @@ Balanced Accuracy
 <p>Finally, we tested whether hours per day meaningfully improved the logistic regression model by comparing the full model to a reduced model that excluded this predictor. A likelihood ratio test showed no significant improvement from adding hours per day <span class="math inline">\((\chi^2(1) = 2.23,\; p = 0.135)\)</span>, indicating that daily music-listening hours do not provide additional explanatory power for predicting high depression symptoms once other factors are accounted for. Model fit indices aligned with this result: the AIC values for the reduced and full models were nearly identical (839.39 vs.&nbsp;839.16), confirming that including hours per day does not meaningfully enhance model performance. However, because our research question specifically examines the role of daily listening time, we retain the full model as our primary specification.</p>
 <div class="cell">
 <div class="cell-output-display">
-<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
-<caption>
-Table 7: Logistic regression model for RQ2 (odds ratios with 95 percent confidence intervals).
-</caption>
+<table class="table" style="font-size: 9px; width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:left;">
