@@ -282,11 +282,118 @@ Overall, although depression is associated with slightly higher listening time, 
 
 # Problem Motivation
 
-As music streaming becomes a dominant part of daily life, understanding how listening behaviors relate to mental well-being has become increasingly important for mental-health professionals, wellness product teams, and sleep researchers. 
+University counseling centers today face a clear and growing challenge: many students show signs of depression or anxiety, yet only a fraction seek help. A recent large study found that roughly 48.9% of college students in the post-pandemic era report depressive tendencies (Luo et al., 2024). Another analysis of more than 100,000 students across 64 studies estimated a pooled prevalence of depression symptoms at 33.6% and anxiety symptoms at 39.0%, demonstrating how widespread mental-health concerns are in higher education (Li et al., 2022).
 
+Because counseling centers have limited resources, and because many students may not seek formal supoort, there is an urgent need for low-burden, behavior-based signals that could help identify or screen for potential mental-health risk. One promising candidate for such indicators is everyday music-listening behavior. Music listening is a near-universal daily behavior among young adults, and research suggests it may serve as a meaningful emotional regulator or mental-health resource. Studies on music’s broader health and well-being effects have documented its benefits on mood, stress, immune function, and mental-health outcomes, including among individuals with diagnosed disorders (Rebecchini et al., 2021). More recent meta-analytic reviews find that informal “musicking”, not only formal therapy, consistently supports emotion regulation in non-clinical populations (Peters et al., 2024), and music-based interventions have been shown to reduce symptoms of depression and anxiety (Rodwin et al., 2022). . 
 
+Given these findings, everyday listening patterns may carry a measurable signal of underlying mental-health status, offering a low-cost way to complement traditional screening tools. If simple behaviors such as daily listening time, preferred streaming platforms, or music-use contexts reliably align with depression symptoms, counseling centers could incorporate brief questions about music habits into wellness check-ins or outreach initiatives. Such indicators would never replace clinical tools, but they could provide an accessible, early-warning layer that helps identify students who might otherwise go unnoticed.
 
+# Results and High-Level Findings
 
+## Overview of Key Findings
+
+Across the full cleaned dataset (N = 645 Respondents for Model 1 and N = 718 Respondents for Model 2), several clear patterns emerged linking students’ music-listening habits with their self-reported mental-health symptoms. While these relationships cannot establish causality, they reveal meaningful behavioral patterns that could inform low-burden wellness screening.
+
+```{r}
+ggplot(music_data_1_subset,
+       aes(x = Depression,
+           y = Hours.per.day,
+           color = Primary.streaming.service)) +
+  geom_point(alpha = 0.4) +
+  geom_smooth(method = "lm", se = FALSE, size = 1) +
+  labs(
+    title = "Daily Listening Time vs. Depression Score by Streaming Platform",
+    x = "Depression Score",
+    y = "Hours per Day",
+    color = "Streaming Platform"
+  ) +
+  theme_minimal()
+
+```
+
+As shown in Figure 1, students with higher depression scores tend to listen to more music per day. Among Apple Music users, listening time increases from about 1 hour/day at low depression levels to 3–4 hours/day at higher levels. Spotify and YouTube Music users show smaller increases, while Pandora users display a slight decline. These differences highlight that both emotional state and platform choice shape listening behavior.
+
+## Drivers of Daily Listening Time
+
+To understand what predicts how much students listen to music, we fit a multiple linear regression model with a log-transformed outcome: log(daily listening hours + 0.1).
+This transformation reduces the influence of extreme values and allows coefficients to be interpreted as percentage changes in listening time.
+
+The final model used N = 645 respondents after filtering non-platform users and removing three influential outliers.
+
+```{r}
+library(broom)
+library(kableExtra)
+library(dplyr)
+
+tbl_rq1_sig <- tidy(
+  model_rq1_log_final,
+  conf.int = TRUE
+) %>%
+  filter(p.value < 0.05) %>%           # significant predictors only
+  mutate(
+    estimate  = round(estimate, 3),
+    std.error = round(std.error, 3),
+    conf.low  = round(conf.low, 3),
+    conf.high = round(conf.high, 3),
+    p.value   = ifelse(p.value < 0.001, "<0.001", sprintf("%.3f", p.value))
+  ) %>%
+  select(term, estimate, std.error, conf.low, conf.high, p.value)
+
+kable(tbl_rq1_sig,
+      caption = "Significant Predictors from RQ1 Linear Model",
+      booktabs = TRUE) %>%
+  kable_styling(full_width = FALSE)
+```
+
+INSERT ANALYSIS HERE
+
+These results show that log-transformed listening hours are shaped by depression symptoms, platform behavior, work context, and musical identity traits.
+
+## Indicators of High Depression Symptoms
+
+To assess whether music behavior can meaningfully signal elevated depression, we fit a logistic regression model predicting whether a student scored 6 or above on the depression scale using N = 718 respondents.
+
+```{r}
+tbl_rq2_condensed <- tidy(
+  model2,
+  exponentiate = TRUE,
+  conf.int = TRUE
+) %>%
+  filter(term %in% c("Hours.per.day", "Anxiety", "Insomnia")) %>%  # key predictors
+  mutate(
+    estimate  = round(estimate, 2),
+    conf.low  = round(conf.low, 2),
+    conf.high = round(conf.high, 2),
+    p.value   = ifelse(p.value < 0.001, "<0.001", sprintf("%.3f", p.value))
+  ) %>%
+  select(term, estimate, conf.low, conf.high, p.value)
+
+kable(
+  tbl_rq2_condensed,
+  caption = "Key Predictors from Logistic Regression (Odds Ratios)",
+  booktabs = TRUE
+) %>%
+  kable_styling(full_width = FALSE)
+```
+Table 2 shows that daily listening hours are not a reliable standalone indicator of high depression. This table includes only predictors that are statistically significant (p values below 0.05), along with hours per day of listening time, since this was our primary independent variable of interest. The odds ratio for listening time is 1.05, which would mean that each additional hour of listening increases the odds of high depression by about 5 percent, but since the p-value is above our 0.05 threshold (at 0.140), we cannot say this is statistically significant. 
+
+In contrast, anxiety is the strongest predictor of high depression, with an odds ratio of 1.40  (p < 0.001), meaning each one-point increase in anxiety raises the odds of high depression by about 40%. Insomnia also emerges as a significant predictor, corresponding to a 17% increase in risk per hour increase in daily listening time (p < 0.001).
+
+Taken together, these results show that while higher depression is associated with more listening, listening time alone should not be treated as a depression flag. Instead, anxiety and insomnia—well-validated psychological indicators—remain the most reliable behavioral cues.
+
+# Limitations and Recommended Next Steps
+
+Although music-listening patterns carry some signal, especially the tendency for students with higher depression to listen more hours per day, the results suggest that music behavior alone is not a reliable standalone indicator of high depression risk. Any practical use of these insights should therefore be paired with validated psychological information, not used in isolation.
+
+However, due to the nature of our data, there are two substantive limitations that are worth keeping in mind when interpreting the findings. First, all mental-health measures in the dataset rely on single self-reported items, not standardized clinical scales such as the PHQ-9 or GAD-7. These single-item scores are coarse and may under- or over-estimate true symptom severity, which limits how confidently we can infer risk or impact of certain variables from them. Second, the data are cross-sectional, meaning we observe students’ music habits and mental-health symptoms at one point in time. This prevents us from determining whether increased listening is a response to worsening mood, a coping strategy, or simply a personal preference unrelated to mental-health changes.
+
+Despite these limitations, the patterns do point toward practical next steps for wellness monitoring and outreach. Because anxiety and insomnia, which have been validated as co-indicators of depression, are far more predictive than listening time, counseling services could focus on early screening, brief questionnaires, or outreach strategies that incorporate these co-occurring symptoms. 
+
+Music-related questions may still play a useful supporting role. Although our analysis did not find strong predictive value for total listening hours alone, the limitations of the dataset mean we cannot rule out that more specific aspects of music use relate meaningfully to students’ mental health. A single measure like “hours per day” does not capture when students listen, what emotional purpose the music serves, or how listening fits into their daily routines. These dimensions may still offer valuable insight.
+
+Moving forward, the counseling center could incorporate a few brief questions into wellness screenings that ask students how they use music, such as whether they listen to manage stress, regulate mood, support sleep, or avoid intrusive thoughts. Gathering this targeted information would be low burden and could help staff identify students who may benefit from additional assessment or outreach.
+
+The university could also consider running its own campus-wide survey that includes these improved questions and relies on more representative sampling than public social media–based datasets. Collecting higher-quality, campus-specific data would allow the counseling center to understand patterns in its own student population and evaluate whether music-related behaviors provide meaningful early signals of mental-health needs. This approach would provide a stronger evidence base for future screening tools or outreach strategies.
 
 # Data
 
@@ -307,6 +414,8 @@ After this, we checked the music effects variable and found seven cases where re
 For analyses involving streaming services, we examined the primary streaming service column and identified two types of unusable entries: blank responses and the explicit answer “I do not use a streaming service.” Because our first research question specifically compares listening patterns across streaming platforms, respondents without a platform could not be meaningfully included in that analysis. Therefore, for the dataset used in RQ1, we removed all rows with missing streaming-service information as well as those who reported not using any streaming service.
 
 Finally, to prepare the binary outcome for our second research question, we created a high depression variable that flags individuals with elevated symptom levels. Because the average depression score in the dataset was 4.82 and the median was 5, we designated respondents with a score of 6 or higher as experiencing “high depression.” This threshold represents a meaningful distinction between typical responses and substantially elevated symptom reports, allowing us to model the likelihood of more severe depression symptoms.
+
+After cleaning, there were 645 rows in the data used for model 1 and 718 rows in the data used for model 2.
 
 # Models
 
@@ -667,3 +776,21 @@ To strengthen the results and analysis, several steps could be taken in future r
 -   **Expand the scope of musical data:** Streaming-platform logs or acoustic features from tracks (tempo, energy, valence, etc.) would enable more detailed analysis of how specific music properties or listening patterns relate to mental-health symptoms. This would move the analysis beyond total hours per day and allow for deeper behavioral insights.
 
 These limitations mean that our findings should be interpreted as descriptive patterns in this sample, rather than definitive evidence about the causal effect of music listening on depression. Nonetheless, the analysis provides a useful starting point for understanding how music–listening habits and mental–health symptoms co–vary in this population.
+
+# Works Cited
+
+Luo et al. (2024)
+Luo, M.-M., Hao, M., Li, X.-H., Liao, J., Wu, C.-M., & Wang, Q. (2024). Prevalence of depressive tendencies among college students and the influence of attributional styles on depressive tendencies in the post-pandemic era. Frontiers in Public Health, 12, 1326582. https://doi.org/10.3389/fpubh.2024.1326582
+
+Li et al. (2022)
+Li, W., Zhao, Z., Chen, D., Peng, Y., & Lu, Z. (2022). Prevalence and associated factors of depression and anxiety symptoms among college students: A systematic review and meta-analysis. Journal of Child Psychology and Psychiatry, 63(11), 1222–1230. https://doi.org/10.1111/jcpp.13606
+
+Rebecchini et al. (2021)
+Rebecchini, L., Russo, F., Agostinis, G., Merlo, L., Caruana, F., & Avanzini, P. (2021). Music and health: What interventions are suitable for mental disorders? International Journal of Environmental Research and Public Health, 18(21), 11141. https://doi.org/10.3390/ijerph182111141
+
+Peters et al. (2024)
+Peters, V., Bissonnette, J., Nadeau, D., Gauthier-Légaré, A., & Noël, M.-A. (2024). The impact of musicking on emotion regulation: A systematic review and meta-analysis. Psychology of Music. Advance online publication. https://doi.org/10.1177/03057356241252505
+
+Rodwin et al. (2022)
+Rodwin, A. H., Verma, P., Lee, J., & Tsai, A. C. (2022). Music-based interventions to improve mental health: A systematic review. The Lancet Psychiatry, 9(11), 843–854. https://doi.org/10.1016/S2215-0366(22)00237-5
+

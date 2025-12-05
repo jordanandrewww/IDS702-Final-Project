@@ -375,6 +375,54 @@ summary(model_rq1_log_final)
 # Diagnostic plots for the final model, after log transformation and removal of outliers
 plot(model_rq1_log_final)
 ```
+# Table with Key Regression Coefficients
+
+```{r}
+library(broom)
+library(kableExtra)
+library(dplyr)
+
+tbl_rq1_sig <- tidy(
+  model_rq1_log_final,
+  conf.int = TRUE
+) %>%
+  filter(p.value < 0.05) %>%           # significant predictors only
+  mutate(
+    estimate  = round(estimate, 3),
+    std.error = round(std.error, 3),
+    conf.low  = round(conf.low, 3),
+    conf.high = round(conf.high, 3),
+    p.value   = ifelse(p.value < 0.001, "<0.001", sprintf("%.3f", p.value))
+  ) %>%
+  select(term, estimate, std.error, conf.low, conf.high, p.value)
+
+kable(tbl_rq1_sig,
+      caption = "Significant Predictors from RQ1 Linear Model",
+      booktabs = TRUE) %>%
+  kable_styling(full_width = FALSE)
+
+```
+# Predicted Listening Time vs Depression by Streaming Platform
+
+```{r}
+ggplot(music_data_1_subset,
+       aes(x = Depression,
+           y = Hours.per.day,
+           color = Primary.streaming.service)) +
+  geom_point(alpha = 0.4) +
+  geom_smooth(method = "lm", se = FALSE, size = 1) +
+  labs(
+    title = "Daily Listening Time vs. Depression Score by Streaming Platform",
+    x = "Depression Score",
+    y = "Hours per Day",
+    color = "Streaming Platform"
+  ) +
+  theme_minimal()
+
+```
+
+
+
 
 # **Research Question 2**
 
@@ -533,6 +581,32 @@ exp(cbind(OR = coef(model2), confint(model2)))
 ```{r}
 nrow(music_data_1_subset)
 nrow(music_data_2)
+```
+
+# Condensed Odds Ratios Table for RQ2 (Only Key Predictors)
+
+```{r}
+tbl_rq2_condensed <- tidy(
+  model2,
+  exponentiate = TRUE,
+  conf.int = TRUE
+) %>%
+  filter(term %in% c("Hours.per.day", "Anxiety", "Insomnia")) %>%  # key predictors
+  mutate(
+    estimate  = round(estimate, 2),
+    conf.low  = round(conf.low, 2),
+    conf.high = round(conf.high, 2),
+    p.value   = ifelse(p.value < 0.001, "<0.001", sprintf("%.3f", p.value))
+  ) %>%
+  select(term, estimate, conf.low, conf.high, p.value)
+
+kable(
+  tbl_rq2_condensed,
+  caption = "Key Predictors from Logistic Regression (Odds Ratios)",
+  booktabs = TRUE
+) %>%
+  kable_styling(full_width = FALSE)
+
 ```
 
 
