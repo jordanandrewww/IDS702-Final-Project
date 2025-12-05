@@ -2,8 +2,6 @@
 
 This repository contains an R-based analysis of the **Music & Mental Health (MxMH) Survey** dataset from Kaggle. The project examines how university students’ music-listening habits relate to self-reported mental-health symptoms, with a focus on **depression, anxiety, and insomnia**.
 
-The main analysis is implemented in a **Quarto** document (e.g. `music_mental_health_analysis.qmd`) that renders to HTML.
-
 ## Research Questions
 
 1. **RQ1 – Listening Time & Platforms**  
