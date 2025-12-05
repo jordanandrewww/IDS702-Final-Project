@@ -284,7 +284,7 @@ Overall, although depression is associated with slightly higher listening time, 
 
 University counseling centers today face a clear and growing challenge: many students show signs of depression or anxiety, yet only a fraction seek help. A recent large study found that roughly 48.9% of college students in the post-pandemic era report depressive tendencies (Luo et al., 2024). Another analysis of more than 100,000 students across 64 studies estimated a pooled prevalence of depression symptoms at 33.6% and anxiety symptoms at 39.0%, demonstrating how widespread mental-health concerns are in higher education (Li et al., 2022).
 
-Because counseling centers have limited resources, and because many students may not seek formal supoort, there is an urgent need for low-burden, behavior-based signals that could help identify or screen for potential mental-health risk. One promising candidate for such indicators is everyday music-listening behavior. Music listening is a near-universal daily behavior among young adults, and research suggests it may serve as a meaningful emotional regulator or mental-health resource. Studies on music’s broader health and well-being effects have documented its benefits on mood, stress, immune function, and mental-health outcomes, including among individuals with diagnosed disorders (Rebecchini et al., 2021). More recent meta-analytic reviews find that informal “musicking”, not only formal therapy, consistently supports emotion regulation in non-clinical populations (Peters et al., 2024), and music-based interventions have been shown to reduce symptoms of depression and anxiety (Rodwin et al., 2022). . 
+Because counseling centers have limited resources, and because many students may not seek formal supoort, there is an urgent need for low-burden, behavior-based signals that could help identify or screen for potential mental-health risk. One promising candidate for such indicators is everyday music-listening behavior. Music listening is a near-universal daily behavior among young adults, and research suggests it may serve as a meaningful emotional regulator or mental-health resource. Studies on music’s broader health and well-being effects have documented its benefits on mood, stress, immune function, and mental-health outcomes, including among individuals with diagnosed disorders (Rebecchini et al., 2021). More recent meta-analytic reviews find that informal “musicking”, not only formal therapy, consistently supports emotion regulation in non-clinical populations (Peters et al., 2024), and music-based interventions have been shown to reduce symptoms of depression and anxiety (Rodwin et al., 2022). .
 
 Given these findings, everyday listening patterns may carry a measurable signal of underlying mental-health status, offering a low-cost way to complement traditional screening tools. If simple behaviors such as daily listening time, preferred streaming platforms, or music-use contexts reliably align with depression symptoms, counseling centers could incorporate brief questions about music habits into wellness check-ins or outreach initiatives. Such indicators would never replace clinical tools, but they could provide an accessible, early-warning layer that helps identify students who might otherwise go unnoticed.
 
@@ -302,7 +302,7 @@ ggplot(music_data_1_subset,
   geom_point(alpha = 0.4) +
   geom_smooth(method = "lm", se = FALSE, size = 1) +
   labs(
-    title = "Daily Listening Time vs. Depression Score by Streaming Platform",
+    title = "Figure 1: Daily Listening Time vs. Depression Score by Streaming Platform",
     x = "Depression Score",
     y = "Hours per Day",
     color = "Streaming Platform"
@@ -315,8 +315,7 @@ As shown in Figure 1, students with higher depression scores tend to listen to m
 
 ## Drivers of Daily Listening Time
 
-To understand what predicts how much students listen to music, we fit a multiple linear regression model with a log-transformed outcome: log(daily listening hours + 0.1).
-This transformation reduces the influence of extreme values and allows coefficients to be interpreted as percentage changes in listening time.
+To understand what predicts how much students listen to music, we fit a multiple linear regression model with a log-transformed outcome: log(daily listening hours + 0.1). This transformation reduces the influence of extreme values and allows coefficients to be interpreted as percentage changes in listening time.
 
 The final model used N = 645 respondents after filtering non-platform users and removing three influential outliers.
 
@@ -340,7 +339,7 @@ tbl_rq1_sig <- tidy(
   select(term, estimate, std.error, conf.low, conf.high, p.value)
 
 kable(tbl_rq1_sig,
-      caption = "Significant Predictors from RQ1 Linear Model",
+      caption = "Table 1: Significant Predictors from RQ1 Linear Model",
       booktabs = TRUE) %>%
   kable_styling(full_width = FALSE)
 ```
@@ -370,14 +369,15 @@ tbl_rq2_condensed <- tidy(
 
 kable(
   tbl_rq2_condensed,
-  caption = "Key Predictors from Logistic Regression (Odds Ratios)",
+  caption = "Table 2: Key Predictors from Logistic Regression (Odds Ratios)",
   booktabs = TRUE
 ) %>%
   kable_styling(full_width = FALSE)
 ```
-Table 2 shows that daily listening hours are not a reliable standalone indicator of high depression. This table includes only predictors that are statistically significant (p values below 0.05), along with hours per day of listening time, since this was our primary independent variable of interest. The odds ratio for listening time is 1.05, which would mean that each additional hour of listening increases the odds of high depression by about 5 percent, but since the p-value is above our 0.05 threshold (at 0.140), we cannot say this is statistically significant. 
 
-In contrast, anxiety is the strongest predictor of high depression, with an odds ratio of 1.40  (p < 0.001), meaning each one-point increase in anxiety raises the odds of high depression by about 40%. Insomnia also emerges as a significant predictor, corresponding to a 17% increase in risk per hour increase in daily listening time (p < 0.001).
+Table 2 shows that daily listening hours are not a reliable standalone indicator of high depression. This table includes only predictors that are statistically significant (p values below 0.05), along with hours per day of listening time, since this was our primary independent variable of interest. The odds ratio for listening time is 1.05, which would mean that each additional hour of listening increases the odds of high depression by about 5 percent, but since the p-value is above our 0.05 threshold (at 0.140), we cannot say this is statistically significant.
+
+In contrast, anxiety is the strongest predictor of high depression, with an odds ratio of 1.40 (p \< 0.001), meaning each one-point increase in anxiety raises the odds of high depression by about 40%. Insomnia also emerges as a significant predictor, corresponding to a 17% increase in risk per hour increase in daily listening time (p \< 0.001).
 
 Taken together, these results show that while higher depression is associated with more listening, listening time alone should not be treated as a depression flag. Instead, anxiety and insomnia—well-validated psychological indicators—remain the most reliable behavioral cues.
 
@@ -387,7 +387,7 @@ Although music-listening patterns carry some signal, especially the tendency for
 
 However, due to the nature of our data, there are two substantive limitations that are worth keeping in mind when interpreting the findings. First, all mental-health measures in the dataset rely on single self-reported items, not standardized clinical scales such as the PHQ-9 or GAD-7. These single-item scores are coarse and may under- or over-estimate true symptom severity, which limits how confidently we can infer risk or impact of certain variables from them. Second, the data are cross-sectional, meaning we observe students’ music habits and mental-health symptoms at one point in time. This prevents us from determining whether increased listening is a response to worsening mood, a coping strategy, or simply a personal preference unrelated to mental-health changes.
 
-Despite these limitations, the patterns do point toward practical next steps for wellness monitoring and outreach. Because anxiety and insomnia, which have been validated as co-indicators of depression, are far more predictive than listening time, counseling services could focus on early screening, brief questionnaires, or outreach strategies that incorporate these co-occurring symptoms. 
+Despite these limitations, the patterns do point toward practical next steps for wellness monitoring and outreach. Because anxiety and insomnia, which have been validated as co-indicators of depression, are far more predictive than listening time, counseling services could focus on early screening, brief questionnaires, or outreach strategies that incorporate these co-occurring symptoms.
 
 Music-related questions may still play a useful supporting role. Although our analysis did not find strong predictive value for total listening hours alone, the limitations of the dataset mean we cannot rule out that more specific aspects of music use relate meaningfully to students’ mental health. A single measure like “hours per day” does not capture when students listen, what emotional purpose the music serves, or how listening fits into their daily routines. These dimensions may still offer valuable insight.
 
@@ -441,16 +441,10 @@ Logistic regression, and therefore our model, assumes independent observations, 
 
 The first model we fit for RQ1 was a linear regression model that regressed the raw outcome of hours of music listening per day on all available predictors in the data set.
 
-```{r}
-# Set plotting window to 2x2
+```{r, fig.cap="Figure 2: Diagnostic plots for the raw RQ1 model.", fig.align='center'}
 par(mfrow = c(2, 2))
-
-# Produce all 4 diagnostic plots
 plot(model_rq1_raw)
-
-# (Optional) Reset layout
 par(mfrow = c(1, 1))
-
 ```
 
 After fitting this initial model, we first examined the standard diagnostic plots, as shown above: Residuals vs Fitted, Normal Q-Q, Scale-Location, and Residuals vs. Leverage. The Residuals vs Fitted plot revealed a strong violation of homoscedasticity, with the points forming a funnel-shape, and a small violation of linearity, where the red smoothing line curved upward rather than remaining flat. The Normal Q–Q plot showed noticeable departures from the 45 degree line, especially in the upper tail, a clear strong violation of normality. The Scale–Location plot further confirmed heteroscedasticity, with residual spread increasing at higher fitted values. Finally, the Residuals vs. Leverage plot identified several influential observations with large residuals and unusually high leverage, suggesting they were exerting disproportionate influence on the fitted model.
@@ -459,7 +453,7 @@ After examining the diagnostic plots, we assessed multicollinearity using GVIF v
 
 One exception was favorite genre, a 16-level categorical variable, which produced a very large raw GVIF (≈ 2400). However, its adjusted value, $\text{GVIF}^{1/(2 \cdot \text{Df})} \approx 1.30$, fell well within acceptable thresholds, since high raw GVIF numbers are expected for factors with many degrees of freedom. No predictors exhibited adjusted GVIF values approaching levels (≈ 2 or 3) that would indicate problematic multicollinearity.
 
-```{r p1-plot, fig.width=4, fig.height=3}
+```{r p1-plot, fig.cap="Figure 3: Diagnostic plots for the raw RQ1 model.", fig.width=4, fig.height=3}
 p1 <- ggplot(music_data_1, aes(x = Hours.per.day)) +
 geom_histogram(bins = 30, color = "black") +
 labs(
@@ -473,9 +467,9 @@ p1
 
 ```
 
-Because the full model included many weakly justified predictors, we fit a reduced model to improve parsimony and check whether the diagnostic issues were caused by unnecessary complexity. We also inspected a histogram of hours per day, pictured above, which was strongly right-skewed, suggesting structural issues with the outcome itself. The reduced model produced essentially the same adjusted R² (≈0.16) and similar residual behavior, with persistent violations of linearity, homoscedasticity, and normality, plus influential points. This showed that removing predictors did not improve model fit and that the underlying outcome distribution, not just model complexity, was driving the diagnostic problems.
+Because the full model included many weakly justified predictors, we fit a reduced model to improve parsimony and check whether the diagnostic issues were caused by unnecessary complexity. We also inspected a histogram of hours per day in Figure 3, which was strongly right-skewed, suggesting structural issues with the outcome itself. The reduced model produced essentially the same adjusted $R^2 (\approx 0.16)$ and similar residual behavior, with persistent violations of linearity, homoscedasticity, and normality, plus influential points. This showed that removing predictors did not improve model fit and that the underlying outcome distribution, not just model complexity, was driving the diagnostic problems.
 
-```{r}
+```{r, fig.cap="Figure 4: Diagnostic plots for the log-transformed RQ1 model.", fig.align='center'}
 
 # Set plotting window to 2x2
 par(mfrow = c(2, 2))
@@ -491,18 +485,18 @@ par(mfrow = c(1, 1))
 
 To address this we applied a log transformation to the outcome and re–fit the model with $\log(\text{Hours per day} + 0.1)$ as the response. On the log scale, the Residuals vs fitted plot and Q–Q plot showed substantially more symmetric and homoscedastic residuals (as shown above) and the histogram of the transformed outcome indicated a much more balanced distribution. These improvements suggested that the log–transformed model better met the assumptions of linear regression. We also used variance inflation factors (VIFs) to check for multicollinearity among predictors and did not find strong evidence of a violation.
 
-```{r, fig.width=4, fig.height=3}
+```{r, fig.cap="Figure 5: Influential Points Measured by Cook's Distance.", fig.align='center'}
 # Cook's distance for linear regression (RQ1)
 cooks <- cooks.distance(model_rq1_log)
 
 plot(cooks, type = "h",
-     main = "Influential points measured by Cook’s distance",
+     main = "Influential Points Measured by Cook’s Distance",
      ylab = "Cook's distance",
      xlab = "Index",
      cex.main = 0.8)
 ```
 
-To evaluate influential observations, we computed Cook’s distance for the log-transformed RQ1 model and examined the corresponding plot. We also inspected the residual and leverage diagnostic plots for outliers. Combining these approaches, we identified three extreme points to remove: two points were flagged as outliers in both the diagnostic plots and Cook’s distance, and one additional point appeared as an outlier only in the diagnostic plots. After removing these three extreme points , we refit the log-transformed model. The residuals are now more symmetrically distributed (Min = -1.84, Max = 1.80, Median ≈ 0), and the residual standard error decreased to 0.625, indicating improved model fit.
+To evaluate influential observations, we computed Cook’s distance for the log-transformed RQ1 model and examined the corresponding plot (Figure 5). We also inspected the residual and leverage diagnostic plots for outliers. Combining these approaches, we identified three extreme points to remove: two points were flagged as outliers in both the diagnostic plots and Cook’s distance, and one additional point appeared as an outlier only in the diagnostic plots. After removing these three extreme points , we refit the log-transformed model. The residuals are now more symmetrically distributed (Min = -1.84, Max = 1.80, Median ≈ 0), and the residual standard error decreased to 0.625, indicating improved model fit.
 
 Several predictors remain significant, including Depression, Primary streaming service, While working, Instrumentalist, Composer, Insomnia, and select favorite genres, with interactions between Depression and streaming platform also holding. The adjusted $R^2$ increased to 0.220, showing that the log transformation and removal of influential points slightly improved the explained variance.
 
@@ -779,18 +773,12 @@ These limitations mean that our findings should be interpreted as descriptive pa
 
 # Works Cited
 
-Luo et al. (2024)
-Luo, M.-M., Hao, M., Li, X.-H., Liao, J., Wu, C.-M., & Wang, Q. (2024). Prevalence of depressive tendencies among college students and the influence of attributional styles on depressive tendencies in the post-pandemic era. Frontiers in Public Health, 12, 1326582. https://doi.org/10.3389/fpubh.2024.1326582
+Luo et al. (2024) Luo, M.-M., Hao, M., Li, X.-H., Liao, J., Wu, C.-M., & Wang, Q. (2024). Prevalence of depressive tendencies among college students and the influence of attributional styles on depressive tendencies in the post-pandemic era. Frontiers in Public Health, 12, 1326582. https://doi.org/10.3389/fpubh.2024.1326582
 
-Li et al. (2022)
-Li, W., Zhao, Z., Chen, D., Peng, Y., & Lu, Z. (2022). Prevalence and associated factors of depression and anxiety symptoms among college students: A systematic review and meta-analysis. Journal of Child Psychology and Psychiatry, 63(11), 1222–1230. https://doi.org/10.1111/jcpp.13606
+Li et al. (2022) Li, W., Zhao, Z., Chen, D., Peng, Y., & Lu, Z. (2022). Prevalence and associated factors of depression and anxiety symptoms among college students: A systematic review and meta-analysis. Journal of Child Psychology and Psychiatry, 63(11), 1222–1230. https://doi.org/10.1111/jcpp.13606
 
-Rebecchini et al. (2021)
-Rebecchini, L., Russo, F., Agostinis, G., Merlo, L., Caruana, F., & Avanzini, P. (2021). Music and health: What interventions are suitable for mental disorders? International Journal of Environmental Research and Public Health, 18(21), 11141. https://doi.org/10.3390/ijerph182111141
+Rebecchini et al. (2021) Rebecchini, L., Russo, F., Agostinis, G., Merlo, L., Caruana, F., & Avanzini, P. (2021). Music and health: What interventions are suitable for mental disorders? International Journal of Environmental Research and Public Health, 18(21), 11141. https://doi.org/10.3390/ijerph182111141
 
-Peters et al. (2024)
-Peters, V., Bissonnette, J., Nadeau, D., Gauthier-Légaré, A., & Noël, M.-A. (2024). The impact of musicking on emotion regulation: A systematic review and meta-analysis. Psychology of Music. Advance online publication. https://doi.org/10.1177/03057356241252505
+Peters et al. (2024) Peters, V., Bissonnette, J., Nadeau, D., Gauthier-Légaré, A., & Noël, M.-A. (2024). The impact of musicking on emotion regulation: A systematic review and meta-analysis. Psychology of Music. Advance online publication. https://doi.org/10.1177/03057356241252505
 
-Rodwin et al. (2022)
-Rodwin, A. H., Verma, P., Lee, J., & Tsai, A. C. (2022). Music-based interventions to improve mental health: A systematic review. The Lancet Psychiatry, 9(11), 843–854. https://doi.org/10.1016/S2215-0366(22)00237-5
-
+Rodwin et al. (2022) Rodwin, A. H., Verma, P., Lee, J., & Tsai, A. C. (2022). Music-based interventions to improve mental health: A systematic review. The Lancet Psychiatry, 9(11), 843–854. https://doi.org/10.1016/S2215-0366(22)00237-5

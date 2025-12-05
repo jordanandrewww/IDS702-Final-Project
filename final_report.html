@@ -95,6 +95,252 @@ window.Quarto = {
 
 
 <hr>
+<section id="stakeholder" class="level1">
+<h1>Stakeholder</h1>
+<p>The primary stakeholder for this memo is the Director of University Counseling &amp; Wellness Services, who oversees mental-health outreach and student support strategy on campus. This stakeholder has some familiarity with data dashboards and survey-based evidence but does not work directly with statistical modeling, so they require clear interpretations rather than technical detail. They care about this analysis because understanding whether music-listening patterns are meaningfully related to depressive symptoms can help determine whether such questions should be incorporated into screening tools, campus wellness initiatives, or early-intervention outreach.</p>
+</section>
+<section id="executive-summary" class="level1">
+<h1>Executive Summary</h1>
+<p>This analysis examines how music-listening behaviors relate to depression symptoms using survey data from 718 respondents. We address two questions: (1) whether daily listening time varies based on depression levels and streaming platforms, and (2) whether the number of hours spent listening to music each day predicts the likelihood of reporting high depression symptoms.</p>
+<p>For the first question, we find that individuals with higher depression scores tend to listen to more music, although this pattern differs across streaming platforms. Listening while working, insomnia symptoms, musician traits, and certain genre preferences were stronger and more consistent predictors of listening time than depression alone. For the second question, our logistic regression model shows that daily listening hours do not meaningfully increase the odds of being in a high-depression category once other factors are taken into account. Instead, anxiety and insomnia serve as the strongest predictors of elevated depression symptoms.</p>
+<p>Overall, although depression is associated with slightly higher listening time, daily music-listening hours are not a reliable indicator of high depression risk. Co-occurring mental-health symptoms provide far more informative predictive value than listening duration.</p>
+</section>
+<section id="problem-motivation" class="level1">
+<h1>Problem Motivation</h1>
+<p>University counseling centers today face a clear and growing challenge: many students show signs of depression or anxiety, yet only a fraction seek help. A recent large study found that roughly 48.9% of college students in the post-pandemic era report depressive tendencies (Luo et al., 2024). Another analysis of more than 100,000 students across 64 studies estimated a pooled prevalence of depression symptoms at 33.6% and anxiety symptoms at 39.0%, demonstrating how widespread mental-health concerns are in higher education (Li et al., 2022).</p>
+<p>Because counseling centers have limited resources, and because many students may not seek formal supoort, there is an urgent need for low-burden, behavior-based signals that could help identify or screen for potential mental-health risk. One promising candidate for such indicators is everyday music-listening behavior. Music listening is a near-universal daily behavior among young adults, and research suggests it may serve as a meaningful emotional regulator or mental-health resource. Studies on music’s broader health and well-being effects have documented its benefits on mood, stress, immune function, and mental-health outcomes, including among individuals with diagnosed disorders (Rebecchini et al., 2021). More recent meta-analytic reviews find that informal “musicking”, not only formal therapy, consistently supports emotion regulation in non-clinical populations (Peters et al., 2024), and music-based interventions have been shown to reduce symptoms of depression and anxiety (Rodwin et al., 2022). .</p>
+<p>Given these findings, everyday listening patterns may carry a measurable signal of underlying mental-health status, offering a low-cost way to complement traditional screening tools. If simple behaviors such as daily listening time, preferred streaming platforms, or music-use contexts reliably align with depression symptoms, counseling centers could incorporate brief questions about music habits into wellness check-ins or outreach initiatives. Such indicators would never replace clinical tools, but they could provide an accessible, early-warning layer that helps identify students who might otherwise go unnoticed.</p>
+</section>
+<section id="results-and-high-level-findings" class="level1">
+<h1>Results and High-Level Findings</h1>
+<section id="overview-of-key-findings" class="level2">
+<h2 class="anchored" data-anchor-id="overview-of-key-findings">Overview of Key Findings</h2>
+<p>Across the full cleaned dataset (N = 645 Respondents for Model 1 and N = 718 Respondents for Model 2), several clear patterns emerged linking students’ music-listening habits with their self-reported mental-health symptoms. While these relationships cannot establish causality, they reveal meaningful behavioral patterns that could inform low-burden wellness screening.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="final_report_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>As shown in Figure 1, students with higher depression scores tend to listen to more music per day. Among Apple Music users, listening time increases from about 1 hour/day at low depression levels to 3–4 hours/day at higher levels. Spotify and YouTube Music users show smaller increases, while Pandora users display a slight decline. These differences highlight that both emotional state and platform choice shape listening behavior.</p>
+</section>
+<section id="drivers-of-daily-listening-time" class="level2">
+<h2 class="anchored" data-anchor-id="drivers-of-daily-listening-time">Drivers of Daily Listening Time</h2>
+<p>To understand what predicts how much students listen to music, we fit a multiple linear regression model with a log-transformed outcome: log(daily listening hours + 0.1). This transformation reduces the influence of extreme values and allows coefficients to be interpreted as percentage changes in listening time.</p>
+<p>The final model used N = 645 respondents after filtering non-platform users and removing three influential outliers.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table caption-top table-sm table-striped small" data-quarto-postprocess="true">
+<caption>Table 1: Significant Predictors from RQ1 Linear Model</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">term</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">estimate</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">std.error</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">conf.low</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">conf.high</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Depression</td>
+<td style="text-align: right;">0.106</td>
+<td style="text-align: right;">0.032</td>
+<td style="text-align: right;">0.043</td>
+<td style="text-align: right;">0.169</td>
+<td style="text-align: left;">0.001</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Primary.streaming.serviceOther streaming service</td>
+<td style="text-align: right;">0.696</td>
+<td style="text-align: right;">0.245</td>
+<td style="text-align: right;">0.216</td>
+<td style="text-align: right;">1.177</td>
+<td style="text-align: left;">0.005</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Primary.streaming.servicePandora</td>
+<td style="text-align: right;">0.776</td>
+<td style="text-align: right;">0.355</td>
+<td style="text-align: right;">0.079</td>
+<td style="text-align: right;">1.472</td>
+<td style="text-align: left;">0.029</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Primary.streaming.serviceSpotify</td>
+<td style="text-align: right;">0.577</td>
+<td style="text-align: right;">0.197</td>
+<td style="text-align: right;">0.189</td>
+<td style="text-align: right;">0.964</td>
+<td style="text-align: left;">0.004</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Primary.streaming.serviceYouTube Music</td>
+<td style="text-align: right;">0.625</td>
+<td style="text-align: right;">0.216</td>
+<td style="text-align: right;">0.202</td>
+<td style="text-align: right;">1.048</td>
+<td style="text-align: left;">0.004</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Age</td>
+<td style="text-align: right;">-0.005</td>
+<td style="text-align: right;">0.003</td>
+<td style="text-align: right;">-0.010</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: left;">0.043</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">While.workingYes</td>
+<td style="text-align: right;">0.605</td>
+<td style="text-align: right;">0.065</td>
+<td style="text-align: right;">0.478</td>
+<td style="text-align: right;">0.732</td>
+<td style="text-align: left;">&lt;0.001</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">InstrumentalistYes</td>
+<td style="text-align: right;">-0.160</td>
+<td style="text-align: right;">0.063</td>
+<td style="text-align: right;">-0.283</td>
+<td style="text-align: right;">-0.037</td>
+<td style="text-align: left;">0.011</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ComposerYes</td>
+<td style="text-align: right;">0.152</td>
+<td style="text-align: right;">0.075</td>
+<td style="text-align: right;">0.004</td>
+<td style="text-align: right;">0.300</td>
+<td style="text-align: left;">0.044</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Insomnia</td>
+<td style="text-align: right;">0.026</td>
+<td style="text-align: right;">0.009</td>
+<td style="text-align: right;">0.008</td>
+<td style="text-align: right;">0.044</td>
+<td style="text-align: left;">0.004</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Fav.genreJazz</td>
+<td style="text-align: right;">0.403</td>
+<td style="text-align: right;">0.175</td>
+<td style="text-align: right;">0.060</td>
+<td style="text-align: right;">0.747</td>
+<td style="text-align: left;">0.021</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fav.genreLatin</td>
+<td style="text-align: right;">0.954</td>
+<td style="text-align: right;">0.457</td>
+<td style="text-align: right;">0.056</td>
+<td style="text-align: right;">1.851</td>
+<td style="text-align: left;">0.037</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Depression:Primary.streaming.serviceOther streaming service</td>
+<td style="text-align: right;">-0.165</td>
+<td style="text-align: right;">0.043</td>
+<td style="text-align: right;">-0.250</td>
+<td style="text-align: right;">-0.081</td>
+<td style="text-align: left;">&lt;0.001</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Depression:Primary.streaming.servicePandora</td>
+<td style="text-align: right;">-0.207</td>
+<td style="text-align: right;">0.067</td>
+<td style="text-align: right;">-0.338</td>
+<td style="text-align: right;">-0.077</td>
+<td style="text-align: left;">0.002</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Depression:Primary.streaming.serviceSpotify</td>
+<td style="text-align: right;">-0.103</td>
+<td style="text-align: right;">0.033</td>
+<td style="text-align: right;">-0.169</td>
+<td style="text-align: right;">-0.038</td>
+<td style="text-align: left;">0.002</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Depression:Primary.streaming.serviceYouTube Music</td>
+<td style="text-align: right;">-0.140</td>
+<td style="text-align: right;">0.038</td>
+<td style="text-align: right;">-0.215</td>
+<td style="text-align: right;">-0.065</td>
+<td style="text-align: left;">&lt;0.001</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>INSERT ANALYSIS HERE</p>
+<p>These results show that log-transformed listening hours are shaped by depression symptoms, platform behavior, work context, and musical identity traits.</p>
+</section>
+<section id="indicators-of-high-depression-symptoms" class="level2">
+<h2 class="anchored" data-anchor-id="indicators-of-high-depression-symptoms">Indicators of High Depression Symptoms</h2>
+<p>To assess whether music behavior can meaningfully signal elevated depression, we fit a logistic regression model predicting whether a student scored 6 or above on the depression scale using N = 718 respondents.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table caption-top table-sm table-striped small" data-quarto-postprocess="true">
+<caption>Table 2: Key Predictors from Logistic Regression (Odds Ratios)</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">term</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">estimate</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">conf.low</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">conf.high</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Hours.per.day</td>
+<td style="text-align: right;">1.05</td>
+<td style="text-align: right;">0.99</td>
+<td style="text-align: right;">1.12</td>
+<td style="text-align: left;">0.140</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Anxiety</td>
+<td style="text-align: right;">1.40</td>
+<td style="text-align: right;">1.30</td>
+<td style="text-align: right;">1.51</td>
+<td style="text-align: left;">&lt;0.001</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Insomnia</td>
+<td style="text-align: right;">1.17</td>
+<td style="text-align: right;">1.10</td>
+<td style="text-align: right;">1.24</td>
+<td style="text-align: left;">&lt;0.001</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>Table 2 shows that daily listening hours are not a reliable standalone indicator of high depression. This table includes only predictors that are statistically significant (p values below 0.05), along with hours per day of listening time, since this was our primary independent variable of interest. The odds ratio for listening time is 1.05, which would mean that each additional hour of listening increases the odds of high depression by about 5 percent, but since the p-value is above our 0.05 threshold (at 0.140), we cannot say this is statistically significant.</p>
+<p>In contrast, anxiety is the strongest predictor of high depression, with an odds ratio of 1.40 (p &lt; 0.001), meaning each one-point increase in anxiety raises the odds of high depression by about 40%. Insomnia also emerges as a significant predictor, corresponding to a 17% increase in risk per hour increase in daily listening time (p &lt; 0.001).</p>
+<p>Taken together, these results show that while higher depression is associated with more listening, listening time alone should not be treated as a depression flag. Instead, anxiety and insomnia—well-validated psychological indicators—remain the most reliable behavioral cues.</p>
+</section>
+</section>
+<section id="limitations-and-recommended-next-steps" class="level1">
+<h1>Limitations and Recommended Next Steps</h1>
+<p>Although music-listening patterns carry some signal, especially the tendency for students with higher depression to listen more hours per day, the results suggest that music behavior alone is not a reliable standalone indicator of high depression risk. Any practical use of these insights should therefore be paired with validated psychological information, not used in isolation.</p>
+<p>However, due to the nature of our data, there are two substantive limitations that are worth keeping in mind when interpreting the findings. First, all mental-health measures in the dataset rely on single self-reported items, not standardized clinical scales such as the PHQ-9 or GAD-7. These single-item scores are coarse and may under- or over-estimate true symptom severity, which limits how confidently we can infer risk or impact of certain variables from them. Second, the data are cross-sectional, meaning we observe students’ music habits and mental-health symptoms at one point in time. This prevents us from determining whether increased listening is a response to worsening mood, a coping strategy, or simply a personal preference unrelated to mental-health changes.</p>
+<p>Despite these limitations, the patterns do point toward practical next steps for wellness monitoring and outreach. Because anxiety and insomnia, which have been validated as co-indicators of depression, are far more predictive than listening time, counseling services could focus on early screening, brief questionnaires, or outreach strategies that incorporate these co-occurring symptoms.</p>
+<p>Music-related questions may still play a useful supporting role. Although our analysis did not find strong predictive value for total listening hours alone, the limitations of the dataset mean we cannot rule out that more specific aspects of music use relate meaningfully to students’ mental health. A single measure like “hours per day” does not capture when students listen, what emotional purpose the music serves, or how listening fits into their daily routines. These dimensions may still offer valuable insight.</p>
+<p>Moving forward, the counseling center could incorporate a few brief questions into wellness screenings that ask students how they use music, such as whether they listen to manage stress, regulate mood, support sleep, or avoid intrusive thoughts. Gathering this targeted information would be low burden and could help staff identify students who may benefit from additional assessment or outreach.</p>
+<p>The university could also consider running its own campus-wide survey that includes these improved questions and relies on more representative sampling than public social media–based datasets. Collecting higher-quality, campus-specific data would allow the counseling center to understand patterns in its own student population and evaluate whether music-related behaviors provide meaningful early signals of mental-health needs. This approach would provide a stronger evidence base for future screening tools or outreach strategies.</p>
+</section>
 <section id="data" class="level1">
 <h1>Data</h1>
 <section id="data-background" class="level2">
@@ -109,6 +355,7 @@ window.Quarto = {
 <p>After this, we checked the music effects variable and found seven cases where respondents left this question blank. Because an empty string does not constitute a valid category and this variable is used in later modeling, we removed these seven rows as well.</p>
 <p>For analyses involving streaming services, we examined the primary streaming service column and identified two types of unusable entries: blank responses and the explicit answer “I do not use a streaming service.” Because our first research question specifically compares listening patterns across streaming platforms, respondents without a platform could not be meaningfully included in that analysis. Therefore, for the dataset used in RQ1, we removed all rows with missing streaming-service information as well as those who reported not using any streaming service.</p>
 <p>Finally, to prepare the binary outcome for our second research question, we created a high depression variable that flags individuals with elevated symptom levels. Because the average depression score in the dataset was 4.82 and the median was 5, we designated respondents with a score of 6 or higher as experiencing “high depression.” This threshold represents a meaningful distinction between typical responses and substantially elevated symptom reports, allowing us to model the likelihood of more severe depression symptoms.</p>
+<p>After cleaning, there were 645 rows in the data used for model 1 and 718 rows in the data used for model 2.</p>
 </section>
 </section>
 <section id="models" class="level1">
@@ -131,11 +378,12 @@ window.Quarto = {
 <section id="research-question-1" class="level2">
 <h2 class="anchored" data-anchor-id="research-question-1">Research Question 1</h2>
 <p>The first model we fit for RQ1 was a linear regression model that regressed the raw outcome of hours of music listening per day on all available predictors in the data set.</p>
-<div class="cell">
+<div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<div>
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="final_report_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="final_report_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Figure 2: Diagnostic plots for the raw RQ1 model.</figcaption>
 </figure>
 </div>
 </div>
@@ -157,7 +405,7 @@ window.Quarto = {
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="final_report_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="final_report_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -167,7 +415,7 @@ window.Quarto = {
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="final_report_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="384"></p>
+<p><img src="final_report_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="384"></p>
 </figure>
 </div>
 </div>
@@ -569,7 +817,7 @@ window.Quarto = {
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="final_report_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="384"></p>
+<p><img src="final_report_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="384"></p>
 </figure>
 </div>
 </div>
@@ -623,7 +871,7 @@ window.Quarto = {
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="final_report_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="384"></p>
+<p><img src="final_report_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="384"></p>
 </figure>
 </div>
 </div>
@@ -946,6 +1194,14 @@ window.Quarto = {
 </ul>
 <p>These limitations mean that our findings should be interpreted as descriptive patterns in this sample, rather than definitive evidence about the causal effect of music listening on depression. Nonetheless, the analysis provides a useful starting point for understanding how music–listening habits and mental–health symptoms co–vary in this population.</p>
 </section>
+</section>
+<section id="works-cited" class="level1">
+<h1>Works Cited</h1>
+<p>Luo et al.&nbsp;(2024) Luo, M.-M., Hao, M., Li, X.-H., Liao, J., Wu, C.-M., &amp; Wang, Q. (2024). Prevalence of depressive tendencies among college students and the influence of attributional styles on depressive tendencies in the post-pandemic era. Frontiers in Public Health, 12, 1326582. https://doi.org/10.3389/fpubh.2024.1326582</p>
+<p>Li et al.&nbsp;(2022) Li, W., Zhao, Z., Chen, D., Peng, Y., &amp; Lu, Z. (2022). Prevalence and associated factors of depression and anxiety symptoms among college students: A systematic review and meta-analysis. Journal of Child Psychology and Psychiatry, 63(11), 1222–1230. https://doi.org/10.1111/jcpp.13606</p>
+<p>Rebecchini et al.&nbsp;(2021) Rebecchini, L., Russo, F., Agostinis, G., Merlo, L., Caruana, F., &amp; Avanzini, P. (2021). Music and health: What interventions are suitable for mental disorders? International Journal of Environmental Research and Public Health, 18(21), 11141. https://doi.org/10.3390/ijerph182111141</p>
+<p>Peters et al.&nbsp;(2024) Peters, V., Bissonnette, J., Nadeau, D., Gauthier-Légaré, A., &amp; Noël, M.-A. (2024). The impact of musicking on emotion regulation: A systematic review and meta-analysis. Psychology of Music. Advance online publication. https://doi.org/10.1177/03057356241252505</p>
+<p>Rodwin et al.&nbsp;(2022) Rodwin, A. H., Verma, P., Lee, J., &amp; Tsai, A. C. (2022). Music-based interventions to improve mental health: A systematic review. The Lancet Psychiatry, 9(11), 843–854. https://doi.org/10.1016/S2215-0366(22)00237-5</p>
 </section>
 
 </main>
