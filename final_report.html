@@ -118,9 +118,10 @@ window.Quarto = {
 <p>Across the full cleaned dataset (N = 645 Respondents for Model 1 and N = 718 Respondents for Model 2), several clear patterns emerged linking students’ music-listening habits with their self-reported mental-health symptoms. While these relationships cannot establish causality, they reveal meaningful behavioral patterns that could inform low-burden wellness screening.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div>
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="final_report_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Daily Listening Time vs.&nbsp;Depression Score by Streaming Platform.</figcaption>
 </figure>
 </div>
 </div>
@@ -133,151 +134,356 @@ window.Quarto = {
 <p>The final model used N = 645 respondents after filtering non-platform users and removing three influential outliers.</p>
 <div class="cell">
 <div class="cell-output-display">
-<table class="table caption-top table-sm table-striped small" data-quarto-postprocess="true">
-<caption>Table 1: Significant Predictors from RQ1 Linear Model</caption>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Table 1: Significant Predictors from RQ1 Linear Model
+</caption>
 <thead>
-<tr class="header">
-<th style="text-align: left;" data-quarto-table-cell-role="th">term</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">estimate</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">std.error</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">conf.low</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">conf.high</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">p.value</th>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:right;">
+estimate
+</th>
+<th style="text-align:right;">
+std.error
+</th>
+<th style="text-align:right;">
+conf.low
+</th>
+<th style="text-align:right;">
+conf.high
+</th>
+<th style="text-align:left;">
+p.value
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td style="text-align: left;">Depression</td>
-<td style="text-align: right;">0.106</td>
-<td style="text-align: right;">0.032</td>
-<td style="text-align: right;">0.043</td>
-<td style="text-align: right;">0.169</td>
-<td style="text-align: left;">0.001</td>
+<tr>
+<td style="text-align:left;">
+Depression
+</td>
+<td style="text-align:right;">
+0.106
+</td>
+<td style="text-align:right;">
+0.032
+</td>
+<td style="text-align:right;">
+0.043
+</td>
+<td style="text-align:right;">
+0.169
+</td>
+<td style="text-align:left;">
+0.001
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Primary.streaming.serviceOther streaming service</td>
-<td style="text-align: right;">0.696</td>
-<td style="text-align: right;">0.245</td>
-<td style="text-align: right;">0.216</td>
-<td style="text-align: right;">1.177</td>
-<td style="text-align: left;">0.005</td>
+<tr>
+<td style="text-align:left;">
+Primary.streaming.serviceOther streaming service
+</td>
+<td style="text-align:right;">
+0.696
+</td>
+<td style="text-align:right;">
+0.245
+</td>
+<td style="text-align:right;">
+0.216
+</td>
+<td style="text-align:right;">
+1.177
+</td>
+<td style="text-align:left;">
+0.005
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">Primary.streaming.servicePandora</td>
-<td style="text-align: right;">0.776</td>
-<td style="text-align: right;">0.355</td>
-<td style="text-align: right;">0.079</td>
-<td style="text-align: right;">1.472</td>
-<td style="text-align: left;">0.029</td>
+<tr>
+<td style="text-align:left;">
+Primary.streaming.servicePandora
+</td>
+<td style="text-align:right;">
+0.776
+</td>
+<td style="text-align:right;">
+0.355
+</td>
+<td style="text-align:right;">
+0.079
+</td>
+<td style="text-align:right;">
+1.472
+</td>
+<td style="text-align:left;">
+0.029
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Primary.streaming.serviceSpotify</td>
-<td style="text-align: right;">0.577</td>
-<td style="text-align: right;">0.197</td>
-<td style="text-align: right;">0.189</td>
-<td style="text-align: right;">0.964</td>
-<td style="text-align: left;">0.004</td>
+<tr>
+<td style="text-align:left;">
+Primary.streaming.serviceSpotify
+</td>
+<td style="text-align:right;">
+0.577
+</td>
+<td style="text-align:right;">
+0.197
+</td>
+<td style="text-align:right;">
+0.189
+</td>
+<td style="text-align:right;">
+0.964
+</td>
+<td style="text-align:left;">
+0.004
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">Primary.streaming.serviceYouTube Music</td>
-<td style="text-align: right;">0.625</td>
-<td style="text-align: right;">0.216</td>
-<td style="text-align: right;">0.202</td>
-<td style="text-align: right;">1.048</td>
-<td style="text-align: left;">0.004</td>
+<tr>
+<td style="text-align:left;">
+Primary.streaming.serviceYouTube Music
+</td>
+<td style="text-align:right;">
+0.625
+</td>
+<td style="text-align:right;">
+0.216
+</td>
+<td style="text-align:right;">
+0.202
+</td>
+<td style="text-align:right;">
+1.048
+</td>
+<td style="text-align:left;">
+0.004
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Age</td>
-<td style="text-align: right;">-0.005</td>
-<td style="text-align: right;">0.003</td>
-<td style="text-align: right;">-0.010</td>
-<td style="text-align: right;">0.000</td>
-<td style="text-align: left;">0.043</td>
+<tr>
+<td style="text-align:left;">
+Age
+</td>
+<td style="text-align:right;">
+-0.005
+</td>
+<td style="text-align:right;">
+0.003
+</td>
+<td style="text-align:right;">
+-0.010
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+<td style="text-align:left;">
+0.043
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">While.workingYes</td>
-<td style="text-align: right;">0.605</td>
-<td style="text-align: right;">0.065</td>
-<td style="text-align: right;">0.478</td>
-<td style="text-align: right;">0.732</td>
-<td style="text-align: left;">&lt;0.001</td>
+<tr>
+<td style="text-align:left;">
+While.workingYes
+</td>
+<td style="text-align:right;">
+0.605
+</td>
+<td style="text-align:right;">
+0.065
+</td>
+<td style="text-align:right;">
+0.478
+</td>
+<td style="text-align:right;">
+0.732
+</td>
+<td style="text-align:left;">
+&lt;0.001
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">InstrumentalistYes</td>
-<td style="text-align: right;">-0.160</td>
-<td style="text-align: right;">0.063</td>
-<td style="text-align: right;">-0.283</td>
-<td style="text-align: right;">-0.037</td>
-<td style="text-align: left;">0.011</td>
+<tr>
+<td style="text-align:left;">
+InstrumentalistYes
+</td>
+<td style="text-align:right;">
+-0.160
+</td>
+<td style="text-align:right;">
+0.063
+</td>
+<td style="text-align:right;">
+-0.283
+</td>
+<td style="text-align:right;">
+-0.037
+</td>
+<td style="text-align:left;">
+0.011
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">ComposerYes</td>
-<td style="text-align: right;">0.152</td>
-<td style="text-align: right;">0.075</td>
-<td style="text-align: right;">0.004</td>
-<td style="text-align: right;">0.300</td>
-<td style="text-align: left;">0.044</td>
+<tr>
+<td style="text-align:left;">
+ComposerYes
+</td>
+<td style="text-align:right;">
+0.152
+</td>
+<td style="text-align:right;">
+0.075
+</td>
+<td style="text-align:right;">
+0.004
+</td>
+<td style="text-align:right;">
+0.300
+</td>
+<td style="text-align:left;">
+0.044
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Insomnia</td>
-<td style="text-align: right;">0.026</td>
-<td style="text-align: right;">0.009</td>
-<td style="text-align: right;">0.008</td>
-<td style="text-align: right;">0.044</td>
-<td style="text-align: left;">0.004</td>
+<tr>
+<td style="text-align:left;">
+Insomnia
+</td>
+<td style="text-align:right;">
+0.026
+</td>
+<td style="text-align:right;">
+0.009
+</td>
+<td style="text-align:right;">
+0.008
+</td>
+<td style="text-align:right;">
+0.044
+</td>
+<td style="text-align:left;">
+0.004
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">Fav.genreJazz</td>
-<td style="text-align: right;">0.403</td>
-<td style="text-align: right;">0.175</td>
-<td style="text-align: right;">0.060</td>
-<td style="text-align: right;">0.747</td>
-<td style="text-align: left;">0.021</td>
+<tr>
+<td style="text-align:left;">
+Fav.genreJazz
+</td>
+<td style="text-align:right;">
+0.403
+</td>
+<td style="text-align:right;">
+0.175
+</td>
+<td style="text-align:right;">
+0.060
+</td>
+<td style="text-align:right;">
+0.747
+</td>
+<td style="text-align:left;">
+0.021
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Fav.genreLatin</td>
-<td style="text-align: right;">0.954</td>
-<td style="text-align: right;">0.457</td>
-<td style="text-align: right;">0.056</td>
-<td style="text-align: right;">1.851</td>
-<td style="text-align: left;">0.037</td>
+<tr>
+<td style="text-align:left;">
+Fav.genreLatin
+</td>
+<td style="text-align:right;">
+0.954
+</td>
+<td style="text-align:right;">
+0.457
+</td>
+<td style="text-align:right;">
+0.056
+</td>
+<td style="text-align:right;">
+1.851
+</td>
+<td style="text-align:left;">
+0.037
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">Depression:Primary.streaming.serviceOther streaming service</td>
-<td style="text-align: right;">-0.165</td>
-<td style="text-align: right;">0.043</td>
-<td style="text-align: right;">-0.250</td>
-<td style="text-align: right;">-0.081</td>
-<td style="text-align: left;">&lt;0.001</td>
+<tr>
+<td style="text-align:left;">
+Depression:Primary.streaming.serviceOther streaming service
+</td>
+<td style="text-align:right;">
+-0.165
+</td>
+<td style="text-align:right;">
+0.043
+</td>
+<td style="text-align:right;">
+-0.250
+</td>
+<td style="text-align:right;">
+-0.081
+</td>
+<td style="text-align:left;">
+&lt;0.001
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Depression:Primary.streaming.servicePandora</td>
-<td style="text-align: right;">-0.207</td>
-<td style="text-align: right;">0.067</td>
-<td style="text-align: right;">-0.338</td>
-<td style="text-align: right;">-0.077</td>
-<td style="text-align: left;">0.002</td>
+<tr>
+<td style="text-align:left;">
+Depression:Primary.streaming.servicePandora
+</td>
+<td style="text-align:right;">
+-0.207
+</td>
+<td style="text-align:right;">
+0.067
+</td>
+<td style="text-align:right;">
+-0.338
+</td>
+<td style="text-align:right;">
+-0.077
+</td>
+<td style="text-align:left;">
+0.002
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">Depression:Primary.streaming.serviceSpotify</td>
-<td style="text-align: right;">-0.103</td>
-<td style="text-align: right;">0.033</td>
-<td style="text-align: right;">-0.169</td>
-<td style="text-align: right;">-0.038</td>
-<td style="text-align: left;">0.002</td>
+<tr>
+<td style="text-align:left;">
+Depression:Primary.streaming.serviceSpotify
+</td>
+<td style="text-align:right;">
+-0.103
+</td>
+<td style="text-align:right;">
+0.033
+</td>
+<td style="text-align:right;">
+-0.169
+</td>
+<td style="text-align:right;">
+-0.038
+</td>
+<td style="text-align:left;">
+0.002
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Depression:Primary.streaming.serviceYouTube Music</td>
-<td style="text-align: right;">-0.140</td>
-<td style="text-align: right;">0.038</td>
-<td style="text-align: right;">-0.215</td>
-<td style="text-align: right;">-0.065</td>
-<td style="text-align: left;">&lt;0.001</td>
+<tr>
+<td style="text-align:left;">
+Depression:Primary.streaming.serviceYouTube Music
+</td>
+<td style="text-align:right;">
+-0.140
+</td>
+<td style="text-align:right;">
+0.038
+</td>
+<td style="text-align:right;">
+-0.215
+</td>
+<td style="text-align:right;">
+-0.065
+</td>
+<td style="text-align:left;">
+&lt;0.001
+</td>
 </tr>
 </tbody>
 </table>
-
-
+<p>Table 1: Significant Predictors from RQ1 Linear Model.</p>
 </div>
 </div>
 <p>INSERT ANALYSIS HERE</p>
@@ -288,43 +494,84 @@ window.Quarto = {
 <p>To assess whether music behavior can meaningfully signal elevated depression, we fit a logistic regression model predicting whether a student scored 6 or above on the depression scale using N = 718 respondents.</p>
 <div class="cell">
 <div class="cell-output-display">
-<table class="table caption-top table-sm table-striped small" data-quarto-postprocess="true">
-<caption>Table 2: Key Predictors from Logistic Regression (Odds Ratios)</caption>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Table 2: Key Predictors from Logistic Regression (Odds Ratios)
+</caption>
 <thead>
-<tr class="header">
-<th style="text-align: left;" data-quarto-table-cell-role="th">term</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">estimate</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">conf.low</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">conf.high</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">p.value</th>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:right;">
+estimate
+</th>
+<th style="text-align:right;">
+conf.low
+</th>
+<th style="text-align:right;">
+conf.high
+</th>
+<th style="text-align:left;">
+p.value
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td style="text-align: left;">Hours.per.day</td>
-<td style="text-align: right;">1.05</td>
-<td style="text-align: right;">0.99</td>
-<td style="text-align: right;">1.12</td>
-<td style="text-align: left;">0.140</td>
+<tr>
+<td style="text-align:left;">
+Hours.per.day
+</td>
+<td style="text-align:right;">
+1.05
+</td>
+<td style="text-align:right;">
+0.99
+</td>
+<td style="text-align:right;">
+1.12
+</td>
+<td style="text-align:left;">
+0.140
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Anxiety</td>
-<td style="text-align: right;">1.40</td>
-<td style="text-align: right;">1.30</td>
-<td style="text-align: right;">1.51</td>
-<td style="text-align: left;">&lt;0.001</td>
+<tr>
+<td style="text-align:left;">
+Anxiety
+</td>
+<td style="text-align:right;">
+1.40
+</td>
+<td style="text-align:right;">
+1.30
+</td>
+<td style="text-align:right;">
+1.51
+</td>
+<td style="text-align:left;">
+&lt;0.001
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">Insomnia</td>
-<td style="text-align: right;">1.17</td>
-<td style="text-align: right;">1.10</td>
-<td style="text-align: right;">1.24</td>
-<td style="text-align: left;">&lt;0.001</td>
+<tr>
+<td style="text-align:left;">
+Insomnia
+</td>
+<td style="text-align:right;">
+1.17
+</td>
+<td style="text-align:right;">
+1.10
+</td>
+<td style="text-align:right;">
+1.24
+</td>
+<td style="text-align:left;">
+&lt;0.001
+</td>
 </tr>
 </tbody>
 </table>
-
-
+<p>Table 2: Key Predictors from Logistic Regression (Odds Ratios)</p>
 </div>
 </div>
 <p>Table 2 shows that daily listening hours are not a reliable standalone indicator of high depression. This table includes only predictors that are statistically significant (p values below 0.05), along with hours per day of listening time, since this was our primary independent variable of interest. The odds ratio for listening time is 1.05, which would mean that each additional hour of listening increases the odds of high depression by about 5 percent, but since the p-value is above our 0.05 threshold (at 0.140), we cannot say this is statistically significant.</p>
@@ -393,421 +640,974 @@ window.Quarto = {
 <p>One exception was favorite genre, a 16-level categorical variable, which produced a very large raw GVIF (≈ 2400). However, its adjusted value, <span class="math inline">\(\text{GVIF}^{1/(2 \cdot \text{Df})} \approx 1.30\)</span>, fell well within acceptable thresholds, since high raw GVIF numbers are expected for factors with many degrees of freedom. No predictors exhibited adjusted GVIF values approaching levels (≈ 2 or 3) that would indicate problematic multicollinearity.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div>
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="final_report_files/figure-html/p1-plot-1.png" class="img-fluid figure-img" width="384"></p>
+<figcaption>Figure 3: Diagnostic plots for the raw RQ1 model.</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>Because the full model included many weakly justified predictors, we fit a reduced model to improve parsimony and check whether the diagnostic issues were caused by unnecessary complexity. We also inspected a histogram of hours per day, pictured above, which was strongly right-skewed, suggesting structural issues with the outcome itself. The reduced model produced essentially the same adjusted R² (≈0.16) and similar residual behavior, with persistent violations of linearity, homoscedasticity, and normality, plus influential points. This showed that removing predictors did not improve model fit and that the underlying outcome distribution, not just model complexity, was driving the diagnostic problems.</p>
-<div class="cell">
+<p>Because the full model included many weakly justified predictors, we fit a reduced model to improve parsimony and check whether the diagnostic issues were caused by unnecessary complexity. We also inspected a histogram of hours per day in Figure 3, which was strongly right-skewed, suggesting structural issues with the outcome itself. The reduced model produced essentially the same adjusted <span class="math inline">\(R^2 (\approx 0.16)\)</span> and similar residual behavior, with persistent violations of linearity, homoscedasticity, and normality, plus influential points. This showed that removing predictors did not improve model fit and that the underlying outcome distribution, not just model complexity, was driving the diagnostic problems.</p>
+<div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<div>
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="final_report_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Figure 4: Diagnostic plots for the log-transformed RQ1 model.</figcaption>
 </figure>
 </div>
 </div>
 </div>
 <p>To address this we applied a log transformation to the outcome and re–fit the model with <span class="math inline">\(\log(\text{Hours per day} + 0.1)\)</span> as the response. On the log scale, the Residuals vs fitted plot and Q–Q plot showed substantially more symmetric and homoscedastic residuals (as shown above) and the histogram of the transformed outcome indicated a much more balanced distribution. These improvements suggested that the log–transformed model better met the assumptions of linear regression. We also used variance inflation factors (VIFs) to check for multicollinearity among predictors and did not find strong evidence of a violation.</p>
-<div class="cell">
+<div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<div>
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="final_report_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="384"></p>
+<p><img src="final_report_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Figure 5: Influential Points Measured by Cook’s Distance.</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>To evaluate influential observations, we computed Cook’s distance for the log-transformed RQ1 model and examined the corresponding plot. We also inspected the residual and leverage diagnostic plots for outliers. Combining these approaches, we identified three extreme points to remove: two points were flagged as outliers in both the diagnostic plots and Cook’s distance, and one additional point appeared as an outlier only in the diagnostic plots. After removing these three extreme points , we refit the log-transformed model. The residuals are now more symmetrically distributed (Min = -1.84, Max = 1.80, Median ≈ 0), and the residual standard error decreased to 0.625, indicating improved model fit.</p>
+<p>To evaluate influential observations, we computed Cook’s distance for the log-transformed RQ1 model and examined the corresponding plot (Figure 5). We also inspected the residual and leverage diagnostic plots for outliers. Combining these approaches, we identified three extreme points to remove: two points were flagged as outliers in both the diagnostic plots and Cook’s distance, and one additional point appeared as an outlier only in the diagnostic plots. After removing these three extreme points , we refit the log-transformed model. The residuals are now more symmetrically distributed (Min = -1.84, Max = 1.80, Median ≈ 0), and the residual standard error decreased to 0.625, indicating improved model fit.</p>
 <p>Several predictors remain significant, including Depression, Primary streaming service, While working, Instrumentalist, Composer, Insomnia, and select favorite genres, with interactions between Depression and streaming platform also holding. The adjusted <span class="math inline">\(R^2\)</span> increased to 0.220, showing that the log transformation and removal of influential points slightly improved the explained variance.</p>
 <div class="cell" data-fig.margin="false">
 <div class="cell-output-display">
-<table class="table caption-top table-sm table-striped small" data-quarto-postprocess="true">
-<caption>Table 1. Model comparison for RQ1 using adjusted R-squared and AIC.</caption>
+<table class="table" style="font-size: 9px; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+Table 3. Model comparison for RQ1 using adjusted R-squared and AIC.
+</caption>
 <thead>
-<tr class="header">
-<th style="text-align: left;" data-quarto-table-cell-role="th">Model</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">Adj_R2</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">AIC</th>
+<tr>
+<th style="text-align:left;">
+Model
+</th>
+<th style="text-align:right;">
+Adj_R2
+</th>
+<th style="text-align:right;">
+AIC
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td style="text-align: left;">Raw model</td>
-<td style="text-align: right;">0.1938095</td>
-<td style="text-align: right;">3173.908</td>
+<tr>
+<td style="text-align:left;">
+Raw model
+</td>
+<td style="text-align:right;">
+0.1938095
+</td>
+<td style="text-align:right;">
+3173.908
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Reduced model</td>
-<td style="text-align: right;">0.1579996</td>
-<td style="text-align: right;">3158.997</td>
+<tr>
+<td style="text-align:left;">
+Reduced model
+</td>
+<td style="text-align:right;">
+0.1579996
+</td>
+<td style="text-align:right;">
+3158.997
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">Log transform</td>
-<td style="text-align: right;">0.2324734</td>
-<td style="text-align: right;">1309.501</td>
+<tr>
+<td style="text-align:left;">
+Log transform
+</td>
+<td style="text-align:right;">
+0.2324734
+</td>
+<td style="text-align:right;">
+1309.501
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Log transform + remove outliers</td>
-<td style="text-align: right;">0.2198529</td>
-<td style="text-align: right;">1260.190</td>
+<tr>
+<td style="text-align:left;">
+Log transform + remove outliers
+</td>
+<td style="text-align:right;">
+0.2198529
+</td>
+<td style="text-align:right;">
+1260.190
+</td>
 </tr>
 </tbody>
 </table>
-
-
+<p>Table 3: Model comparison for RQ1 using adjusted R-squared and AIC.</p>
 </div>
 </div>
-<p>Table 1 presents a comparison of the models for RQ1 using adjusted <span class="math inline">\(R^2\)</span> and AIC. The raw model explained about <span class="math inline">\(19\%\)</span> of the variance but had a high AIC, reflecting poorer fit. Reducing predictors slightly lowered adjusted <span class="math inline">\(R^2\)</span> but improved AIC marginally. Applying the log transformation improved both adjusted <span class="math inline">\(R^2\)</span> (to 0.232) and AIC (to 1309), indicating better model performance. Finally, removing the three outliers slightly reduced adjusted <span class="math inline">\(R^2\)</span> to 0.220 but further lowered AIC to 1260, suggesting a more parsimonious and stable model. Overall, the log-transformed model with outliers removed balances interpretability, fit, and the influence of extreme points, and became our primary model for question 1.</p>
+<p>Table 3 presents a comparison of the models for RQ1 using adjusted <span class="math inline">\(R^2\)</span> and AIC. The raw model explained about <span class="math inline">\(19\%\)</span> of the variance but had a high AIC, reflecting poorer fit. Reducing predictors slightly lowered adjusted <span class="math inline">\(R^2\)</span> but improved AIC marginally. Applying the log transformation improved both adjusted <span class="math inline">\(R^2\)</span> (to 0.232) and AIC (to 1309), indicating better model performance. Finally, removing the three outliers slightly reduced adjusted <span class="math inline">\(R^2\)</span> to 0.220 but further lowered AIC to 1260, suggesting a more parsimonious and stable model. Overall, the log-transformed model with outliers removed balances interpretability, fit, and the influence of extreme points, and became our primary model for question 1.</p>
 <div class="cell">
 <div class="cell-output-display">
-<table class="table caption-top table-sm table-striped small" data-quarto-postprocess="true">
-<caption>Table 2: Final linear regression model for RQ1 (log-hours with influential points removed).</caption>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Table 4: Final linear regression model for RQ1 (log-hours with influential points removed).
+</caption>
 <thead>
-<tr class="header">
-<th style="text-align: left;" data-quarto-table-cell-role="th">Term</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">Estimate</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">Std Error</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">statistic</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">p-value</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">2.5% CI</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">97.5% CI</th>
+<tr>
+<th style="text-align:left;">
+Term
+</th>
+<th style="text-align:right;">
+Estimate
+</th>
+<th style="text-align:right;">
+Std Error
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:left;">
+p-value
+</th>
+<th style="text-align:right;">
+2.5% CI
+</th>
+<th style="text-align:right;">
+97.5% CI
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td style="text-align: left;">\(Intercept\)</td>
-<td style="text-align: right;">-0.133</td>
-<td style="text-align: right;">0.237</td>
-<td style="text-align: right;">-0.5611308</td>
-<td style="text-align: left;">0.575</td>
-<td style="text-align: right;">-0.597</td>
-<td style="text-align: right;">0.332</td>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+-0.133
+</td>
+<td style="text-align:right;">
+0.237
+</td>
+<td style="text-align:right;">
+-0.5611308
+</td>
+<td style="text-align:left;">
+0.575
+</td>
+<td style="text-align:right;">
+-0.597
+</td>
+<td style="text-align:right;">
+0.332
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Depression</td>
-<td style="text-align: right;">0.106</td>
-<td style="text-align: right;">0.032</td>
-<td style="text-align: right;">3.2931047</td>
-<td style="text-align: left;">0.001</td>
-<td style="text-align: right;">0.043</td>
-<td style="text-align: right;">0.169</td>
+<tr>
+<td style="text-align:left;">
+Depression
+</td>
+<td style="text-align:right;">
+0.106
+</td>
+<td style="text-align:right;">
+0.032
+</td>
+<td style="text-align:right;">
+3.2931047
+</td>
+<td style="text-align:left;">
+0.001
+</td>
+<td style="text-align:right;">
+0.043
+</td>
+<td style="text-align:right;">
+0.169
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">Primary.streaming.serviceOther streaming service</td>
-<td style="text-align: right;">0.696</td>
-<td style="text-align: right;">0.245</td>
-<td style="text-align: right;">2.8455457</td>
-<td style="text-align: left;">0.005</td>
-<td style="text-align: right;">0.216</td>
-<td style="text-align: right;">1.177</td>
+<tr>
+<td style="text-align:left;">
+Primary.streaming.serviceOther streaming service
+</td>
+<td style="text-align:right;">
+0.696
+</td>
+<td style="text-align:right;">
+0.245
+</td>
+<td style="text-align:right;">
+2.8455457
+</td>
+<td style="text-align:left;">
+0.005
+</td>
+<td style="text-align:right;">
+0.216
+</td>
+<td style="text-align:right;">
+1.177
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Primary.streaming.servicePandora</td>
-<td style="text-align: right;">0.776</td>
-<td style="text-align: right;">0.355</td>
-<td style="text-align: right;">2.1878891</td>
-<td style="text-align: left;">0.029</td>
-<td style="text-align: right;">0.079</td>
-<td style="text-align: right;">1.472</td>
+<tr>
+<td style="text-align:left;">
+Primary.streaming.servicePandora
+</td>
+<td style="text-align:right;">
+0.776
+</td>
+<td style="text-align:right;">
+0.355
+</td>
+<td style="text-align:right;">
+2.1878891
+</td>
+<td style="text-align:left;">
+0.029
+</td>
+<td style="text-align:right;">
+0.079
+</td>
+<td style="text-align:right;">
+1.472
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">Primary.streaming.serviceSpotify</td>
-<td style="text-align: right;">0.577</td>
-<td style="text-align: right;">0.197</td>
-<td style="text-align: right;">2.9249186</td>
-<td style="text-align: left;">0.004</td>
-<td style="text-align: right;">0.189</td>
-<td style="text-align: right;">0.964</td>
+<tr>
+<td style="text-align:left;">
+Primary.streaming.serviceSpotify
+</td>
+<td style="text-align:right;">
+0.577
+</td>
+<td style="text-align:right;">
+0.197
+</td>
+<td style="text-align:right;">
+2.9249186
+</td>
+<td style="text-align:left;">
+0.004
+</td>
+<td style="text-align:right;">
+0.189
+</td>
+<td style="text-align:right;">
+0.964
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Primary.streaming.serviceYouTube Music</td>
-<td style="text-align: right;">0.625</td>
-<td style="text-align: right;">0.216</td>
-<td style="text-align: right;">2.8988409</td>
-<td style="text-align: left;">0.004</td>
-<td style="text-align: right;">0.202</td>
-<td style="text-align: right;">1.048</td>
+<tr>
+<td style="text-align:left;">
+Primary.streaming.serviceYouTube Music
+</td>
+<td style="text-align:right;">
+0.625
+</td>
+<td style="text-align:right;">
+0.216
+</td>
+<td style="text-align:right;">
+2.8988409
+</td>
+<td style="text-align:left;">
+0.004
+</td>
+<td style="text-align:right;">
+0.202
+</td>
+<td style="text-align:right;">
+1.048
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">Age</td>
-<td style="text-align: right;">-0.005</td>
-<td style="text-align: right;">0.003</td>
-<td style="text-align: right;">-2.0325505</td>
-<td style="text-align: left;">0.043</td>
-<td style="text-align: right;">-0.010</td>
-<td style="text-align: right;">0.000</td>
+<tr>
+<td style="text-align:left;">
+Age
+</td>
+<td style="text-align:right;">
+-0.005
+</td>
+<td style="text-align:right;">
+0.003
+</td>
+<td style="text-align:right;">
+-2.0325505
+</td>
+<td style="text-align:left;">
+0.043
+</td>
+<td style="text-align:right;">
+-0.010
+</td>
+<td style="text-align:right;">
+0.000
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">While.workingYes</td>
-<td style="text-align: right;">0.605</td>
-<td style="text-align: right;">0.065</td>
-<td style="text-align: right;">9.3626702</td>
-<td style="text-align: left;">&lt;0.001</td>
-<td style="text-align: right;">0.478</td>
-<td style="text-align: right;">0.732</td>
+<tr>
+<td style="text-align:left;">
+While.workingYes
+</td>
+<td style="text-align:right;">
+0.605
+</td>
+<td style="text-align:right;">
+0.065
+</td>
+<td style="text-align:right;">
+9.3626702
+</td>
+<td style="text-align:left;">
+&lt;0.001
+</td>
+<td style="text-align:right;">
+0.478
+</td>
+<td style="text-align:right;">
+0.732
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">InstrumentalistYes</td>
-<td style="text-align: right;">-0.160</td>
-<td style="text-align: right;">0.063</td>
-<td style="text-align: right;">-2.5549132</td>
-<td style="text-align: left;">0.011</td>
-<td style="text-align: right;">-0.283</td>
-<td style="text-align: right;">-0.037</td>
+<tr>
+<td style="text-align:left;">
+InstrumentalistYes
+</td>
+<td style="text-align:right;">
+-0.160
+</td>
+<td style="text-align:right;">
+0.063
+</td>
+<td style="text-align:right;">
+-2.5549132
+</td>
+<td style="text-align:left;">
+0.011
+</td>
+<td style="text-align:right;">
+-0.283
+</td>
+<td style="text-align:right;">
+-0.037
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">ComposerYes</td>
-<td style="text-align: right;">0.152</td>
-<td style="text-align: right;">0.075</td>
-<td style="text-align: right;">2.0181945</td>
-<td style="text-align: left;">0.044</td>
-<td style="text-align: right;">0.004</td>
-<td style="text-align: right;">0.300</td>
+<tr>
+<td style="text-align:left;">
+ComposerYes
+</td>
+<td style="text-align:right;">
+0.152
+</td>
+<td style="text-align:right;">
+0.075
+</td>
+<td style="text-align:right;">
+2.0181945
+</td>
+<td style="text-align:left;">
+0.044
+</td>
+<td style="text-align:right;">
+0.004
+</td>
+<td style="text-align:right;">
+0.300
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">ExploratoryYes</td>
-<td style="text-align: right;">0.072</td>
-<td style="text-align: right;">0.061</td>
-<td style="text-align: right;">1.1673916</td>
-<td style="text-align: left;">0.244</td>
-<td style="text-align: right;">-0.049</td>
-<td style="text-align: right;">0.192</td>
+<tr>
+<td style="text-align:left;">
+ExploratoryYes
+</td>
+<td style="text-align:right;">
+0.072
+</td>
+<td style="text-align:right;">
+0.061
+</td>
+<td style="text-align:right;">
+1.1673916
+</td>
+<td style="text-align:left;">
+0.244
+</td>
+<td style="text-align:right;">
+-0.049
+</td>
+<td style="text-align:right;">
+0.192
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Foreign.languagesYes</td>
-<td style="text-align: right;">0.060</td>
-<td style="text-align: right;">0.054</td>
-<td style="text-align: right;">1.1261125</td>
-<td style="text-align: left;">0.261</td>
-<td style="text-align: right;">-0.045</td>
-<td style="text-align: right;">0.165</td>
+<tr>
+<td style="text-align:left;">
+Foreign.languagesYes
+</td>
+<td style="text-align:right;">
+0.060
+</td>
+<td style="text-align:right;">
+0.054
+</td>
+<td style="text-align:right;">
+1.1261125
+</td>
+<td style="text-align:left;">
+0.261
+</td>
+<td style="text-align:right;">
+-0.045
+</td>
+<td style="text-align:right;">
+0.165
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">Anxiety</td>
-<td style="text-align: right;">0.000</td>
-<td style="text-align: right;">0.011</td>
-<td style="text-align: right;">0.0427548</td>
-<td style="text-align: left;">0.966</td>
-<td style="text-align: right;">-0.022</td>
-<td style="text-align: right;">0.023</td>
+<tr>
+<td style="text-align:left;">
+Anxiety
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+<td style="text-align:right;">
+0.011
+</td>
+<td style="text-align:right;">
+0.0427548
+</td>
+<td style="text-align:left;">
+0.966
+</td>
+<td style="text-align:right;">
+-0.022
+</td>
+<td style="text-align:right;">
+0.023
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Insomnia</td>
-<td style="text-align: right;">0.026</td>
-<td style="text-align: right;">0.009</td>
-<td style="text-align: right;">2.8836975</td>
-<td style="text-align: left;">0.004</td>
-<td style="text-align: right;">0.008</td>
-<td style="text-align: right;">0.044</td>
+<tr>
+<td style="text-align:left;">
+Insomnia
+</td>
+<td style="text-align:right;">
+0.026
+</td>
+<td style="text-align:right;">
+0.009
+</td>
+<td style="text-align:right;">
+2.8836975
+</td>
+<td style="text-align:left;">
+0.004
+</td>
+<td style="text-align:right;">
+0.008
+</td>
+<td style="text-align:right;">
+0.044
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">OCD</td>
-<td style="text-align: right;">0.019</td>
-<td style="text-align: right;">0.010</td>
-<td style="text-align: right;">1.9530351</td>
-<td style="text-align: left;">0.051</td>
-<td style="text-align: right;">0.000</td>
-<td style="text-align: right;">0.037</td>
+<tr>
+<td style="text-align:left;">
+OCD
+</td>
+<td style="text-align:right;">
+0.019
+</td>
+<td style="text-align:right;">
+0.010
+</td>
+<td style="text-align:right;">
+1.9530351
+</td>
+<td style="text-align:left;">
+0.051
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+<td style="text-align:right;">
+0.037
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Fav.genreCountry</td>
-<td style="text-align: right;">0.149</td>
-<td style="text-align: right;">0.168</td>
-<td style="text-align: right;">0.8892265</td>
-<td style="text-align: left;">0.374</td>
-<td style="text-align: right;">-0.180</td>
-<td style="text-align: right;">0.479</td>
+<tr>
+<td style="text-align:left;">
+Fav.genreCountry
+</td>
+<td style="text-align:right;">
+0.149
+</td>
+<td style="text-align:right;">
+0.168
+</td>
+<td style="text-align:right;">
+0.8892265
+</td>
+<td style="text-align:left;">
+0.374
+</td>
+<td style="text-align:right;">
+-0.180
+</td>
+<td style="text-align:right;">
+0.479
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">Fav.genreEDM</td>
-<td style="text-align: right;">0.248</td>
-<td style="text-align: right;">0.149</td>
-<td style="text-align: right;">1.6591055</td>
-<td style="text-align: left;">0.098</td>
-<td style="text-align: right;">-0.046</td>
-<td style="text-align: right;">0.542</td>
+<tr>
+<td style="text-align:left;">
+Fav.genreEDM
+</td>
+<td style="text-align:right;">
+0.248
+</td>
+<td style="text-align:right;">
+0.149
+</td>
+<td style="text-align:right;">
+1.6591055
+</td>
+<td style="text-align:left;">
+0.098
+</td>
+<td style="text-align:right;">
+-0.046
+</td>
+<td style="text-align:right;">
+0.542
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Fav.genreFolk</td>
-<td style="text-align: right;">0.094</td>
-<td style="text-align: right;">0.161</td>
-<td style="text-align: right;">0.5845425</td>
-<td style="text-align: left;">0.559</td>
-<td style="text-align: right;">-0.223</td>
-<td style="text-align: right;">0.411</td>
+<tr>
+<td style="text-align:left;">
+Fav.genreFolk
+</td>
+<td style="text-align:right;">
+0.094
+</td>
+<td style="text-align:right;">
+0.161
+</td>
+<td style="text-align:right;">
+0.5845425
+</td>
+<td style="text-align:left;">
+0.559
+</td>
+<td style="text-align:right;">
+-0.223
+</td>
+<td style="text-align:right;">
+0.411
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">Fav.genreGospel</td>
-<td style="text-align: right;">0.060</td>
-<td style="text-align: right;">0.317</td>
-<td style="text-align: right;">0.1889684</td>
-<td style="text-align: left;">0.850</td>
-<td style="text-align: right;">-0.562</td>
-<td style="text-align: right;">0.682</td>
+<tr>
+<td style="text-align:left;">
+Fav.genreGospel
+</td>
+<td style="text-align:right;">
+0.060
+</td>
+<td style="text-align:right;">
+0.317
+</td>
+<td style="text-align:right;">
+0.1889684
+</td>
+<td style="text-align:left;">
+0.850
+</td>
+<td style="text-align:right;">
+-0.562
+</td>
+<td style="text-align:right;">
+0.682
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Fav.genreHip hop</td>
-<td style="text-align: right;">0.134</td>
-<td style="text-align: right;">0.153</td>
-<td style="text-align: right;">0.8818361</td>
-<td style="text-align: left;">0.378</td>
-<td style="text-align: right;">-0.165</td>
-<td style="text-align: right;">0.434</td>
+<tr>
+<td style="text-align:left;">
+Fav.genreHip hop
+</td>
+<td style="text-align:right;">
+0.134
+</td>
+<td style="text-align:right;">
+0.153
+</td>
+<td style="text-align:right;">
+0.8818361
+</td>
+<td style="text-align:left;">
+0.378
+</td>
+<td style="text-align:right;">
+-0.165
+</td>
+<td style="text-align:right;">
+0.434
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">Fav.genreJazz</td>
-<td style="text-align: right;">0.403</td>
-<td style="text-align: right;">0.175</td>
-<td style="text-align: right;">2.3074706</td>
-<td style="text-align: left;">0.021</td>
-<td style="text-align: right;">0.060</td>
-<td style="text-align: right;">0.747</td>
+<tr>
+<td style="text-align:left;">
+Fav.genreJazz
+</td>
+<td style="text-align:right;">
+0.403
+</td>
+<td style="text-align:right;">
+0.175
+</td>
+<td style="text-align:right;">
+2.3074706
+</td>
+<td style="text-align:left;">
+0.021
+</td>
+<td style="text-align:right;">
+0.060
+</td>
+<td style="text-align:right;">
+0.747
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Fav.genreK pop</td>
-<td style="text-align: right;">-0.072</td>
-<td style="text-align: right;">0.175</td>
-<td style="text-align: right;">-0.4120588</td>
-<td style="text-align: left;">0.680</td>
-<td style="text-align: right;">-0.417</td>
-<td style="text-align: right;">0.272</td>
+<tr>
+<td style="text-align:left;">
+Fav.genreK pop
+</td>
+<td style="text-align:right;">
+-0.072
+</td>
+<td style="text-align:right;">
+0.175
+</td>
+<td style="text-align:right;">
+-0.4120588
+</td>
+<td style="text-align:left;">
+0.680
+</td>
+<td style="text-align:right;">
+-0.417
+</td>
+<td style="text-align:right;">
+0.272
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">Fav.genreLatin</td>
-<td style="text-align: right;">0.954</td>
-<td style="text-align: right;">0.457</td>
-<td style="text-align: right;">2.0872769</td>
-<td style="text-align: left;">0.037</td>
-<td style="text-align: right;">0.056</td>
-<td style="text-align: right;">1.851</td>
+<tr>
+<td style="text-align:left;">
+Fav.genreLatin
+</td>
+<td style="text-align:right;">
+0.954
+</td>
+<td style="text-align:right;">
+0.457
+</td>
+<td style="text-align:right;">
+2.0872769
+</td>
+<td style="text-align:left;">
+0.037
+</td>
+<td style="text-align:right;">
+0.056
+</td>
+<td style="text-align:right;">
+1.851
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Fav.genreLofi</td>
-<td style="text-align: right;">0.060</td>
-<td style="text-align: right;">0.227</td>
-<td style="text-align: right;">0.2636701</td>
-<td style="text-align: left;">0.792</td>
-<td style="text-align: right;">-0.386</td>
-<td style="text-align: right;">0.506</td>
+<tr>
+<td style="text-align:left;">
+Fav.genreLofi
+</td>
+<td style="text-align:right;">
+0.060
+</td>
+<td style="text-align:right;">
+0.227
+</td>
+<td style="text-align:right;">
+0.2636701
+</td>
+<td style="text-align:left;">
+0.792
+</td>
+<td style="text-align:right;">
+-0.386
+</td>
+<td style="text-align:right;">
+0.506
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">Fav.genreMetal</td>
-<td style="text-align: right;">0.132</td>
-<td style="text-align: right;">0.126</td>
-<td style="text-align: right;">1.0502311</td>
-<td style="text-align: left;">0.294</td>
-<td style="text-align: right;">-0.115</td>
-<td style="text-align: right;">0.378</td>
+<tr>
+<td style="text-align:left;">
+Fav.genreMetal
+</td>
+<td style="text-align:right;">
+0.132
+</td>
+<td style="text-align:right;">
+0.126
+</td>
+<td style="text-align:right;">
+1.0502311
+</td>
+<td style="text-align:left;">
+0.294
+</td>
+<td style="text-align:right;">
+-0.115
+</td>
+<td style="text-align:right;">
+0.378
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Fav.genrePop</td>
-<td style="text-align: right;">-0.117</td>
-<td style="text-align: right;">0.120</td>
-<td style="text-align: right;">-0.9754466</td>
-<td style="text-align: left;">0.330</td>
-<td style="text-align: right;">-0.354</td>
-<td style="text-align: right;">0.119</td>
+<tr>
+<td style="text-align:left;">
+Fav.genrePop
+</td>
+<td style="text-align:right;">
+-0.117
+</td>
+<td style="text-align:right;">
+0.120
+</td>
+<td style="text-align:right;">
+-0.9754466
+</td>
+<td style="text-align:left;">
+0.330
+</td>
+<td style="text-align:right;">
+-0.354
+</td>
+<td style="text-align:right;">
+0.119
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">Fav.genreR and B</td>
-<td style="text-align: right;">0.128</td>
-<td style="text-align: right;">0.153</td>
-<td style="text-align: right;">0.8348958</td>
-<td style="text-align: left;">0.404</td>
-<td style="text-align: right;">-0.173</td>
-<td style="text-align: right;">0.429</td>
+<tr>
+<td style="text-align:left;">
+Fav.genreR and B
+</td>
+<td style="text-align:right;">
+0.128
+</td>
+<td style="text-align:right;">
+0.153
+</td>
+<td style="text-align:right;">
+0.8348958
+</td>
+<td style="text-align:left;">
+0.404
+</td>
+<td style="text-align:right;">
+-0.173
+</td>
+<td style="text-align:right;">
+0.429
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Fav.genreRap</td>
-<td style="text-align: right;">0.283</td>
-<td style="text-align: right;">0.176</td>
-<td style="text-align: right;">1.6140922</td>
-<td style="text-align: left;">0.107</td>
-<td style="text-align: right;">-0.061</td>
-<td style="text-align: right;">0.628</td>
+<tr>
+<td style="text-align:left;">
+Fav.genreRap
+</td>
+<td style="text-align:right;">
+0.283
+</td>
+<td style="text-align:right;">
+0.176
+</td>
+<td style="text-align:right;">
+1.6140922
+</td>
+<td style="text-align:left;">
+0.107
+</td>
+<td style="text-align:right;">
+-0.061
+</td>
+<td style="text-align:right;">
+0.628
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">Fav.genreRock</td>
-<td style="text-align: right;">0.097</td>
-<td style="text-align: right;">0.115</td>
-<td style="text-align: right;">0.8419446</td>
-<td style="text-align: left;">0.400</td>
-<td style="text-align: right;">-0.129</td>
-<td style="text-align: right;">0.322</td>
+<tr>
+<td style="text-align:left;">
+Fav.genreRock
+</td>
+<td style="text-align:right;">
+0.097
+</td>
+<td style="text-align:right;">
+0.115
+</td>
+<td style="text-align:right;">
+0.8419446
+</td>
+<td style="text-align:left;">
+0.400
+</td>
+<td style="text-align:right;">
+-0.129
+</td>
+<td style="text-align:right;">
+0.322
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Fav.genreVideo game music</td>
-<td style="text-align: right;">-0.266</td>
-<td style="text-align: right;">0.156</td>
-<td style="text-align: right;">-1.7049786</td>
-<td style="text-align: left;">0.089</td>
-<td style="text-align: right;">-0.573</td>
-<td style="text-align: right;">0.040</td>
+<tr>
+<td style="text-align:left;">
+Fav.genreVideo game music
+</td>
+<td style="text-align:right;">
+-0.266
+</td>
+<td style="text-align:right;">
+0.156
+</td>
+<td style="text-align:right;">
+-1.7049786
+</td>
+<td style="text-align:left;">
+0.089
+</td>
+<td style="text-align:right;">
+-0.573
+</td>
+<td style="text-align:right;">
+0.040
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">Music.effectsNo effect</td>
-<td style="text-align: right;">0.017</td>
-<td style="text-align: right;">0.063</td>
-<td style="text-align: right;">0.2704797</td>
-<td style="text-align: left;">0.787</td>
-<td style="text-align: right;">-0.106</td>
-<td style="text-align: right;">0.140</td>
+<tr>
+<td style="text-align:left;">
+Music.effectsNo effect
+</td>
+<td style="text-align:right;">
+0.017
+</td>
+<td style="text-align:right;">
+0.063
+</td>
+<td style="text-align:right;">
+0.2704797
+</td>
+<td style="text-align:left;">
+0.787
+</td>
+<td style="text-align:right;">
+-0.106
+</td>
+<td style="text-align:right;">
+0.140
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Music.effectsWorsen</td>
-<td style="text-align: right;">-0.106</td>
-<td style="text-align: right;">0.175</td>
-<td style="text-align: right;">-0.6037773</td>
-<td style="text-align: left;">0.546</td>
-<td style="text-align: right;">-0.450</td>
-<td style="text-align: right;">0.238</td>
+<tr>
+<td style="text-align:left;">
+Music.effectsWorsen
+</td>
+<td style="text-align:right;">
+-0.106
+</td>
+<td style="text-align:right;">
+0.175
+</td>
+<td style="text-align:right;">
+-0.6037773
+</td>
+<td style="text-align:left;">
+0.546
+</td>
+<td style="text-align:right;">
+-0.450
+</td>
+<td style="text-align:right;">
+0.238
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">Depression:Primary.streaming.serviceOther streaming service</td>
-<td style="text-align: right;">-0.165</td>
-<td style="text-align: right;">0.043</td>
-<td style="text-align: right;">-3.8441528</td>
-<td style="text-align: left;">&lt;0.001</td>
-<td style="text-align: right;">-0.250</td>
-<td style="text-align: right;">-0.081</td>
+<tr>
+<td style="text-align:left;">
+Depression:Primary.streaming.serviceOther streaming service
+</td>
+<td style="text-align:right;">
+-0.165
+</td>
+<td style="text-align:right;">
+0.043
+</td>
+<td style="text-align:right;">
+-3.8441528
+</td>
+<td style="text-align:left;">
+&lt;0.001
+</td>
+<td style="text-align:right;">
+-0.250
+</td>
+<td style="text-align:right;">
+-0.081
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Depression:Primary.streaming.servicePandora</td>
-<td style="text-align: right;">-0.207</td>
-<td style="text-align: right;">0.067</td>
-<td style="text-align: right;">-3.1180379</td>
-<td style="text-align: left;">0.002</td>
-<td style="text-align: right;">-0.338</td>
-<td style="text-align: right;">-0.077</td>
+<tr>
+<td style="text-align:left;">
+Depression:Primary.streaming.servicePandora
+</td>
+<td style="text-align:right;">
+-0.207
+</td>
+<td style="text-align:right;">
+0.067
+</td>
+<td style="text-align:right;">
+-3.1180379
+</td>
+<td style="text-align:left;">
+0.002
+</td>
+<td style="text-align:right;">
+-0.338
+</td>
+<td style="text-align:right;">
+-0.077
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">Depression:Primary.streaming.serviceSpotify</td>
-<td style="text-align: right;">-0.103</td>
-<td style="text-align: right;">0.033</td>
-<td style="text-align: right;">-3.0904123</td>
-<td style="text-align: left;">0.002</td>
-<td style="text-align: right;">-0.169</td>
-<td style="text-align: right;">-0.038</td>
+<tr>
+<td style="text-align:left;">
+Depression:Primary.streaming.serviceSpotify
+</td>
+<td style="text-align:right;">
+-0.103
+</td>
+<td style="text-align:right;">
+0.033
+</td>
+<td style="text-align:right;">
+-3.0904123
+</td>
+<td style="text-align:left;">
+0.002
+</td>
+<td style="text-align:right;">
+-0.169
+</td>
+<td style="text-align:right;">
+-0.038
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Depression:Primary.streaming.serviceYouTube Music</td>
-<td style="text-align: right;">-0.140</td>
-<td style="text-align: right;">0.038</td>
-<td style="text-align: right;">-3.6613614</td>
-<td style="text-align: left;">&lt;0.001</td>
-<td style="text-align: right;">-0.215</td>
-<td style="text-align: right;">-0.065</td>
+<tr>
+<td style="text-align:left;">
+Depression:Primary.streaming.serviceYouTube Music
+</td>
+<td style="text-align:right;">
+-0.140
+</td>
+<td style="text-align:right;">
+0.038
+</td>
+<td style="text-align:right;">
+-3.6613614
+</td>
+<td style="text-align:left;">
+&lt;0.001
+</td>
+<td style="text-align:right;">
+-0.215
+</td>
+<td style="text-align:right;">
+-0.065
+</td>
 </tr>
 </tbody>
 </table>
-
-
+<p>Table 4: Final linear regression model for RQ1 (log-hours with influential points removed).</p>
 </div>
 </div>
-<p>Table 2 shows that depression is associated with higher listening time (<span class="math inline">\(\hat{\beta} = 0.106, p = 0.001\)</span>), but this effect is reduced for users of major streaming platforms, as indicated by the negative interaction terms (e.g., Spotify: <span class="math inline">\(\hat{\beta} = -0.103, p = 0.002\)</span>; YouTube Music: <span class="math inline">\(\hat{\beta} = -0.140, p &lt; 0.001\)</span>). Several platforms also have positive main effects: Spotify (<span class="math inline">\(\hat{\beta} = 0.577, p = 0.004\)</span>), YouTube Music (<span class="math inline">\(\hat{\beta} = 0.625, p = 0.004\)</span>), Pandora (<span class="math inline">\(\hat{\beta} = 0.776, p = 0.029\)</span>), and Other services (<span class="math inline">\(\hat{\beta} = 0.696, p = 0.005\)</span>). All of these predict higher log-hours relative to the baseline streaming category, Apple Music.</p>
+<p>Table 4 shows that depression is associated with higher listening time (<span class="math inline">\(\hat{\beta} = 0.106, p = 0.001\)</span>), but this effect is reduced for users of major streaming platforms, as indicated by the negative interaction terms (e.g., Spotify: <span class="math inline">\(\hat{\beta} = -0.103, p = 0.002\)</span>; YouTube Music: <span class="math inline">\(\hat{\beta} = -0.140, p &lt; 0.001\)</span>). Several platforms also have positive main effects: Spotify (<span class="math inline">\(\hat{\beta} = 0.577, p = 0.004\)</span>), YouTube Music (<span class="math inline">\(\hat{\beta} = 0.625, p = 0.004\)</span>), Pandora (<span class="math inline">\(\hat{\beta} = 0.776, p = 0.029\)</span>), and Other services (<span class="math inline">\(\hat{\beta} = 0.696, p = 0.005\)</span>). All of these predict higher log-hours relative to the baseline streaming category, Apple Music.</p>
 <p>Listening while working has the largest coefficient in the model (<span class="math inline">\(\hat{\beta} = 0.605, p &lt; 0.001\)</span>), indicating substantially higher daily listening. Additional significant predictors include insomnia (<span class="math inline">\(\hat{\beta} = 0.026, p = 0.004\)</span>), being a composer (<span class="math inline">\(\hat{\beta} = 0.152, p = 0.044\)</span>), being an instrumentalist (<span class="math inline">\(\hat{\beta} = -0.160, p = 0.011\)</span>), age (<span class="math inline">\(\hat{\beta} = -0.005, p = 0.043\)</span>), and two favorite genres: Jazz (<span class="math inline">\(\hat{\beta} = 0.403, p = 0.021\)</span>) and Latin (<span class="math inline">\(\hat{\beta} = 0.954, p = 0.037\)</span>). Most remaining predictors have confidence intervals crossing zero, indicating no detectable association with listening time.</p>
 </section>
 <section id="research-question-2" class="level2">
@@ -815,359 +1615,824 @@ window.Quarto = {
 <p>For RQ2, we modeled a binary outcome indicating “high depression” (depression score ≥ 6) using logistic regression, with daily listening time (Hours per day) as our primary predictor.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div>
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="final_report_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="384"></p>
+<p><img src="final_report_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="384"></p>
+<figcaption>Figure 6: Partial Residuals Plot for Hours.per.day.</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>Because logistic regression assumes that continuous predictors have a linear relationship with the log–odds of the outcome, we began by checking this assumption for Hours per day using a component–plus–residual (partial residual) plot. This plot did not reveal strong curvature or systematic departures from linearity, as the pink line was fitted very tightly to the blue, so we retained Hours per day in linear form.</p>
+<p>Because logistic regression assumes that continuous predictors have a linear relationship with the log–odds of the outcome, we began by checking this assumption for Hours per day using a component–plus–residual (partial residual) plot (Figure 6). This plot did not reveal strong curvature or systematic departures from linearity, as the pink line was fitted very tightly to the blue, so we retained Hours per day in linear form.</p>
 <p>We then examined several additional diagnostics. First, we used VIFs to assess multicollinearity among the predictors and did not detect problematic levels of collinearity. Second, we evaluated overall model fit with a Hosmer–Lemeshow goodness–of–fit test, which revealed a p-value greater than 0.05 (0.1641), meaning the test indicates no substantial issue with the fitting of the model.</p>
 <p>We calculated leverage values using the hat matrix and identified several observations above the common threshold of <span class="math inline">\(2\bar{h}\)</span>. However, high leverage alone is not sufficient evidence to remove points in logistic regression, particularly in models with many categorical predictors. Because these cases did not show extreme Pearson residuals either, we retained all observations for the final model.</p>
 <div class="cell">
 <div class="cell-output-display">
-<table class="table caption-top table-sm table-striped small" data-quarto-postprocess="true">
-<caption>Table 3: Confusion Matrix and Classification Metrics</caption>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Table 5: Confusion Matrix and Classification Metrics
+</caption>
 <thead>
-<tr class="header">
-<th style="text-align: right;" data-quarto-table-cell-role="th">TN</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">FP</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">FN</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">TP</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">Accuracy</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">Kappa</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">Sensitivity</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">Specificity</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">Precision</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">Recall</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">F1</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">Balanced Accuracy</th>
+<tr>
+<th style="text-align:right;">
+TN
+</th>
+<th style="text-align:right;">
+FP
+</th>
+<th style="text-align:right;">
+FN
+</th>
+<th style="text-align:right;">
+TP
+</th>
+<th style="text-align:right;">
+Accuracy
+</th>
+<th style="text-align:right;">
+Kappa
+</th>
+<th style="text-align:right;">
+Sensitivity
+</th>
+<th style="text-align:right;">
+Specificity
+</th>
+<th style="text-align:right;">
+Precision
+</th>
+<th style="text-align:right;">
+Recall
+</th>
+<th style="text-align:right;">
+F1
+</th>
+<th style="text-align:right;">
+Balanced Accuracy
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td style="text-align: right;">277</td>
-<td style="text-align: right;">95</td>
-<td style="text-align: right;">103</td>
-<td style="text-align: right;">243</td>
-<td style="text-align: right;">0.724</td>
-<td style="text-align: right;">0.447</td>
-<td style="text-align: right;">0.719</td>
-<td style="text-align: right;">0.729</td>
-<td style="text-align: right;">0.702</td>
-<td style="text-align: right;">0.719</td>
-<td style="text-align: right;">0.711</td>
-<td style="text-align: right;">0.724</td>
+<tr>
+<td style="text-align:right;">
+277
+</td>
+<td style="text-align:right;">
+95
+</td>
+<td style="text-align:right;">
+103
+</td>
+<td style="text-align:right;">
+243
+</td>
+<td style="text-align:right;">
+0.724
+</td>
+<td style="text-align:right;">
+0.447
+</td>
+<td style="text-align:right;">
+0.719
+</td>
+<td style="text-align:right;">
+0.729
+</td>
+<td style="text-align:right;">
+0.702
+</td>
+<td style="text-align:right;">
+0.719
+</td>
+<td style="text-align:right;">
+0.711
+</td>
+<td style="text-align:right;">
+0.724
+</td>
 </tr>
 </tbody>
 </table>
-
-
+<p>Table 5: Confusion Matrix and Classification Metrics, Threshold = 0.5.</p>
 </div>
 </div>
 <p>To assess predictive performance, we computed an initial confusion matrix (Table 3) based on the conventional 0.5 probability threshold. The initial confusion matrix showed 277 true negatives, 243 true positives, 95 false negatives, and 103 false positives, yielding an overall accuracy of 0.724. Sensitivity was 0.719, meaning the model correctly identified about 72% of participants with high depression, while specificity was 0.729, indicating a similar rate of correct classification among low-depression participants. The model’s precision (0.702) and F1 score (0.711) suggested moderate predictive performance but also revealed room for improvement, particularly in reducing false negatives.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div>
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="final_report_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="384"></p>
+<p><img src="final_report_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="384"></p>
+<figcaption>Figure 7: ROC Curve.</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>To further assess model performance, we examined the ROC curve and computed the AUC. The model achieved an AUC of 0.797, indicating strong discriminative ability. The optimal classification threshold was identified as 0.456, which balances sensitivity and specificity more effectively than the default 0.50 cutoff.</p>
+<p>To further assess model performance, we examined the ROC curve (Figure 7) and computed the AUC. The model achieved an AUC of 0.797, indicating strong discriminative ability. The optimal classification threshold was identified as 0.456, which balances sensitivity and specificity more effectively than the default 0.50 cutoff.</p>
 <div class="cell">
 <div class="cell-output-display">
-<table class="table caption-top table-sm table-striped small" data-quarto-postprocess="true">
-<caption>Table 4: Confusion Matrix and Classification Metrics (Threshold = 0.456).</caption>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Table 6: Confusion Matrix and Classification Metrics (Threshold = 0.456).
+</caption>
 <thead>
-<tr class="header">
-<th style="text-align: right;" data-quarto-table-cell-role="th">TN</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">FP</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">FN</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">TP</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">Accuracy</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">Kappa</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">Sensitivity</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">Specificity</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">Precision</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">Recall</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">F1</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">Balanced Accuracy</th>
+<tr>
+<th style="text-align:right;">
+TN
+</th>
+<th style="text-align:right;">
+FP
+</th>
+<th style="text-align:right;">
+FN
+</th>
+<th style="text-align:right;">
+TP
+</th>
+<th style="text-align:right;">
+Accuracy
+</th>
+<th style="text-align:right;">
+Kappa
+</th>
+<th style="text-align:right;">
+Sensitivity
+</th>
+<th style="text-align:right;">
+Specificity
+</th>
+<th style="text-align:right;">
+Precision
+</th>
+<th style="text-align:right;">
+Recall
+</th>
+<th style="text-align:right;">
+F1
+</th>
+<th style="text-align:right;">
+Balanced Accuracy
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td style="text-align: right;">268</td>
-<td style="text-align: right;">76</td>
-<td style="text-align: right;">112</td>
-<td style="text-align: right;">262</td>
-<td style="text-align: right;">0.738</td>
-<td style="text-align: right;">0.478</td>
-<td style="text-align: right;">0.775</td>
-<td style="text-align: right;">0.705</td>
-<td style="text-align: right;">0.701</td>
-<td style="text-align: right;">0.775</td>
-<td style="text-align: right;">0.736</td>
-<td style="text-align: right;">0.74</td>
+<tr>
+<td style="text-align:right;">
+268
+</td>
+<td style="text-align:right;">
+76
+</td>
+<td style="text-align:right;">
+112
+</td>
+<td style="text-align:right;">
+262
+</td>
+<td style="text-align:right;">
+0.738
+</td>
+<td style="text-align:right;">
+0.478
+</td>
+<td style="text-align:right;">
+0.775
+</td>
+<td style="text-align:right;">
+0.705
+</td>
+<td style="text-align:right;">
+0.701
+</td>
+<td style="text-align:right;">
+0.775
+</td>
+<td style="text-align:right;">
+0.736
+</td>
+<td style="text-align:right;">
+0.74
+</td>
 </tr>
 </tbody>
 </table>
-
-
+<p>Table 6: Confusion Matrix and Classification Metrics (Threshold = 0.456).</p>
 </div>
 </div>
 <p>At this optimized threshold, we recomputed the confusion matrix (Table 4), and sensitivity increased from 0.719 to 0.775, meaning the model detected a larger proportion of high-depression cases, while specificity remained reasonably high at 0.705. Overall accuracy also improved from 0.724 to 0.738, and the F1 score increased from 0.711 to 0.736, demonstrating that threshold adjustment meaningfully enhanced the model’s ability to classify high depression symptoms.</p>
 <p>Finally, we tested whether hours per day meaningfully improved the logistic regression model by comparing the full model to a reduced model that excluded this predictor. A likelihood ratio test showed no significant improvement from adding hours per day <span class="math inline">\((\chi^2(1) = 2.23,\; p = 0.135)\)</span>, indicating that daily music-listening hours do not provide additional explanatory power for predicting high depression symptoms once other factors are accounted for. Model fit indices aligned with this result: the AIC values for the reduced and full models were nearly identical (839.39 vs.&nbsp;839.16), confirming that including hours per day does not meaningfully enhance model performance. However, because our research question specifically examines the role of daily listening time, we retain the full model as our primary specification.</p>
 <div class="cell">
 <div class="cell-output-display">
-<table class="table caption-top table-sm table-striped small" data-quarto-postprocess="true">
-<caption>Table 5: Logistic regression model for RQ2 (odds ratios with 95 percent confidence intervals).</caption>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Table 7: Logistic regression model for RQ2 (odds ratios with 95 percent confidence intervals).
+</caption>
 <thead>
-<tr class="header">
-<th style="text-align: left;" data-quarto-table-cell-role="th">Term</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">Odds Ratio</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">Std Error</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">statistic</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">p-value</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">2.5% CI</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">97.5% CI</th>
+<tr>
+<th style="text-align:left;">
+Term
+</th>
+<th style="text-align:right;">
+Odds Ratio
+</th>
+<th style="text-align:right;">
+Std Error
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:left;">
+p-value
+</th>
+<th style="text-align:right;">
+2.5% CI
+</th>
+<th style="text-align:right;">
+97.5% CI
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td style="text-align: left;">(Intercept)</td>
-<td style="text-align: right;">0.08</td>
-<td style="text-align: right;">0.52</td>
-<td style="text-align: right;">-4.8161509</td>
-<td style="text-align: left;">p&lt;0.001</td>
-<td style="text-align: right;">0.03</td>
-<td style="text-align: right;">0.22</td>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+0.08
+</td>
+<td style="text-align:right;">
+0.52
+</td>
+<td style="text-align:right;">
+-4.8161509
+</td>
+<td style="text-align:left;">
+p&lt;0.001
+</td>
+<td style="text-align:right;">
+0.03
+</td>
+<td style="text-align:right;">
+0.22
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Hours.per.day</td>
-<td style="text-align: right;">1.05</td>
-<td style="text-align: right;">0.03</td>
-<td style="text-align: right;">1.4764301</td>
-<td style="text-align: left;">0.140</td>
-<td style="text-align: right;">0.99</td>
-<td style="text-align: right;">1.12</td>
+<tr>
+<td style="text-align:left;">
+Hours.per.day
+</td>
+<td style="text-align:right;">
+1.05
+</td>
+<td style="text-align:right;">
+0.03
+</td>
+<td style="text-align:right;">
+1.4764301
+</td>
+<td style="text-align:left;">
+0.140
+</td>
+<td style="text-align:right;">
+0.99
+</td>
+<td style="text-align:right;">
+1.12
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">Age</td>
-<td style="text-align: right;">0.99</td>
-<td style="text-align: right;">0.01</td>
-<td style="text-align: right;">-1.4976696</td>
-<td style="text-align: left;">0.134</td>
-<td style="text-align: right;">0.97</td>
-<td style="text-align: right;">1.00</td>
+<tr>
+<td style="text-align:left;">
+Age
+</td>
+<td style="text-align:right;">
+0.99
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+<td style="text-align:right;">
+-1.4976696
+</td>
+<td style="text-align:left;">
+0.134
+</td>
+<td style="text-align:right;">
+0.97
+</td>
+<td style="text-align:right;">
+1.00
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">InstrumentalistYes</td>
-<td style="text-align: right;">0.94</td>
-<td style="text-align: right;">0.22</td>
-<td style="text-align: right;">-0.2893564</td>
-<td style="text-align: left;">0.772</td>
-<td style="text-align: right;">0.61</td>
-<td style="text-align: right;">1.43</td>
+<tr>
+<td style="text-align:left;">
+InstrumentalistYes
+</td>
+<td style="text-align:right;">
+0.94
+</td>
+<td style="text-align:right;">
+0.22
+</td>
+<td style="text-align:right;">
+-0.2893564
+</td>
+<td style="text-align:left;">
+0.772
+</td>
+<td style="text-align:right;">
+0.61
+</td>
+<td style="text-align:right;">
+1.43
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">ComposerYes</td>
-<td style="text-align: right;">1.13</td>
-<td style="text-align: right;">0.26</td>
-<td style="text-align: right;">0.4570654</td>
-<td style="text-align: left;">0.648</td>
-<td style="text-align: right;">0.68</td>
-<td style="text-align: right;">1.87</td>
+<tr>
+<td style="text-align:left;">
+ComposerYes
+</td>
+<td style="text-align:right;">
+1.13
+</td>
+<td style="text-align:right;">
+0.26
+</td>
+<td style="text-align:right;">
+0.4570654
+</td>
+<td style="text-align:left;">
+0.648
+</td>
+<td style="text-align:right;">
+0.68
+</td>
+<td style="text-align:right;">
+1.87
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Anxiety</td>
-<td style="text-align: right;">1.40</td>
-<td style="text-align: right;">0.04</td>
-<td style="text-align: right;">8.6830117</td>
-<td style="text-align: left;">p&lt;0.001</td>
-<td style="text-align: right;">1.30</td>
-<td style="text-align: right;">1.51</td>
+<tr>
+<td style="text-align:left;">
+Anxiety
+</td>
+<td style="text-align:right;">
+1.40
+</td>
+<td style="text-align:right;">
+0.04
+</td>
+<td style="text-align:right;">
+8.6830117
+</td>
+<td style="text-align:left;">
+p&lt;0.001
+</td>
+<td style="text-align:right;">
+1.30
+</td>
+<td style="text-align:right;">
+1.51
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">Insomnia</td>
-<td style="text-align: right;">1.17</td>
-<td style="text-align: right;">0.03</td>
-<td style="text-align: right;">5.0936882</td>
-<td style="text-align: left;">p&lt;0.001</td>
-<td style="text-align: right;">1.10</td>
-<td style="text-align: right;">1.24</td>
+<tr>
+<td style="text-align:left;">
+Insomnia
+</td>
+<td style="text-align:right;">
+1.17
+</td>
+<td style="text-align:right;">
+0.03
+</td>
+<td style="text-align:right;">
+5.0936882
+</td>
+<td style="text-align:left;">
+p&lt;0.001
+</td>
+<td style="text-align:right;">
+1.10
+</td>
+<td style="text-align:right;">
+1.24
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">OCD</td>
-<td style="text-align: right;">0.97</td>
-<td style="text-align: right;">0.03</td>
-<td style="text-align: right;">-0.7990682</td>
-<td style="text-align: left;">0.424</td>
-<td style="text-align: right;">0.91</td>
-<td style="text-align: right;">1.04</td>
+<tr>
+<td style="text-align:left;">
+OCD
+</td>
+<td style="text-align:right;">
+0.97
+</td>
+<td style="text-align:right;">
+0.03
+</td>
+<td style="text-align:right;">
+-0.7990682
+</td>
+<td style="text-align:left;">
+0.424
+</td>
+<td style="text-align:right;">
+0.91
+</td>
+<td style="text-align:right;">
+1.04
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">Fav.genreCountry</td>
-<td style="text-align: right;">0.57</td>
-<td style="text-align: right;">0.59</td>
-<td style="text-align: right;">-0.9522194</td>
-<td style="text-align: left;">0.341</td>
-<td style="text-align: right;">0.17</td>
-<td style="text-align: right;">1.79</td>
+<tr>
+<td style="text-align:left;">
+Fav.genreCountry
+</td>
+<td style="text-align:right;">
+0.57
+</td>
+<td style="text-align:right;">
+0.59
+</td>
+<td style="text-align:right;">
+-0.9522194
+</td>
+<td style="text-align:left;">
+0.341
+</td>
+<td style="text-align:right;">
+0.17
+</td>
+<td style="text-align:right;">
+1.79
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Fav.genreEDM</td>
-<td style="text-align: right;">1.18</td>
-<td style="text-align: right;">0.53</td>
-<td style="text-align: right;">0.3036052</td>
-<td style="text-align: left;">0.761</td>
-<td style="text-align: right;">0.41</td>
-<td style="text-align: right;">3.37</td>
+<tr>
+<td style="text-align:left;">
+Fav.genreEDM
+</td>
+<td style="text-align:right;">
+1.18
+</td>
+<td style="text-align:right;">
+0.53
+</td>
+<td style="text-align:right;">
+0.3036052
+</td>
+<td style="text-align:left;">
+0.761
+</td>
+<td style="text-align:right;">
+0.41
+</td>
+<td style="text-align:right;">
+3.37
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">Fav.genreFolk</td>
-<td style="text-align: right;">0.79</td>
-<td style="text-align: right;">0.53</td>
-<td style="text-align: right;">-0.4380352</td>
-<td style="text-align: left;">0.661</td>
-<td style="text-align: right;">0.28</td>
-<td style="text-align: right;">2.26</td>
+<tr>
+<td style="text-align:left;">
+Fav.genreFolk
+</td>
+<td style="text-align:right;">
+0.79
+</td>
+<td style="text-align:right;">
+0.53
+</td>
+<td style="text-align:right;">
+-0.4380352
+</td>
+<td style="text-align:left;">
+0.661
+</td>
+<td style="text-align:right;">
+0.28
+</td>
+<td style="text-align:right;">
+2.26
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Fav.genreGospel</td>
-<td style="text-align: right;">0.20</td>
-<td style="text-align: right;">1.30</td>
-<td style="text-align: right;">-1.2446057</td>
-<td style="text-align: left;">0.213</td>
-<td style="text-align: right;">0.01</td>
-<td style="text-align: right;">1.99</td>
+<tr>
+<td style="text-align:left;">
+Fav.genreGospel
+</td>
+<td style="text-align:right;">
+0.20
+</td>
+<td style="text-align:right;">
+1.30
+</td>
+<td style="text-align:right;">
+-1.2446057
+</td>
+<td style="text-align:left;">
+0.213
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+<td style="text-align:right;">
+1.99
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">Fav.genreHip hop</td>
-<td style="text-align: right;">2.54</td>
-<td style="text-align: right;">0.54</td>
-<td style="text-align: right;">1.7321500</td>
-<td style="text-align: left;">0.083</td>
-<td style="text-align: right;">0.90</td>
-<td style="text-align: right;">7.49</td>
+<tr>
+<td style="text-align:left;">
+Fav.genreHip hop
+</td>
+<td style="text-align:right;">
+2.54
+</td>
+<td style="text-align:right;">
+0.54
+</td>
+<td style="text-align:right;">
+1.7321500
+</td>
+<td style="text-align:left;">
+0.083
+</td>
+<td style="text-align:right;">
+0.90
+</td>
+<td style="text-align:right;">
+7.49
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Fav.genreJazz</td>
-<td style="text-align: right;">0.72</td>
-<td style="text-align: right;">0.61</td>
-<td style="text-align: right;">-0.5339638</td>
-<td style="text-align: left;">0.593</td>
-<td style="text-align: right;">0.21</td>
-<td style="text-align: right;">2.42</td>
+<tr>
+<td style="text-align:left;">
+Fav.genreJazz
+</td>
+<td style="text-align:right;">
+0.72
+</td>
+<td style="text-align:right;">
+0.61
+</td>
+<td style="text-align:right;">
+-0.5339638
+</td>
+<td style="text-align:left;">
+0.593
+</td>
+<td style="text-align:right;">
+0.21
+</td>
+<td style="text-align:right;">
+2.42
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">Fav.genreK pop</td>
-<td style="text-align: right;">0.41</td>
-<td style="text-align: right;">0.61</td>
-<td style="text-align: right;">-1.4771463</td>
-<td style="text-align: left;">0.140</td>
-<td style="text-align: right;">0.12</td>
-<td style="text-align: right;">1.32</td>
+<tr>
+<td style="text-align:left;">
+Fav.genreK pop
+</td>
+<td style="text-align:right;">
+0.41
+</td>
+<td style="text-align:right;">
+0.61
+</td>
+<td style="text-align:right;">
+-1.4771463
+</td>
+<td style="text-align:left;">
+0.140
+</td>
+<td style="text-align:right;">
+0.12
+</td>
+<td style="text-align:right;">
+1.32
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Fav.genreLatin</td>
-<td style="text-align: right;">1.01</td>
-<td style="text-align: right;">1.58</td>
-<td style="text-align: right;">0.0063683</td>
-<td style="text-align: left;">0.995</td>
-<td style="text-align: right;">0.03</td>
-<td style="text-align: right;">32.42</td>
+<tr>
+<td style="text-align:left;">
+Fav.genreLatin
+</td>
+<td style="text-align:right;">
+1.01
+</td>
+<td style="text-align:right;">
+1.58
+</td>
+<td style="text-align:right;">
+0.0063683
+</td>
+<td style="text-align:left;">
+0.995
+</td>
+<td style="text-align:right;">
+0.03
+</td>
+<td style="text-align:right;">
+32.42
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">Fav.genreLofi</td>
-<td style="text-align: right;">1.98</td>
-<td style="text-align: right;">0.83</td>
-<td style="text-align: right;">0.8259485</td>
-<td style="text-align: left;">0.409</td>
-<td style="text-align: right;">0.42</td>
-<td style="text-align: right;">11.47</td>
+<tr>
+<td style="text-align:left;">
+Fav.genreLofi
+</td>
+<td style="text-align:right;">
+1.98
+</td>
+<td style="text-align:right;">
+0.83
+</td>
+<td style="text-align:right;">
+0.8259485
+</td>
+<td style="text-align:left;">
+0.409
+</td>
+<td style="text-align:right;">
+0.42
+</td>
+<td style="text-align:right;">
+11.47
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Fav.genreMetal</td>
-<td style="text-align: right;">1.17</td>
-<td style="text-align: right;">0.42</td>
-<td style="text-align: right;">0.3797032</td>
-<td style="text-align: left;">0.704</td>
-<td style="text-align: right;">0.51</td>
-<td style="text-align: right;">2.70</td>
+<tr>
+<td style="text-align:left;">
+Fav.genreMetal
+</td>
+<td style="text-align:right;">
+1.17
+</td>
+<td style="text-align:right;">
+0.42
+</td>
+<td style="text-align:right;">
+0.3797032
+</td>
+<td style="text-align:left;">
+0.704
+</td>
+<td style="text-align:right;">
+0.51
+</td>
+<td style="text-align:right;">
+2.70
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">Fav.genrePop</td>
-<td style="text-align: right;">0.66</td>
-<td style="text-align: right;">0.41</td>
-<td style="text-align: right;">-1.0317028</td>
-<td style="text-align: left;">0.302</td>
-<td style="text-align: right;">0.30</td>
-<td style="text-align: right;">1.46</td>
+<tr>
+<td style="text-align:left;">
+Fav.genrePop
+</td>
+<td style="text-align:right;">
+0.66
+</td>
+<td style="text-align:right;">
+0.41
+</td>
+<td style="text-align:right;">
+-1.0317028
+</td>
+<td style="text-align:left;">
+0.302
+</td>
+<td style="text-align:right;">
+0.30
+</td>
+<td style="text-align:right;">
+1.46
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Fav.genreR and B</td>
-<td style="text-align: right;">0.73</td>
-<td style="text-align: right;">0.55</td>
-<td style="text-align: right;">-0.5711555</td>
-<td style="text-align: left;">0.568</td>
-<td style="text-align: right;">0.24</td>
-<td style="text-align: right;">2.13</td>
+<tr>
+<td style="text-align:left;">
+Fav.genreR and B
+</td>
+<td style="text-align:right;">
+0.73
+</td>
+<td style="text-align:right;">
+0.55
+</td>
+<td style="text-align:right;">
+-0.5711555
+</td>
+<td style="text-align:left;">
+0.568
+</td>
+<td style="text-align:right;">
+0.24
+</td>
+<td style="text-align:right;">
+2.13
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">Fav.genreRap</td>
-<td style="text-align: right;">0.63</td>
-<td style="text-align: right;">0.62</td>
-<td style="text-align: right;">-0.7514045</td>
-<td style="text-align: left;">0.452</td>
-<td style="text-align: right;">0.18</td>
-<td style="text-align: right;">2.09</td>
+<tr>
+<td style="text-align:left;">
+Fav.genreRap
+</td>
+<td style="text-align:right;">
+0.63
+</td>
+<td style="text-align:right;">
+0.62
+</td>
+<td style="text-align:right;">
+-0.7514045
+</td>
+<td style="text-align:left;">
+0.452
+</td>
+<td style="text-align:right;">
+0.18
+</td>
+<td style="text-align:right;">
+2.09
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Fav.genreRock</td>
-<td style="text-align: right;">1.30</td>
-<td style="text-align: right;">0.38</td>
-<td style="text-align: right;">0.6954891</td>
-<td style="text-align: left;">0.487</td>
-<td style="text-align: right;">0.62</td>
-<td style="text-align: right;">2.77</td>
+<tr>
+<td style="text-align:left;">
+Fav.genreRock
+</td>
+<td style="text-align:right;">
+1.30
+</td>
+<td style="text-align:right;">
+0.38
+</td>
+<td style="text-align:right;">
+0.6954891
+</td>
+<td style="text-align:left;">
+0.487
+</td>
+<td style="text-align:right;">
+0.62
+</td>
+<td style="text-align:right;">
+2.77
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">Fav.genreVideo game music</td>
-<td style="text-align: right;">0.57</td>
-<td style="text-align: right;">0.49</td>
-<td style="text-align: right;">-1.1384220</td>
-<td style="text-align: left;">0.255</td>
-<td style="text-align: right;">0.21</td>
-<td style="text-align: right;">1.50</td>
+<tr>
+<td style="text-align:left;">
+Fav.genreVideo game music
+</td>
+<td style="text-align:right;">
+0.57
+</td>
+<td style="text-align:right;">
+0.49
+</td>
+<td style="text-align:right;">
+-1.1384220
+</td>
+<td style="text-align:left;">
+0.255
+</td>
+<td style="text-align:right;">
+0.21
+</td>
+<td style="text-align:right;">
+1.50
+</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Music.effectsNo effect</td>
-<td style="text-align: right;">1.11</td>
-<td style="text-align: right;">0.21</td>
-<td style="text-align: right;">0.4851821</td>
-<td style="text-align: left;">0.628</td>
-<td style="text-align: right;">0.73</td>
-<td style="text-align: right;">1.69</td>
+<tr>
+<td style="text-align:left;">
+Music.effectsNo effect
+</td>
+<td style="text-align:right;">
+1.11
+</td>
+<td style="text-align:right;">
+0.21
+</td>
+<td style="text-align:right;">
+0.4851821
+</td>
+<td style="text-align:left;">
+0.628
+</td>
+<td style="text-align:right;">
+0.73
+</td>
+<td style="text-align:right;">
+1.69
+</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">Music.effectsWorsen</td>
-<td style="text-align: right;">2.60</td>
-<td style="text-align: right;">0.60</td>
-<td style="text-align: right;">1.5973620</td>
-<td style="text-align: left;">0.110</td>
-<td style="text-align: right;">0.84</td>
-<td style="text-align: right;">9.14</td>
+<tr>
+<td style="text-align:left;">
+Music.effectsWorsen
+</td>
+<td style="text-align:right;">
+2.60
+</td>
+<td style="text-align:right;">
+0.60
+</td>
+<td style="text-align:right;">
+1.5973620
+</td>
+<td style="text-align:left;">
+0.110
+</td>
+<td style="text-align:right;">
+0.84
+</td>
+<td style="text-align:right;">
+9.14
+</td>
 </tr>
 </tbody>
 </table>
-
-
+<p>Table 7: Logistic regression model for RQ2 (odds ratios with 95 percent confidence intervals).</p>
 </div>
 </div>
-<p>Table 5 summarizes the corresponding regression results on the odds–ratio scale, including odds ratios, standard errors, confidence intervals, and p–values. Daily hours spent listening to music showed no significant association with high depression (OR = 1.05, 95% CI: 0.99–1.12, <span class="math inline">\(p = 0.140\)</span>), indicating that each additional hour of listening time does not meaningfully change the odds of reporting elevated depression symptoms. Age was also non-significant (OR = 0.99, 95% CI: 0.97–1.00, <span class="math inline">\(p = 0.134\)</span>), suggesting that depression levels did not vary systematically across ages in this sample.</p>
+<p>Table 7 summarizes the corresponding regression results on the odds–ratio scale, including odds ratios, standard errors, confidence intervals, and p–values. Daily hours spent listening to music showed no significant association with high depression (OR = 1.05, 95% CI: 0.99–1.12, <span class="math inline">\(p = 0.140\)</span>), indicating that each additional hour of listening time does not meaningfully change the odds of reporting elevated depression symptoms. Age was also non-significant (OR = 0.99, 95% CI: 0.97–1.00, <span class="math inline">\(p = 0.134\)</span>), suggesting that depression levels did not vary systematically across ages in this sample.</p>
 <p>The only strong and consistent predictors were mental–health variables already closely tied to depression. Anxiety had a large, significant effect (OR = 1.40, 95% CI: 1.30–1.51, <span class="math inline">\(p &lt; 0.001\)</span>), meaning that each one-unit increase in anxiety score increased the odds of high depression by approximately 40%. Insomnia also significantly increased risk (OR = 1.17, 95% CI: 1.10–1.24, <span class="math inline">\(p &lt; 0.001\)</span>). OCD symptoms were not significant (OR = 0.97, <span class="math inline">\(p = 0.424\)</span>).</p>
 <p>Neither musician status (Instrumentalist or Composer) nor any favorite–genre category significantly predicted high depression, as all confidence intervals crossed 1.0. Although ``Music effects: worsen’’ had a relatively large odds ratio (OR = 2.60), the estimate was imprecise (95% CI: 0.84–9.14, <span class="math inline">\(p = 0.110\)</span>) and therefore not statistically reliable.</p>
 <p>Overall, the model indicates that depression symptoms are most strongly predicted by other co-occurring mental–health indicators (anxiety and insomnia), whereas hours of music listening, demographic variables, musician traits, and musical preferences show no meaningful association with elevated depression levels.</p>
