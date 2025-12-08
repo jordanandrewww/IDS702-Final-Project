@@ -1,0 +1,628 @@
+---
+title: "Final Project"
+author: "Jordan Andrew, Pranshul Bhatnagar, Arushi Singh, and Jay Wu"
+subtitle: "Due December 13th at 12:00pm"
+format: pdf
+editor: visual
+---
+
+#### Load Packages
+
+```{r load-packages, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(dplyr)
+library(car)
+library(ggplot2)
+```
+
+**Load the data and provide a `glimpse()`**:
+
+```{r data-1, warning=FALSE}
+library(dplyr)
+music_data <- read.csv("data/mxmh_survey_results.csv")
+glimpse(music_data)
+
+```
+
+# **Data Cleaning**
+
+```{r}
+# Showing which columns have null values and how many
+music_data %>%
+  summarise(across(everything(), ~ sum(is.na(.)))) %>%
+  pivot_longer(everything(), names_to = "column", values_to = "na_count") %>%
+  filter(na_count > 0) %>%
+  arrange(desc(na_count))
+
+```
+
+```{r}
+# Summary to spot outliers
+summary(music_data$Age)
+
+# Count unrealistic ages
+sum(music_data$Age < 10 | music_data$Age > 90, na.rm = TRUE)
+
+# View rows with unrealistic ages
+music_data %>% 
+  filter(Age < 10 | Age > 90)
+```
+
+```{r}
+
+# Checking that music hours per day doesn't contain unrealistic # of hours
+summary(music_data$Hours.per.day)
+
+music_data %>% 
+  filter(Hours.per.day < 0 | Hours.per.day > 16)
+
+# we will remove the 89 year old who listens to rap exclusively while working and has no perceived mental health issues
+
+```
+
+```{r}
+cols <- c("Anxiety", "Depression", "Insomnia", "OCD")
+
+# Checking if any values for self reported mental illness are out of the 0-10 range
+music_data %>% 
+  summarise(across(all_of(cols), 
+                   ~ sum(. < 0 | . > 10, na.rm = TRUE)))
+
+
+```
+
+```{r}
+yn_cols <- c(
+  "While.working",
+  "Instrumentalist",
+  "Composer",
+  "Exploratory",
+  "Foreign.languages"
+)
+
+# Checking to see if any of the "yes" "no" columns have values outside of these options
+sapply(music_data[yn_cols], function(x) all(x %in% c("Yes", "No")))
+
+lapply(music_data[yn_cols], function(x) setdiff(unique(x), c("Yes", "No")))
+
+sapply(music_data[yn_cols], function(x) sum(x == "", na.rm = TRUE))
+
+# We will drop the rows that having missing values here, as there is no clear way how to impute them
+
+
+```
+
+```{r}
+freq_cols <- c(
+  "Frequency..Classical.",
+  "Frequency..Country.",
+  "Frequency..EDM.",
+  "Frequency..Folk.",
+  "Frequency..Gospel.",
+  "Frequency..Hip.hop.",
+  "Frequency..Jazz.",
+  "Frequency..K.pop.",
+  "Frequency..Latin.",
+  "Frequency..Lofi.",
+  "Frequency..Metal.",
+  "Frequency..Pop.",
+  "Frequency..R.B.",
+  "Frequency..Rap.",
+  "Frequency..Rock.",
+  "Frequency..Video.game.music."
+)
+
+allowed_freq <- c("Never", "Rarely", "Sometimes", "Very frequently")
+
+
+# Checking to see if any of the frequency columns have values outside of "Never, Rarely, Sometimes, Very frequently"
+sapply(music_data[freq_cols], function(x) sum(!(x %in% allowed_freq)))
+```
+
+```{r}
+table(music_data$Music.effects)
+```
+
+# **General Data Cleaning**
+
+```{r}
+# Cleaning our data
+
+# dropping BPM column
+music_data <- music_data %>% select(-any_of("BPM"))
+
+# dropping 1 row that has a null value for Age
+music_data <- music_data %>% 
+  filter(!is.na(Age))
+
+# Dropping the 89 year old year old who listens to only rap while working 24 hours a day(unrealistic value)
+music_data <- music_data %>%
+  filter(!(Age == 89 & Hours.per.day == 24))
+
+# Dropping the rows that have non "yes" "no" answers for questions that only permit those values (9 rows were removed here)
+allowed_yn <- c("Yes", "No")
+
+music_data <- music_data %>%
+  filter(
+    if_all(all_of(yn_cols), ~ .x %in% allowed_yn)
+  )
+
+# removing 7 rows where Music.effects has an empty string as a response
+music_data <- music_data %>%
+  filter(Music.effects != "")
+
+# Keep only columns that exist in the data
+freq_cols_present <- freq_cols[freq_cols %in% colnames(music_data)]
+
+# Only rename if any of these columns exist
+if (length(freq_cols_present) > 0) {
+  music_data <- music_data %>%
+    rename_with(.cols = all_of(freq_cols_present), 
+                .fn = ~ gsub("Frequency\\.\\.", "freq_", .x) %>% 
+                       gsub("\\.", "", .))  # Remove all remaining periods
+}
+
+music_data_clean <- music_data
+
+glimpse(music_data_clean)
+
+```
+
+# **Research Question 1**
+
+```{r}
+# Question 1: How does the number of hours spent listening to music per day vary by depression status and primary streaming service?
+
+# this will be the dataset used for our first research question
+music_data_1 <- music_data_clean
+
+unique(music_data_1$Primary.streaming.service)
+
+music_data_1 %>%
+  count(Primary.streaming.service)
+
+# removing the row where Primary.streaming.service is empty
+music_data_1 <- music_data_1 %>%
+  filter(Primary.streaming.service != "")
+
+music_data_1 %>%
+  filter(Primary.streaming.service == "I do not use a streaming service.")
+
+# removing the rows where participants stated they do not use a streaming service
+music_data_1 <- music_data_1 %>%
+  filter(Primary.streaming.service != "I do not use a streaming service.")
+
+music_data_1 %>%
+  count(Primary.streaming.service)
+```
+
+# Finding the median and mean age for stakeholder relevance
+
+```{r}
+mean(music_data_1$Age, na.rm = TRUE)
+median(music_data_1$Age, na.rm = TRUE)
+```
+
+# **Modeling for Research Question 1**
+
+```{r}
+
+# Question 1: How does depression score vary by hours spent listening to music per day and primary streaming service?
+
+# fit our linear regression model
+model_rq1 <- lm(
+  Depression ~ Hours.per.day * Primary.streaming.service +
+    Age +
+    While.working +
+    Instrumentalist +
+    Composer +
+    Exploratory +
+    Foreign.languages +
+    Anxiety +
+    Insomnia +
+    OCD +
+    Fav.genre +
+    Music.effects,
+  data = music_data_1
+)
+
+summary(model_rq1)
+
+```
+
+# **Diagnostics for Research Question 1 Model**
+
+```{r}
+plot(model_rq1)
+
+```
+
+```{r}
+# checking for multicollinearity
+vif(model_rq1, type = "predictor")
+```
+
+```{r}
+p1 <- ggplot(music_data_1, aes(x = Depression)) +
+geom_histogram(bins = 30, color = "black") +
+labs(
+x = "Depression score",
+y = "Count",
+title = "Distribution of Depression Score"
+)
+
+p1
+```
+
+# **Log Transformation of Outcome Variable RQ1**
+
+```{r}
+# build log-transformed outcome
+music_data_1 <- music_data_1 %>%
+  mutate(log_depression = log(Depression + 0.1))
+
+# run log-transform
+model_rq1_log <- lm(
+  log_depression ~ Hours.per.day * Primary.streaming.service +
+    Age +
+    While.working +
+    Instrumentalist +
+    Composer +
+    Exploratory +
+    Foreign.languages +
+    Anxiety +
+    Insomnia +
+    OCD +
+    Fav.genre +
+    Music.effects,
+  data = music_data_1
+)
+
+summary(model_rq1_log)
+```
+
+```{r}
+# diagnostic plots for log-transformed model
+plot(model_rq1_log)
+
+# we can see that violations of homoscedasticity and normality have improved (no more strong violations)
+
+```
+
+```{r}
+# Cook's distance for linear regression (RQ1)
+cooks <- cooks.distance(model_rq1_log)
+
+plot(cooks, type = "h",
+     main = "Influential points measured by Cook’s distance",
+     ylab = "Cook's distance",
+     xlab = "Index")
+
+# Identify influential observations
+which(cooks > 0.04)
+
+```
+
+```{r}
+# Removing the three main outliers shown in the diagnostic plots
+music_data_1_subset <- music_data_1[!(rownames(music_data_1) %in% c("407", "345", "537")), ]
+
+# Refitting the model
+# run log-transform
+model_rq1_log_final <- lm(
+  log_hours ~ Depression * Primary.streaming.service +
+    Age +
+    While.working +
+    Instrumentalist +
+    Composer +
+    Exploratory +
+    Foreign.languages +
+    Anxiety +
+    Insomnia +
+    OCD +
+    Fav.genre +
+    Music.effects,
+  data = music_data_1_subset
+)
+
+summary(model_rq1_log_final)
+```
+
+```{r}
+# Diagnostic plots for the final model, after log transformation and removal of outliers
+plot(model_rq1_log_final)
+```
+
+# Table with Key Regression Coefficients
+
+```{r}
+library(broom)
+library(kableExtra)
+library(dplyr)
+
+tbl_rq1_sig <- tidy(
+  model_rq1_log_final,
+  conf.int = TRUE
+) %>%
+  filter(p.value < 0.05) %>%           # significant predictors only
+  mutate(
+    estimate  = round(estimate, 3),
+    std.error = round(std.error, 3),
+    conf.low  = round(conf.low, 3),
+    conf.high = round(conf.high, 3),
+    p.value   = ifelse(p.value < 0.001, "<0.001", sprintf("%.3f", p.value))
+  ) %>%
+  select(term, estimate, std.error, conf.low, conf.high, p.value)
+
+kable(tbl_rq1_sig,
+      caption = "Significant Predictors from RQ1 Linear Model",
+      booktabs = TRUE) %>%
+  kable_styling(full_width = FALSE)
+
+```
+
+# Predicted Listening Time vs Depression by Streaming Platform
+
+```{r}
+ggplot(music_data_1_subset,
+       aes(x = Depression,
+           y = Hours.per.day,
+           color = Primary.streaming.service)) +
+  geom_point(alpha = 0.4) +
+  geom_smooth(method = "lm", se = FALSE, size = 1) +
+  labs(
+    title = "Daily Listening Time vs. Depression Score by Streaming Platform",
+    x = "Depression Score",
+    y = "Hours per Day",
+    color = "Streaming Platform"
+  ) +
+  theme_minimal()
+
+```
+
+# **Research Question 2**
+
+```{r}
+# Question 2: Does the number of hours spent listening to music each day increase the likelihood of reporting high depression symptoms?
+
+# this will be the dataset used for our first research question
+music_data_2 <- music_data_clean
+
+# create high_depression as 1 if Depression >= threshold, 0 otherwise
+music_data_2$high_depression <- ifelse(music_data_2$Depression >= 6, 1, 0)
+
+# Fit logistic regression including all relevant predictors
+model2 <- glm(
+  high_depression ~ Hours.per.day +
+    Age +
+    Instrumentalist +
+    Composer +
+    Anxiety +
+    Insomnia +
+    OCD +
+    Fav.genre +
+    Music.effects,
+  data = music_data_2,
+  family = binomial
+)
+
+# View model summary
+summary(model2)
+
+```
+
+```{r}
+# Coefficients on the odds scale
+exp(coef(model2))
+```
+
+# **Diagnostics RQ2**
+
+# **Partial residual plot**
+
+```{r}
+# Partial residual plot for our main predictor (Hours.per.day)
+
+# This checks linearity of Hours.per.day with log-odds.
+crPlot(model2, "Hours.per.day")
+
+```
+
+# **Checking for multicollinearity**
+
+```{r}
+vif(model2)
+```
+
+# **Goodness-of-fit (Hosmer-Lemeshow test)**
+
+```{r}
+# This test compares observed and expected frequencies of the outcome.
+ResourceSelection::hoslem.test(model2$y, fitted(model2))
+
+```
+
+## Pearson residuals vs fitted plot
+
+```{r}
+plot(model2, which = 1)
+```
+
+# **Checking for high leverage points**
+
+```{r}
+hatvalues <- hatvalues(model2)
+which(hatvalues > (2*mean(hatvalues)))
+
+```
+
+# **Confusion Matrix**
+
+```{r}
+probs <- predict(model2, type = "response")
+
+pred_class <- ifelse(probs > 0.5, 1, 0)
+pred_class <- factor(pred_class, levels = c(0,1))
+
+caret::confusionMatrix(
+  table(pred_class, music_data_2$high_depression),
+  positive = "1",
+  mode = "everything"
+)
+
+```
+
+# **ROC Curve and AUC**
+
+```{r}
+pROC::roc(music_data_2$high_depression, probs,
+          print.thres = "best",
+          print.auc = TRUE,
+          legacy.axes = TRUE,
+          plot = TRUE)
+
+```
+
+# **Updated Confusion Matrix with "best" Threshold**
+
+```{r}
+probs <- predict(model2, type = "response")
+
+pred_class <- ifelse(probs > 0.456, 1, 0)
+pred_class <- factor(pred_class, levels = c(0,1))
+
+caret::confusionMatrix(
+  table(pred_class, music_data_2$high_depression),
+  positive = "1",
+  mode = "everything"
+)
+```
+
+# **Reduced Model Comparison (no Hours.per.day)**
+
+```{r}
+
+# reduced model without Hours.per.day
+model2_red <- glm(
+  high_depression ~
+    Age +
+    Instrumentalist +
+    Composer +
+    Anxiety +
+    Insomnia +
+    OCD +
+    Fav.genre +
+    Music.effects,
+  data = music_data_2,
+  family = binomial
+)
+
+
+# Deviance test
+anova(model2_red, model2, test="Chisq")
+
+AIC(model2_red)
+AIC(model2)
+
+
+
+
+```
+
+# \*\* Confidence Intervals and Odds Ratios\*\*
+
+```{r}
+exp(cbind(OR = coef(model2), confint(model2)))
+
+```
+
+## Final number of rows for each subset of data (RQ1 and RQ2)
+
+```{r}
+nrow(music_data_1_subset)
+nrow(music_data_2)
+```
+
+# Condensed Odds Ratios Table for RQ2 (Only Key Predictors)
+
+```{r}
+tbl_rq2_condensed <- tidy(
+  model2,
+  exponentiate = TRUE,
+  conf.int = TRUE
+) %>%
+  filter(term %in% c("Hours.per.day", "Anxiety", "Insomnia")) %>%  # key predictors
+  mutate(
+    estimate  = round(estimate, 2),
+    conf.low  = round(conf.low, 2),
+    conf.high = round(conf.high, 2),
+    p.value   = ifelse(p.value < 0.001, "<0.001", sprintf("%.3f", p.value))
+  ) %>%
+  select(term, estimate, conf.low, conf.high, p.value)
+
+kable(
+  tbl_rq2_condensed,
+  caption = "Key Predictors from Logistic Regression (Odds Ratios)",
+  booktabs = TRUE
+) %>%
+  kable_styling(full_width = FALSE)
+
+```
+
+```{r, fig.cap="Table 1: Significant Predictors from RQ1 Linear Model (Original and Exponentiated Coefficients)."}
+
+library(broom)
+library(kableExtra)
+library(dplyr)
+
+tbl_rq1_sig <- tidy(
+  model_rq1_log_final,
+  conf.int = TRUE
+) %>%
+  filter(p.value < 0.05) %>%           
+  mutate(
+    # exponentiate coefficients + CI
+    exp_estimate = exp(estimate),
+    exp_low      = exp(conf.low),
+    exp_high     = exp(conf.high),
+
+    # round all columns appropriately
+    estimate     = round(estimate, 3),
+    std.error    = round(std.error, 3),
+    conf.low     = round(conf.low, 3),
+    conf.high    = round(conf.high, 3),
+    exp_estimate = round(exp_estimate, 3),
+    exp_low      = round(exp_low, 3),
+    exp_high     = round(exp_high, 3),
+    p.value      = ifelse(p.value < 0.001, "<0.001", sprintf("%.3f", p.value))
+  ) %>%
+  select(
+    term,
+    estimate,
+    exp_estimate,
+    std.error,
+    conf.low,
+    conf.high,
+    exp_low,
+    exp_high,
+    p.value
+  )
+
+kable(
+  tbl_rq1_sig,
+  booktabs = TRUE,
+  col.names = c(
+    "Term",
+    "Estimate (log scale)",
+    "Exp(Estimate)",
+    "Std Error",
+    "2.5% CI",
+    "97.5% CI",
+    "Exp(2.5% CI)",
+    "Exp(97.5% CI)",
+    "p-value"
+  )
+) %>%
+  kable_styling(full_width = FALSE, font_size = 9)
+
+```
