@@ -243,55 +243,8 @@ vif(model_rq1, type = "predictor")
 ```
 
 ```{r}
-p1 <- ggplot(music_data_1, aes(x = Depression)) +
-geom_histogram(bins = 30, color = "black") +
-labs(
-x = "Depression score",
-y = "Count",
-title = "Distribution of Depression Score"
-)
-
-p1
-```
-
-# **Log Transformation of Outcome Variable RQ1**
-
-```{r}
-# build log-transformed outcome
-music_data_1 <- music_data_1 %>%
-  mutate(log_depression = log(Depression + 0.1))
-
-# run log-transform
-model_rq1_log <- lm(
-  log_depression ~ Hours.per.day * Primary.streaming.service +
-    Age +
-    While.working +
-    Instrumentalist +
-    Composer +
-    Exploratory +
-    Foreign.languages +
-    Anxiety +
-    Insomnia +
-    OCD +
-    Fav.genre +
-    Music.effects,
-  data = music_data_1
-)
-
-summary(model_rq1_log)
-```
-
-```{r}
-# diagnostic plots for log-transformed model
-plot(model_rq1_log)
-
-# we can see that violations of homoscedasticity and normality have improved (no more strong violations)
-
-```
-
-```{r}
 # Cook's distance for linear regression (RQ1)
-cooks <- cooks.distance(model_rq1_log)
+cooks <- cooks.distance(model_rq1)
 
 plot(cooks, type = "h",
      main = "Influential points measured by Cook’s distance",
@@ -302,37 +255,6 @@ plot(cooks, type = "h",
 which(cooks > 0.04)
 
 ```
-
-```{r}
-# Removing the three main outliers shown in the diagnostic plots
-music_data_1_subset <- music_data_1[!(rownames(music_data_1) %in% c("407", "345", "537")), ]
-
-# Refitting the model
-# run log-transform
-model_rq1_log_final <- lm(
-  log_hours ~ Depression * Primary.streaming.service +
-    Age +
-    While.working +
-    Instrumentalist +
-    Composer +
-    Exploratory +
-    Foreign.languages +
-    Anxiety +
-    Insomnia +
-    OCD +
-    Fav.genre +
-    Music.effects,
-  data = music_data_1_subset
-)
-
-summary(model_rq1_log_final)
-```
-
-```{r}
-# Diagnostic plots for the final model, after log transformation and removal of outliers
-plot(model_rq1_log_final)
-```
-
 # Table with Key Regression Coefficients
 
 ```{r}
@@ -341,7 +263,7 @@ library(kableExtra)
 library(dplyr)
 
 tbl_rq1_sig <- tidy(
-  model_rq1_log_final,
+  model_rq1,
   conf.int = TRUE
 ) %>%
   filter(p.value < 0.05) %>%           # significant predictors only
@@ -364,19 +286,35 @@ kable(tbl_rq1_sig,
 # Predicted Listening Time vs Depression by Streaming Platform
 
 ```{r}
-ggplot(music_data_1_subset,
-       aes(x = Depression,
-           y = Hours.per.day,
+ggplot(music_data_1,
+       aes(x = Hours.per.day,
+           y = Depression,
            color = Primary.streaming.service)) +
-  geom_point(alpha = 0.4) +
-  geom_smooth(method = "lm", se = FALSE, size = 1) +
+  geom_smooth(method = "lm",
+              se = FALSE,
+              size = 1) + 
   labs(
-    title = "Daily Listening Time vs. Depression Score by Streaming Platform",
-    x = "Depression Score",
-    y = "Hours per Day",
-    color = "Streaming Platform"
+    x = "Hours of Music Listening per Day",
+    y = "Depression Score"
   ) +
-  theme_minimal()
+  scale_color_brewer(palette = "Dark2") +
+  scale_y_continuous(limits = c(0, 10)) +     # y-axis capped
+  scale_x_continuous(limits = c(0, 24)) +     # x-axis capped
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.title = element_blank(),
+    legend.position = "right",
+    plot.title = element_text(face = "bold")
+  )
+
+music_data_1 %>%
+  filter(Hours.per.day > 24 |
+         Depression > 10 |
+           Depression < 0 |
+           Hours.per.day < 0 |
+         is.na(Hours.per.day) |
+         is.na(Depression))
+
 
 ```
 
