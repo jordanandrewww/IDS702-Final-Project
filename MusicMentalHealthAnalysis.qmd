@@ -278,6 +278,13 @@ model_rq1 <- lm(
 summary(model_rq1)
 
 ```
+```{r}
+table(music_data_1$Depression)
+
+
+```
+
+
 
 # **Diagnostics for Research Question 1 Model**
 
@@ -292,12 +299,12 @@ vif(model_rq1, type = "predictor")
 ```
 
 ```{r}
-p1 <- ggplot(music_data_1, aes(x = Hours.per.day)) +
+p1 <- ggplot(music_data_1, aes(x = Depression)) +
 geom_histogram(bins = 30, color = "black") +
 labs(
-x = "Hours of music listening per day",
+x = "Depression Scores",
 y = "Count",
-title = "Distribution of Hours.per.day"
+title = "Distribution of Depression"
 )
 
 p1

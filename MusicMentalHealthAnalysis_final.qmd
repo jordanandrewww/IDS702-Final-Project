@@ -171,7 +171,7 @@ glimpse(music_data_clean)
 # **Research Question 1**
 
 ```{r}
-# Question 1: How does the number of hours spent listening to music per day vary by depression status and primary streaming service?
+# Question 1: How does depression score vary by hours spent listening to music per day and primary streaming service?
 
 # this will be the dataset used for our first research question
 music_data_1 <- music_data_clean
@@ -201,6 +201,9 @@ music_data_1 %>%
 ```{r}
 mean(music_data_1$Age, na.rm = TRUE)
 median(music_data_1$Age, na.rm = TRUE)
+
+min(music_data_1$Age, na.rm = TRUE)
+max(music_data_1$Age, na.rm = TRUE)
 ```
 
 # **Modeling for Research Question 1**
@@ -237,56 +240,100 @@ plot(model_rq1)
 
 ```
 
+
+```{r}
+# Trying Poisson Model
+
+# Filtering out 2 values that have decimal depression scores
+music_data_1_clean <- subset(music_data_1, Depression != 3.5)
+
+model_1_pois <- glm(
+  Depression ~ Hours.per.day * Primary.streaming.service +
+    Age +
+    While.working +
+    Instrumentalist +
+    Composer +
+    Exploratory +
+    Foreign.languages +
+    Anxiety +
+    Insomnia +
+    OCD +
+    Fav.genre +
+    Music.effects,
+  data = music_data_1_clean,
+  family = poisson
+)
+
+summary(model_1_pois)
+
+```
+
+```{r}
+(exp_coefs <- exp(cbind(est=coef(model_1_pois),confint(model_1_pois))))
+```
+
+
+# Finding age statistics for stakeholder relevance
+```{r}
+
+mean(music_data_1_clean$Age, na.rm = TRUE)
+median(music_data_1_clean$Age, na.rm = TRUE)
+
+min(music_data_1_clean$Age, na.rm = TRUE)
+max(music_data_1_clean$Age, na.rm = TRUE)
+```
+
+
+```{r}
+# Checking equidispersion against negative binomial model
+model_1_nb <- MASS::glm.nb(
+  Depression ~ Hours.per.day * Primary.streaming.service +
+    Age + While.working + Instrumentalist + Composer + Exploratory +
+    Foreign.languages + Anxiety + Insomnia + OCD + Fav.genre + Music.effects,
+  data = music_data_1_clean
+)
+
+AIC(model_1_pois, model_1_nb)
+
+```
+
+
 ```{r}
 # checking for multicollinearity
-vif(model_rq1, type = "predictor")
+vif(model_1_pois, type="predictor")
 ```
-
+# Checking partial residuals plot of Hours.per.day (poisson model without the interaction term)
 ```{r}
-# Cook's distance for linear regression (RQ1)
-cooks <- cooks.distance(model_rq1)
+model_1_pois_no_int <- glm(
+  Depression ~ Hours.per.day + Primary.streaming.service +
+    Age +
+    While.working +
+    Instrumentalist +
+    Composer +
+    Exploratory +
+    Foreign.languages +
+    Anxiety +
+    Insomnia +
+    OCD +
+    Fav.genre +
+    Music.effects,
+  data = music_data_1_clean,
+  family = poisson
+)
 
-plot(cooks, type = "h",
-     main = "Influential points measured by Cook’s distance",
-     ylab = "Cook's distance",
-     xlab = "Index")
-
-# Identify influential observations
-which(cooks > 0.04)
-
+car::crPlot(model_1_pois_no_int, "Hours.per.day")
 ```
-# Table with Key Regression Coefficients
-
 ```{r}
-library(broom)
-library(kableExtra)
-library(dplyr)
-
-tbl_rq1_sig <- tidy(
-  model_rq1,
-  conf.int = TRUE
-) %>%
-  filter(p.value < 0.05) %>%           # significant predictors only
-  mutate(
-    estimate  = round(estimate, 3),
-    std.error = round(std.error, 3),
-    conf.low  = round(conf.low, 3),
-    conf.high = round(conf.high, 3),
-    p.value   = ifelse(p.value < 0.001, "<0.001", sprintf("%.3f", p.value))
-  ) %>%
-  select(term, estimate, std.error, conf.low, conf.high, p.value)
-
-kable(tbl_rq1_sig,
-      caption = "Significant Predictors from RQ1 Linear Model",
-      booktabs = TRUE) %>%
-  kable_styling(full_width = FALSE)
-
+# Pearson residuals plot (will show that there is still a violation of linearity but this is a limitation)
+Resid <- residuals(model_1_pois, type="pearson")
+fit_vals <- fitted(model_1_pois)
+plot(fit_vals, Resid)
 ```
 
 # Predicted Listening Time vs Depression by Streaming Platform
 
 ```{r}
-ggplot(music_data_1,
+ggplot(music_data_1_clean,
        aes(x = Hours.per.day,
            y = Depression,
            color = Primary.streaming.service)) +
@@ -307,14 +354,6 @@ ggplot(music_data_1,
     plot.title = element_text(face = "bold")
   )
 
-music_data_1 %>%
-  filter(Hours.per.day > 24 |
-         Depression > 10 |
-           Depression < 0 |
-           Hours.per.day < 0 |
-         is.na(Hours.per.day) |
-         is.na(Depression))
-
 
 ```
 
@@ -326,8 +365,10 @@ music_data_1 %>%
 # this will be the dataset used for our first research question
 music_data_2 <- music_data_clean
 
+quantile(music_data_2$Depression, 0.75)
+
 # create high_depression as 1 if Depression >= threshold, 0 otherwise
-music_data_2$high_depression <- ifelse(music_data_2$Depression >= 6, 1, 0)
+music_data_2$high_depression <- ifelse(music_data_2$Depression >= 7, 1, 0)
 
 # Fit logistic regression including all relevant predictors
 model2 <- glm(

@@ -122,49 +122,12 @@ music_data_1 <- music_data_1 %>%
 
 
 # ------------------------------------------------------------
-# MODEL A — Raw-scale model (no transformation)
-# ------------------------------------------------------------
-
-# fit our linear regression model
-model_rq1_raw <- lm(
-  Hours.per.day ~ Depression * Primary.streaming.service +
-    Age +
-    While.working +
-    Instrumentalist +
-    Composer +
-    Exploratory +
-    Foreign.languages +
-    Anxiety +
-    Insomnia +
-    OCD +
-    Fav.genre +
-    Music.effects +
-    freq_Classical +
-    freq_Country +
-    freq_EDM +
-    freq_Folk +
-    freq_Gospel +
-    freq_Hiphop +
-    freq_Jazz +
-    freq_Kpop +
-    freq_Latin +
-    freq_Lofi +
-    freq_Metal +
-    freq_Pop +
-    freq_RB +
-    freq_Rap +
-    freq_Rock +
-    freq_Videogamemusic,
-  data = music_data_1
-)
-
-# ------------------------------------------------------------
-# MODEL B — Model with Relevant Predictors
+# MODEL A — Linear regression model
 # ------------------------------------------------------------
 
 # fit our linear regression model
 model_rq1 <- lm(
-  Hours.per.day ~ Depression * Primary.streaming.service +
+  Depression ~ Hours.per.day * Primary.streaming.service +
     Age +
     While.working +
     Instrumentalist +
@@ -180,15 +143,13 @@ model_rq1 <- lm(
 )
 
 # ------------------------------------------------------------
-# MODEL C — Log-transformed model (primary model)
+# MODEL B — Poisson model (primary model)
 # ------------------------------------------------------------
-# build log-transformed outcome
-music_data_1 <- music_data_1 %>%
-  mutate(log_hours = log(Hours.per.day + 0.1))
+# Filtering out 2 values that have decimal depression scores
+music_data_1_clean <- subset(music_data_1, Depression != 3.5)
 
-# run log-transform
-model_rq1_log <- lm(
-  log_hours ~ Depression * Primary.streaming.service +
+model_1_pois <- glm(
+  Depression ~ Hours.per.day * Primary.streaming.service +
     Age +
     While.working +
     Instrumentalist +
@@ -200,32 +161,10 @@ model_rq1_log <- lm(
     OCD +
     Fav.genre +
     Music.effects,
-  data = music_data_1
+  data = music_data_1_clean,
+  family = poisson
 )
 
-# ------------------------------------------------------------
-# MODEL  — Log model + Removing outlier observations
-# ------------------------------------------------------------
-# Removing the three main outliers shown in the diagnostic plots
-music_data_1_subset <- music_data_1[!(rownames(music_data_1) %in% c("407", "345", "537")), ]
-
-# Refitting the model
-# run log-transform
-model_rq1_log_final <- lm(
-  log_hours ~ Depression * Primary.streaming.service +
-    Age +
-    While.working +
-    Instrumentalist +
-    Composer +
-    Exploratory +
-    Foreign.languages +
-    Anxiety +
-    Insomnia +
-    OCD +
-    Fav.genre +
-    Music.effects,
-  data = music_data_1_subset
-)
 
 # ============================================================
 # RQ2 — Prepare dataset and fit logistic regression models
@@ -273,9 +212,11 @@ The primary stakeholder for this memo is the Director of University Counseling &
 
 # Executive Summary
 
-This analysis examines how music-listening behaviors relate to depression symptoms using survey data from 718 respondents. We address two questions: (1) whether daily listening time varies based on depression levels and streaming platforms, and (2) whether the number of hours spent listening to music each day predicts the likelihood of reporting high depression symptoms.
+This analysis examines how music-listening behaviors relate to depression symptoms using survey data from 718 respondents. The dataset was collected through an online Google Form distributed across social media platforms and public discussion forums. Respondents were predominantly young adults: the average age was approximately 24, and the median age was 21, indicating that the sample is largely representative of college-aged students.
 
-For the first question, we find that individuals with higher depression scores tend to listen to more music, although this pattern differs across streaming platforms. Listening while working, insomnia symptoms, musician traits, and certain genre preferences were stronger and more consistent predictors of listening time than depression alone. For the second question, our logistic regression model shows that daily listening hours do not meaningfully increase the odds of being in a high-depression category once other factors are taken into account. Instead, anxiety and insomnia serve as the strongest predictors of elevated depression symptoms.
+We address two questions: (1) whether depression score (self reported on a scale of 0-10) varies based on hours of music listened to per day and streaming platforms, and (2) whether the number of hours spent listening to music each day is associated with the likelihood of reporting high depression symptoms (scores of 7 or above).
+
+For the first question, we find that daily music-listening hours are related to depression scores, but the direction and strength of this relationship depend heavily on the streaming platform. In the baseline platform group (Apple Music), more listening time is associated with higher depression scores, while several other platforms show a weaker or even reversed pattern. This indicates that listening time alone is not a consistent or reliable indicator of depression. Other factors, such as insomnia symptoms, anxiety, and certain genre preferences, were more stable predictors of depression scores than listening hours.For the second question, our logistic regression model shows that daily listening hours do not meaningfully increase the odds of being in a high-depression category once other factors are taken into account. Instead, anxiety and insomnia serve as the strongest predictors of elevated depression symptoms.
 
 Overall, although depression is associated with slightly higher listening time, daily music-listening hours are not a reliable indicator of high depression risk. Co-occurring mental-health symptoms provide far more informative predictive value than listening duration.
 
@@ -291,161 +232,88 @@ Given these findings, everyday listening patterns may carry a measurable signal 
 
 ## Overview of Key Findings
 
-Across the full cleaned dataset (N = 645 Respondents for Model 1 and N = 718 Respondents for Model 2), several clear patterns emerged linking students’ music-listening habits with their self-reported mental-health symptoms. While these relationships cannot establish causality, they reveal meaningful behavioral patterns that could inform low-burden wellness screening.
+Across the full cleaned dataset (N = 646 Respondents for Model 1 and N = 718 Respondents for Model 2), several clear patterns emerged linking students’ music-listening habits with their self-reported mental-health symptoms. While these relationships cannot establish causality, they reveal meaningful behavioral patterns that could inform low-burden wellness screening.
 
 ```{r, fig.cap="Daily Listening Time vs. Depression Score by Streaming Platform.", fig.width=5, fig.height=3}
-ggplot(music_data_1_subset,
-       aes(x = Depression,
-           y = Hours.per.day,
+ggplot(music_data_1_clean,
+       aes(x = Hours.per.day,
+           y = Depression,
            color = Primary.streaming.service)) +
-  geom_point(alpha = 0.4) +
-  geom_smooth(method = "lm", se = FALSE, size = 1) +
+  geom_smooth(method = "lm",
+              se = FALSE,
+              size = 1) + 
   labs(
-    x = "Depression Score",
-    y = "Hours per Day",
-    color = "Streaming Platform"
+    x = "Hours of Music Listening per Day",
+    y = "Depression Score"
   ) +
-  theme_minimal()
+  scale_color_brewer(palette = "Dark2") +
+  scale_y_continuous(limits = c(0, 10)) +     # y-axis capped
+  scale_x_continuous(limits = c(0, 24)) +     # x-axis capped
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.title = element_blank(),
+    legend.position = "right",
+    plot.title = element_text(face = "bold")
+  )
 
 ```
 
-As shown in Figure 1, students with higher depression scores tend to listen to more music per day. Among Apple Music users, listening time increases from about 1 hour/day at low depression levels to 3–4 hours/day at higher levels. Spotify and YouTube Music users show smaller increases, while Pandora users display a slight decline. These differences highlight that both emotional state and platform choice shape listening behavior.
+As shown in Figure 1, the relationship between daily music-listening time and depression score differs substantially across streaming platforms. For Apple Music users, the trend is strongly positive: students who listen for more hours per day show noticeably higher depression scores. Spotify users also show a positive association, though the slope is much more moderate. In contrast, students using YouTube Music or Other streaming services show a negative trend, where greater listening time is associated with lower depression scores for these groups. The pattern is most dramatic for Pandora, where the slope is sharply negative: even moderate increases in listening time correspond to substantially lower depression scores.
+
+These contrasting slopes indicate that the effect of listening time on depression is highly platform-dependent, with some platforms showing the expected positive association and others showing the opposite. As a result, there is no single, uniform relationship between listening hours and depression symptoms across all listeners.
 
 ## Drivers of Daily Listening Time
 
-To understand what predicts how much students listen to music, we fit a multiple linear regression model with a log-transformed outcome: log(daily listening hours + 0.1). This transformation reduces the influence of extreme values and allows coefficients to be interpreted as percentage changes in listening time.
+To examine predictors of depression scores, we fit a Poisson regression model. The final analytic sample included N = 646 respondents after excluding participants who did not report a primary streaming platform and removing two cases with non-integer depression scores (Poisson models require count outcomes).
 
-The final model used N = 645 respondents after filtering non-platform users and removing three influential outliers.
+The regression results show that daily listening time was a significant predictor of depression for users of the baseline streaming platform (Apple Music): each additional hour of music per day was associated with a 4.7% increase in expected depression scores. Independent of listening hours, several streaming platforms showed higher depression scores compared to the baseline service. Pandora users reported nearly 190% higher expected depression scores compared to the baseline platform, and Spotify users showed about a 24% higher depression score. Other streaming platforms and YouTube Music were not significantly different from the baseline at zero listening hours.
 
-```{r, fig.cap="Table 1: Significant Predictors from RQ1 Linear Model (Original and Exponentiated Coefficients)."}
-library(broom)
-library(kableExtra)
-library(dplyr)
-
-tbl_rq1_sig <- tidy(
-  model_rq1_log_final,
-  conf.int = TRUE
-) %>%
-  filter(p.value < 0.05) %>%           
-  mutate(
-    # exponentiate coefficients + CI
-    exp_estimate = exp(estimate),
-    exp_low      = exp(conf.low),
-    exp_high     = exp(conf.high),
-
-    # round columns
-    exp_estimate = round(exp_estimate, 3),
-    exp_low      = round(exp_low, 3),
-    exp_high     = round(exp_high, 3),
-    std.error    = round(std.error, 3),
-    p.value      = ifelse(p.value < 0.001, "<0.001", sprintf("%.3f", p.value))
-  ) %>%
-  select(
-    term,
-    exp_estimate,
-    std.error,
-    exp_low,
-    exp_high,
-    p.value
-  )
-
-kable(
-  tbl_rq1_sig,
-  booktabs = TRUE,
-  col.names = c(
-    "Term",
-    "Exp(Estimate)",
-    "Std Error",
-    "Exp(2.5% CI)",
-    "Exp(97.5% CI)",
-    "p-value"
-  )
-) %>%
-  kable_styling(full_width = FALSE, position = "center", font_size = 8)
-
-```
-
-The regression results in Table 1 show several clear factors associated with higher (or lower) daily listening time after adjusting for demographic and behavioral variables. Depression remains a meaningful predictor: each one-point increase in depression score corresponds to roughly an 11 percent increase in daily listening time, indicating that students with more severe symptoms tend to engage more with music throughout the day. Platform choice is also strongly associated with listening behavior. Compared with Apple Music users, students using Spotify, YouTube Music, Pandora, or other services listen between 78 percent and 117 percent more per day, suggesting large platform-based differences in engagement.
-
-Listening while working emerges as one of the strongest predictors in the model, with these students listening about 83 percent more per day than those who do not listen during work. Several individual characteristics also matter: composers listen about 16 percent more, whereas instrumentalists listen about 15 percent less. Insomnia shows a modest positive effect, with each point associated with a 2 to 3 percent increase in listening time. Finally, musical preferences appear relevant, as jazz listeners average roughly 50 percent more listening time and Latin listeners more than double the listening time of the reference group. Interaction terms indicate that the positive relationship between depression and listening time is weaker among students on most major platforms compared with Apple Music users. Together, these patterns highlight that emotional state, platform choice, and listening context all play meaningful roles in shaping how much music students consume daily.
+Mental-health symptoms were strong predictors of depression. Anxiety was the most influential: for each one-unit increase in anxiety, expected depression scores increased by 11%. Insomnia also had a meaningful effect, with each unit increase associated with a 4.9% rise in depression. OCD symptoms, by contrast, were not a significant predictor after adjusting for the other variables. Most genre preferences were not associated with depression, but gospel listeners had strikingly lower scores: their expected depression was about 49% lower than listeners of the baseline genre, Classical.
 
 ## Indicators of High Depression Symptoms
 
-To assess whether music behavior can meaningfully signal elevated depression, we fit a logistic regression model predicting whether a student scored 6 or above on the depression scale using N = 718 respondents.
+To assess whether music behavior can meaningfully signal elevated depression, we fit a logistic regression model predicting whether a respondent scored 7 or above on the 0–10 depression scale using 718 students. The updated results indicate that daily listening hours are still not a statistically significant predictor of high depression. The odds ratio for listening time is 1.06, meaning that each additional hour of listening is associated with a 5.8% increase in the odds of high depression, but this effect is not significant (p = 0.072). Age, musician status (instrumentalist or composer), and most genre preferences also showed no meaningful association with the likelihood of high depression.
 
-```{r, fig.cap="Table 2: Key Predictors from Logistic Regression (Odds Ratios)"}
-tbl_rq2_condensed <- tidy(
-  model2,
-  exponentiate = TRUE,
-  conf.int = TRUE
-) %>%
-  filter(term %in% c("Hours.per.day", "Anxiety", "Insomnia")) %>%  # key predictors
-  mutate(
-    estimate  = round(estimate, 2),
-    conf.low  = round(conf.low, 2),
-    conf.high = round(conf.high, 2),
-    p.value   = ifelse(p.value < 0.001, "<0.001", sprintf("%.3f", p.value))
-  ) %>%
-  select(term, estimate, conf.low, conf.high, p.value)
+In contrast, anxiety and insomnia remain the strongest predictors of elevated depression symptoms. For anxiety, the odds ratio is 1.39, meaning that each one-point increase raises the odds of high depression by 39% (p \< 0.001). Insomnia also shows a robust effect: each unit increase is associated with a 15% increase in the odds of high depression  (p \< 0.001). Two additional predictors reached significance. Students who primarily listen to hip hop had more than three times the odds of high depression, whereas those who reported that music worsens their mood had odds more than four times higher than students who reported positive or neutral effects. OCD symptoms showed a marginally negative trend but did not reach significance.
 
-kable(
-  tbl_rq2_condensed,
-  booktabs = TRUE
-) %>%
-  kable_styling(full_width = FALSE, font_size = 9)
-```
-
-Table 2 shows that daily listening hours are not a reliable standalone indicator of high depression. This table includes only predictors that are statistically significant (p values below 0.05), along with hours per day of listening time, since this was our primary independent variable of interest. The odds ratio for listening time is 1.05, which would mean that each additional hour of listening increases the odds of high depression by about 5 percent, but since the p-value is above our 0.05 threshold (at 0.140), we cannot say this is statistically significant.
-
-In contrast, anxiety is the strongest predictor of high depression, with an odds ratio of 1.40 (p \< 0.001), meaning each one-point increase in anxiety raises the odds of high depression by about 40%. Insomnia also emerges as a significant predictor, corresponding to a 17% increase in risk per hour increase in daily listening time (p \< 0.001).
-
-Taken together, these results show that while higher depression is associated with more listening, listening time alone should not be treated as a depression flag. Instead, anxiety and insomnia—well-validated psychological indicators—remain the most reliable behavioral cues.
+Taken together, these results show that music-listening hours do not reliably distinguish students with high depression symptoms, even under a stricter severity threshold. Instead, validated psychological indicators—especially anxiety and insomnia—remain far more informative. Music behaviors, including genre preferences and streaming hours, may provide supplemental context but should not be interpreted as standalone mental-health signals.
 
 # Limitations and Recommended Next Steps
 
-Although music-listening patterns carry some signal, especially the tendency for students with higher depression to listen more hours per day, the results suggest that music behavior alone is not a reliable standalone indicator of high depression risk. Any practical use of these insights should therefore be paired with validated psychological information, not used in isolation.
+Although music-listening behaviors do contain some signal, our results show that the relationship between depression scores and daily listening hours is not consistent across streaming platforms. For some platforms, such as the baseline service and Spotify, more listening hours are associated with higher depression scores, while for others—such as YouTube Music, Pandora, and “Other” platforms—the trend is weaker or even reversed. This platform-dependent pattern means that music behavior alone is not a reliable standalone indicator of depression, because the meaning of “listening more” fundamentally changes depending on where students listen. Any practical use of these insights would need to be paired with validated psychological information rather than used in isolation.
 
-However, due to the nature of our data, there are two substantive limitations that are worth keeping in mind when interpreting the findings. First, all mental-health measures in the dataset rely on single self-reported items, not standardized clinical scales such as the PHQ-9 or GAD-7. These single-item scores are coarse and may under- or over-estimate true symptom severity, which limits how confidently we can infer risk or impact of certain variables from them. Second, the data are cross-sectional, meaning we observe students’ music habits and mental-health symptoms at one point in time. This prevents us from determining whether increased listening is a response to worsening mood, a coping strategy, or simply a personal preference unrelated to mental-health changes.
+Two substantive limitations of our data should be kept in mind when interpreting these findings. First, all mental-health measures rely on single self-reported items rather than standardized clinical scales like the PHQ-9 or GAD-7. These coarse, one-item scores may underestimate or overestimate true symptom severity, limiting how confidently we can draw inferences about the size or importance of predictors. Second, the dataset is cross-sectional, capturing students’ listening habits and mental-health symptoms at a single point in time. This prevents us from determining whether heavier or lighter listening patterns reflect coping strategies, consequences of mood changes, or stable personal preferences unrelated to mental-health trajectories.
 
-Despite these limitations, the patterns do point toward practical next steps for wellness monitoring and outreach. Because anxiety and insomnia, which have been validated as co-indicators of depression, are far more predictive than listening time, counseling services could focus on early screening, brief questionnaires, or outreach strategies that incorporate these co-occurring symptoms.
+Despite these limitations, the patterns suggest meaningful directions for future wellness monitoring and outreach. Because anxiety and insomnia—validated co-indicators of depression—were far more consistent predictors of depression scores than listening behavior, counseling services may benefit from prioritizing these co-occurring symptoms in early screening or brief questionnaires. Music-related responses may still play a useful supporting role, especially if collected with more nuance than a single “hours per day” measure. Our data do not capture why, when, or how students use music, and these contextual dimensions may contain information that simple duration-based measures miss.
 
-Music-related questions may still play a useful supporting role. Although our analysis did not find strong predictive value for total listening hours alone, the limitations of the dataset mean we cannot rule out that more specific aspects of music use relate meaningfully to students’ mental health. A single measure like “hours per day” does not capture when students listen, what emotional purpose the music serves, or how listening fits into their daily routines. These dimensions may still offer valuable insight.
+Moving forward, the counseling center could incorporate a few targeted questions about students’ music use into existing wellness screenings—for example, whether they listen to manage stress, regulate mood, support sleep, or reduce intrusive thoughts. These specific motivations are more likely to relate meaningfully to mental-health needs than overall listening volume. Finally, the university could consider collecting higher-quality, campus-specific data using improved measures and representative sampling. Doing so would allow staff to evaluate whether certain music-use patterns provide early indicators of mental-health challenges within their own student population and develop more evidence-informed outreach strategies.
 
-Moving forward, the counseling center could incorporate a few brief questions into wellness screenings that ask students how they use music, such as whether they listen to manage stress, regulate mood, support sleep, or avoid intrusive thoughts. Gathering this targeted information would be low burden and could help staff identify students who may benefit from additional assessment or outreach.
+\newpage
 
-The university could also consider running its own campus-wide survey that includes these improved questions and relies on more representative sampling than public social media–based datasets. Collecting higher-quality, campus-specific data would allow the counseling center to understand patterns in its own student population and evaluate whether music-related behaviors provide meaningful early signals of mental-health needs. This approach would provide a stronger evidence base for future screening tools or outreach strategies.
-
-# Data
+# Technical Appendix
 
 ## Data Background
 
-The data used in this analysis comes from the Music and Mental Health (MxMH) Survey Results hosted on Kaggle. The dataset was collected through an online Google Form that was distributed via social media and public forums. It contains 736 respondents (rows) and includes variables on demographic characteristics (such as age), music-listening habits (hours per day, streaming platform, frequency of listening to certain genres), and self-reported mental-health scores for anxiety, depression, insomnia, and OCD (rated 0-10). The data is cross-sectional and self-reported, meaning it is suitable for identifying associations/correlations but not establishing causal effects.
-
+The data used in this analysis come from the Music and Mental Health (MxMH) Survey Results hosted on Kaggle. The dataset was collected through an online Google Form distributed through social media platforms and public forums, resulting in a convenience sample of 736 respondents. After cleaning, participants ranged in age from 10 to 73, with an average age of approximately 24 and a median age of 21, indicating that the sample is largely composed of late-adolescent and young adult respondents. Because most individuals fall within the traditional college-age range, it is reasonably aligned with the population of interest for our stakeholder—a university counseling center—though it is not a representative campus sample. The dataset includes demographic variables (such as age), music-listening behaviors (hours per day, primary streaming platform, and preferred genres), and self-reported mental-health symptom scores for anxiety, depression, insomnia, and OCD (each rated 0–10). As a cross-sectional, self-reported dataset, it is appropriate for identifying associations but cannot establish causal relationships.
 ## Data Cleaning
 
-Our data cleaning process began with an assessment of missing values across all columns. This revealed 107 null entries in the BPM column and a single null entry in the Age column. After looking further into the BPM data collection, we discovered that it was meant to represent the “Beats per minute of favorite genre.” However, rows with the same reported favorite genre displayed inconsistent BPM values, indicating that participants did not interpret or answer the question reliably. Combined with the large number of missing entries, this inconsistency made the variable unsuitable for analysis, so we dropped the BPM column entirely. The single row with a missing Age value was also removed to maintain completeness for demographic modeling.
+We began by assessing missingness across all variables. Overall, 107 observations had missing or inconsistent values in the BPM variable, and because responses to this item were highly unreliable, we removed the BPM column entirely. We additionally removed 1 observation with a missing age value to maintain completeness of demographic information. During outlier screening, we excluded 1 respondent whose reported age and music-listening hours were implausible and would have exerted undue influence on later models.
 
-Next, we examined the dataset for implausible or erroneous entries. During this process, we identified a respondent who reported being 89 years old and listening to music for 24 hours per day, and they were doing so while working. Because this combination is not physically possible and would exert undue influence on any model involving hours per day, we removed this outlier from the dataset.
+Several variables with binary “Yes/No” responses contained invalid or misspelled entries; to ensure consistency in these predictors, we removed 9 rows that did not provide valid responses. The music-effects variable contained 7 blank entries, which were also removed because the variable is used in downstream modeling. For analyses involving streaming platforms (RQ1), we excluded respondents who reported not using a streaming service or left the platform question blank, resulting in the removal of 60 observations for that subset. In addition, because Poisson modeling was used for RQ1, we excluded 2 rows that contained non-integer values for Depression score.
 
-We then reviewed all variables designed to accept only binary “Yes” or “No” responses. Several of these columns contained values outside of the allowed set, such as misspellings, alternative phrasing, or blank entries. To maintain consistency in these binary predictors, we filtered out any rows that did not provide valid “Yes” or “No” answers across all such variables, resulting in the removal of nine additional rows.
+To prepare the binary outcome for RQ2, we created a “high depression” indicator classifying respondents scoring 7 or higher on the 0–10 depression scale as experiencing elevated symptoms. Because there is no established clinical cutoff for single-item self-reported depression scores, we adopted a data-driven threshold based on the sample’s third quartile (Q3 = 7), which identifies respondents in the highest 25% of the depression distribution.
 
-After this, we checked the music effects variable and found seven cases where respondents left this question blank. Because an empty string does not constitute a valid category and this variable is used in later modeling, we removed these seven rows as well.
-
-For analyses involving streaming services, we examined the primary streaming service column and identified two types of unusable entries: blank responses and the explicit answer “I do not use a streaming service.” Because our first research question specifically compares listening patterns across streaming platforms, respondents without a platform could not be meaningfully included in that analysis. Therefore, for the dataset used in RQ1, we removed all rows with missing streaming-service information as well as those who reported not using any streaming service.
-
-Finally, to prepare the binary outcome for our second research question, we created a high depression variable that flags individuals with elevated symptom levels. Because the average depression score in the dataset was 4.82 and the median was 5, we designated respondents with a score of 6 or higher as experiencing “high depression.” This threshold represents a meaningful distinction between typical responses and substantially elevated symptom reports, allowing us to model the likelihood of more severe depression symptoms.
-
-After cleaning, there were 645 rows in the data used for model 1 and 718 rows in the data used for model 2.
+After all cleaning steps, the final dataset contained 646 respondents for the model examining depression scores (RQ1) and 718 respondents for the model predicting high-depression status (RQ2).
 
 # Models
 
-## Research Question 1: “How does the number of hours spent listening to music per day vary by depression status and primary streaming service?”
+## Research Question 1: “How does depression score vary by hours spent listening to music per day and primary streaming service?”
 
-To investigate how the number of hours spent listening to music per day varies based on depression symptoms and primary streaming service, we fit a multiple linear regression model using hours per day as the continuous response variable. Linear regression is appropriate for this question because the goal is to estimate how the average listening duration changes across different levels of depression and across streaming platforms, while adjusting for potential confounders. We also included an interaction term between depression and primary streaming service, which tests whether the association between self-reported depression symptoms and daily listening time differs by the platform a respondent uses.
+To examine how depression scores vary based on daily music-listening hours and streaming platform, we fit a Poisson regression model using the depression score (0–10) as the count-based response variable. Poisson regression is appropriate because the outcome is a non-negative count, and the goal is to estimate how the expected depression score changes with listening time and platform use while adjusting for relevant covariates. We included an interaction between hours per day and primary streaming service to test whether the association between listening duration and depression differs across platforms. This directly addresses our research question by modeling whether the slope relating listening time to depression score varies depending on the service a respondent uses.
 
-Beyond the primary predictors of depression and primary streaming service, we included a set of covariates to reduce potential confounding and isolate the effects of depression and steaming service on listening time. These covariates were selected because they relate to both music-listening behavior and mental-health-related characteristics without making the model too busy. These covariates include age, while working (whether the respondent listens while working), instrumentalist (yes/no), composer (yes/no), exploratory (whether they tend to explore new music), foreign languages (whether they tend to listen to music in foreign languages), and three mental health related variables (anxiety, insomnia, OCD, all self-reported on a scale of 0-10). We also included two music-related behavioral factors, favorite genre and music effects, to account for genre preferences and how individuals perceive music impacts their emotions. Including these variables helps adjust for individual differences in music engagement, mental-health comorbidity, and daily listening contexts that could otherwise bias the estimated relationships.
+Beyond the primary predictors of listening hours and streaming platform, we incorporated a set of covariates to reduce potential confounding and better isolate the effects of platform-specific listening patterns. These covariates were chosen because they relate to both music-use behavior and broader mental-health characteristics. The model adjusts for age, whether the respondent listens while working, instrumentalist status, composer status, exploratory listening tendencies, listening to music in foreign languages, and three additional mental-health symptom scores (anxiety, insomnia, and OCD). We also included favorite genre and perceived music effects to account for musical preferences and how individuals believe music influences their emotions. Including these variables helps adjust for individual differences in musical habits, mental-health co-morbidity, and listening contexts that could bias estimated associations.
 
-Our model, which follows the linear regression framework, relies on the standard assumptions of linearity, independence of observations, homoscedasticity, and normally distributed residuals. We also assumed that there was no multicollinearity among predictors, and all of these assumptions were assessed via diagnostic plots/tests.
+The Poisson framework assumes that the mean and variance of the outcome are equal, observations are independent, predictors have a log-linear relationship with the expected count, and predictors are not highly collinear. We evaluated these assumptions through diagnostic checks, including residual plots, variance-inflation factors, and an AIC comparison with a negative binomial model. Although the model showed mild overdispersion, the Poisson specification still provided a reasonable structure for examining platform-specific differences in the relationship between listening time and depression.
 
 ## Research Question 2: “Does the number of hours spent listening to music each day increase the likelihood of reporting high depression symptoms?”
 
@@ -459,96 +327,24 @@ Logistic regression, and therefore our model, assumes independent observations, 
 
 ## Research Question 1
 
-The first model we fit for RQ1 was a linear regression model that regressed the raw outcome of hours of music listening per day on all available predictors in the data set.
+The first model we fit for RQ1 was a linear regression model that regressed depression score on our chosen predictors, including our interaction term of hours spent listening per day x primary streaming service.
 
-```{r, fig.cap="Diagnostic plots for the raw RQ1 model."}
+```{r, fig.height=6, fig.cap="Diagnostic plots for the raw RQ1 model."}
 par(mfrow = c(2, 2))
-plot(model_rq1_raw)
+plot(model_rq1)
 par(mfrow = c(1, 1))
 ```
 
-After fitting this initial model, we first examined the standard diagnostic plots, as shown in Figure 2: Residuals vs Fitted, Normal Q-Q, Scale-Location, and Residuals vs. Leverage. The Residuals vs Fitted plot revealed a strong violation of homoscedasticity, with the points forming a funnel-shape, and a small violation of linearity, where the red smoothing line curved upward rather than remaining flat. The Normal Q–Q plot showed noticeable departures from the 45 degree line, especially in the upper tail, a clear strong violation of normality. The Scale–Location plot further confirmed heteroscedasticity, with residual spread increasing at higher fitted values. Finally, the Residuals vs. Leverage plot identified several influential observations with large residuals and unusually high leverage, suggesting they were exerting disproportionate influence on the fitted model.
+After fitting this initial model, we first examined the standard diagnostic plots, as shown in Figure 2: Residuals vs Fitted, Normal Q-Q, Scale-Location, and Residuals vs. Leverage.
+While the Normal Q-Q plot showed no strong evidence of a normality violation, as there are no signficiant departures from the 45 degree line, the Residuals vs Fitted plot revealed a strong violation of homoscedasticity, with the points forming a funnel-shape, and a small violation of linearity, where the red smoothing line curved downwards rather than remaining flat. 
 
-After examining the diagnostic plots, we assessed multicollinearity using GVIF values, which adjust for the degrees of freedom of multi-level categorical variables. For most predictors, including age, musician traits, mental-health indicators, and the genre-frequency variables, the adjusted $\text{GVIF}^{1/(2 \cdot \text{Df})}$ values were all close to 1.1-1.3, indicating low multicollinearity and no immediate concern for inflation of variance. The interaction term between depression and primary streaming service also showed a modest adjusted GVIF value of approximately 1.10, further supporting stability in these estimates.
+After examining the diagnostic plots, we assessed multicollinearity using GVIF values, which adjust for the degrees of freedom of multi-level categorical variables. No predictors exhibited adjusted GVIF values at levels (around 3 or 4) that would indicate problematic multicollinearity.
 
-One exception was favorite genre, a 16-level categorical variable, which produced a very large raw GVIF (≈ 2400). However, its adjusted value, $\text{GVIF}^{1/(2 \cdot \text{Df})} \approx 1.30$, fell well within acceptable thresholds, since high raw GVIF numbers are expected for factors with many degrees of freedom. No predictors exhibited adjusted GVIF values approaching levels (≈ 2 or 3) that would indicate problematic multicollinearity.
+Because the linear regression model exhibited violations of both linearity and homoscedasticity, we decided to fit a poisson model. After removing 2 observations that included non-integer depression scores, 
 
-```{r fig.cap="Diagnostic plots for the raw RQ1 model.", fig.width=4, fig.height=3}
-p1 <- ggplot(music_data_1, aes(x = Hours.per.day)) +
-geom_histogram(bins = 30, color = "black") +
-labs(
-x = "Hours of music listening per day",
-y = "Count",
-title = "Distribution of Hours.per.day"
-)
 
-## ---- fig.width=4, fig.height=3 ----
-p1
 
-```
 
-Because the full model included many weakly justified predictors, we fit a reduced model to improve parsimony and check whether the diagnostic issues were caused by unnecessary complexity. We also inspected a histogram of hours per day in Figure 3, which was strongly right-skewed, suggesting structural issues with the outcome itself. The reduced model produced essentially the same adjusted $R^2 (\approx 0.16)$ and similar residual behavior, with persistent violations of linearity, homoscedasticity, and normality, plus influential points. This showed that removing predictors did not improve model fit and that the underlying outcome distribution, not just model complexity, was driving the diagnostic problems.
-
-```{r, fig.cap="Diagnostic plots for the log-transformed RQ1 model.", fig.align='center'}
-
-# Set plotting window to 2x2
-par(mfrow = c(2, 2))
-
-# Produce all 4 diagnostic plots
-plot(model_rq1_log_final)
-
-# (Optional) Reset layout
-par(mfrow = c(1, 1))
-
-# we can see that violations of homoscedasticity and normality have improved (no more strong violations)
-```
-
-To address this we applied a log transformation to the outcome and re–fit the model with $\log(\text{Hours per day} + 0.1)$ as the response. On the log scale, the Residuals vs fitted plot and Q–Q plot showed substantially more symmetric and homoscedastic residuals (Figure 4) and the histogram of the transformed outcome indicated a much more balanced distribution. These improvements suggested that the log–transformed model better met the assumptions of linear regression. We also used variance inflation factors (VIFs) to check for multicollinearity among predictors and did not find strong evidence of a violation.
-
-```{r, fig.cap="Influential Points Measured by Cook's Distance.", fig.align='center', fig.width=4, fig.height=3}
-# Cook's distance for linear regression (RQ1)
-cooks <- cooks.distance(model_rq1_log)
-
-plot(cooks, type = "h",
-     main = "Influential Points Measured by Cook's Distance",
-     ylab = "Cook's distance",
-     xlab = "Index",
-     cex.main = 0.8)
-```
-
-To evaluate influential observations, we computed Cook’s distance for the log-transformed RQ1 model and examined the corresponding plot (Figure 5). We also inspected the residual and leverage diagnostic plots for outliers. Combining these approaches, we identified three extreme points to remove: two points were flagged as outliers in both the diagnostic plots and Cook’s distance, and one additional point appeared as an outlier only in the diagnostic plots. After removing these three extreme points , we refit the log-transformed model. The residuals are now more symmetrically distributed (Min = -1.84, Max = 1.80, Median ≈ 0), and the residual standard error decreased to 0.625, indicating improved model fit.
-
-Several predictors remain significant, including Depression, Primary streaming service, While working, Instrumentalist, Composer, Insomnia, and select favorite genres, with interactions between Depression and streaming platform also holding. The adjusted $R^2$ increased to 0.220, showing that the log transformation and removal of influential points slightly improved the explained variance.
-
-```{r, fig.cap="Table 3: Model comparison for RQ1 using adjusted R-squared and AIC."}
-
-comp_tbl <- data.frame(
-Model = c("Raw model", "Reduced model", "Log transform", "Log transform + remove outliers"),
-Adj_R2 = c(
-summary(model_rq1_raw)$adj.r.squared,
-summary(model_rq1)$adj.r.squared,
-summary(model_rq1_log)$adj.r.squared,
-summary(model_rq1_log_final)$adj.r.squared
-),
-AIC = c(
-AIC(model_rq1_raw),
-AIC(model_rq1),
-AIC(model_rq1_log),
-AIC(model_rq1_log_final)
-)
-)
-
-kable(comp_tbl, booktabs = TRUE) %>%
-  kable_styling(
-    position = "center",
-    full_width = FALSE,
-    latex_options = c("hold_position", "striped"),
-    font_size = 9
-  )
-
-```
-
-Table 3 presents a comparison of the models for RQ1 using adjusted $R^2$ and AIC. The raw model explained about $19\%$ of the variance but had a high AIC, reflecting poorer fit. Reducing predictors slightly lowered adjusted $R^2$ but improved AIC marginally. Applying the log transformation improved both adjusted $R^2$ (to 0.232) and AIC (to 1309), indicating better model performance. Finally, removing the three outliers slightly reduced adjusted $R^2$ to 0.220 but further lowered AIC to 1260, suggesting a more parsimonious and stable model. Overall, the log-transformed model with outliers removed balances interpretability, fit, and the influence of extreme points, and became our primary model for question 1.
 
 ```{r, fig.cap="Table 4: Final linear regression model for RQ1 (log-hours with influential points removed)."}
 
