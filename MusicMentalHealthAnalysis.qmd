@@ -195,6 +195,11 @@ music_data_1 <- music_data_1 %>%
 music_data_1 %>%
   count(Primary.streaming.service)
 ```
+# Finding the median and mean age for stakeholder relevance
+```{r}
+mean(music_data_1$Age, na.rm = TRUE)
+median(music_data_1$Age, na.rm = TRUE)
+```
 
 # **Modeling for Research Question 1**
 
@@ -420,7 +425,6 @@ ggplot(music_data_1_subset,
   theme_minimal()
 
 ```
-
 
 
 

@@ -138,22 +138,31 @@ window.Quarto = {
 <thead>
 <tr>
 <th style="text-align:left;">
-term
+Term
 </th>
 <th style="text-align:right;">
-estimate
+Estimate (log scale)
 </th>
 <th style="text-align:right;">
-std.error
+Exp(Estimate)
 </th>
 <th style="text-align:right;">
-conf.low
+Std Error
 </th>
 <th style="text-align:right;">
-conf.high
+2.5% CI
+</th>
+<th style="text-align:right;">
+97.5% CI
+</th>
+<th style="text-align:right;">
+Exp(2.5% CI)
+</th>
+<th style="text-align:right;">
+Exp(97.5% CI)
 </th>
 <th style="text-align:left;">
-p.value
+p-value
 </th>
 </tr>
 </thead>
@@ -166,6 +175,9 @@ Depression
 0.106
 </td>
 <td style="text-align:right;">
+1.112
+</td>
+<td style="text-align:right;">
 0.032
 </td>
 <td style="text-align:right;">
@@ -173,6 +185,12 @@ Depression
 </td>
 <td style="text-align:right;">
 0.169
+</td>
+<td style="text-align:right;">
+1.044
+</td>
+<td style="text-align:right;">
+1.184
 </td>
 <td style="text-align:left;">
 0.001
@@ -186,6 +204,9 @@ Primary.streaming.serviceOther streaming service
 0.696
 </td>
 <td style="text-align:right;">
+2.007
+</td>
+<td style="text-align:right;">
 0.245
 </td>
 <td style="text-align:right;">
@@ -193,6 +214,12 @@ Primary.streaming.serviceOther streaming service
 </td>
 <td style="text-align:right;">
 1.177
+</td>
+<td style="text-align:right;">
+1.241
+</td>
+<td style="text-align:right;">
+3.245
 </td>
 <td style="text-align:left;">
 0.005
@@ -206,6 +233,9 @@ Primary.streaming.servicePandora
 0.776
 </td>
 <td style="text-align:right;">
+2.172
+</td>
+<td style="text-align:right;">
 0.355
 </td>
 <td style="text-align:right;">
@@ -213,6 +243,12 @@ Primary.streaming.servicePandora
 </td>
 <td style="text-align:right;">
 1.472
+</td>
+<td style="text-align:right;">
+1.083
+</td>
+<td style="text-align:right;">
+4.359
 </td>
 <td style="text-align:left;">
 0.029
@@ -226,6 +262,9 @@ Primary.streaming.serviceSpotify
 0.577
 </td>
 <td style="text-align:right;">
+1.780
+</td>
+<td style="text-align:right;">
 0.197
 </td>
 <td style="text-align:right;">
@@ -233,6 +272,12 @@ Primary.streaming.serviceSpotify
 </td>
 <td style="text-align:right;">
 0.964
+</td>
+<td style="text-align:right;">
+1.209
+</td>
+<td style="text-align:right;">
+2.622
 </td>
 <td style="text-align:left;">
 0.004
@@ -246,6 +291,9 @@ Primary.streaming.serviceYouTube Music
 0.625
 </td>
 <td style="text-align:right;">
+1.868
+</td>
+<td style="text-align:right;">
 0.216
 </td>
 <td style="text-align:right;">
@@ -253,6 +301,12 @@ Primary.streaming.serviceYouTube Music
 </td>
 <td style="text-align:right;">
 1.048
+</td>
+<td style="text-align:right;">
+1.223
+</td>
+<td style="text-align:right;">
+2.853
 </td>
 <td style="text-align:left;">
 0.004
@@ -266,6 +320,9 @@ Age
 -0.005
 </td>
 <td style="text-align:right;">
+0.995
+</td>
+<td style="text-align:right;">
 0.003
 </td>
 <td style="text-align:right;">
@@ -273,6 +330,12 @@ Age
 </td>
 <td style="text-align:right;">
 0.000
+</td>
+<td style="text-align:right;">
+0.990
+</td>
+<td style="text-align:right;">
+1.000
 </td>
 <td style="text-align:left;">
 0.043
@@ -286,6 +349,9 @@ While.workingYes
 0.605
 </td>
 <td style="text-align:right;">
+1.831
+</td>
+<td style="text-align:right;">
 0.065
 </td>
 <td style="text-align:right;">
@@ -293,6 +359,12 @@ While.workingYes
 </td>
 <td style="text-align:right;">
 0.732
+</td>
+<td style="text-align:right;">
+1.613
+</td>
+<td style="text-align:right;">
+2.078
 </td>
 <td style="text-align:left;">
 &lt;0.001
@@ -306,6 +378,9 @@ InstrumentalistYes
 -0.160
 </td>
 <td style="text-align:right;">
+0.852
+</td>
+<td style="text-align:right;">
 0.063
 </td>
 <td style="text-align:right;">
@@ -313,6 +388,12 @@ InstrumentalistYes
 </td>
 <td style="text-align:right;">
 -0.037
+</td>
+<td style="text-align:right;">
+0.753
+</td>
+<td style="text-align:right;">
+0.964
 </td>
 <td style="text-align:left;">
 0.011
@@ -326,6 +407,9 @@ ComposerYes
 0.152
 </td>
 <td style="text-align:right;">
+1.164
+</td>
+<td style="text-align:right;">
 0.075
 </td>
 <td style="text-align:right;">
@@ -333,6 +417,12 @@ ComposerYes
 </td>
 <td style="text-align:right;">
 0.300
+</td>
+<td style="text-align:right;">
+1.004
+</td>
+<td style="text-align:right;">
+1.350
 </td>
 <td style="text-align:left;">
 0.044
@@ -346,6 +436,9 @@ Insomnia
 0.026
 </td>
 <td style="text-align:right;">
+1.027
+</td>
+<td style="text-align:right;">
 0.009
 </td>
 <td style="text-align:right;">
@@ -353,6 +446,12 @@ Insomnia
 </td>
 <td style="text-align:right;">
 0.044
+</td>
+<td style="text-align:right;">
+1.008
+</td>
+<td style="text-align:right;">
+1.046
 </td>
 <td style="text-align:left;">
 0.004
@@ -366,6 +465,9 @@ Fav.genreJazz
 0.403
 </td>
 <td style="text-align:right;">
+1.497
+</td>
+<td style="text-align:right;">
 0.175
 </td>
 <td style="text-align:right;">
@@ -373,6 +475,12 @@ Fav.genreJazz
 </td>
 <td style="text-align:right;">
 0.747
+</td>
+<td style="text-align:right;">
+1.062
+</td>
+<td style="text-align:right;">
+2.110
 </td>
 <td style="text-align:left;">
 0.021
@@ -386,6 +494,9 @@ Fav.genreLatin
 0.954
 </td>
 <td style="text-align:right;">
+2.595
+</td>
+<td style="text-align:right;">
 0.457
 </td>
 <td style="text-align:right;">
@@ -393,6 +504,12 @@ Fav.genreLatin
 </td>
 <td style="text-align:right;">
 1.851
+</td>
+<td style="text-align:right;">
+1.058
+</td>
+<td style="text-align:right;">
+6.366
 </td>
 <td style="text-align:left;">
 0.037
@@ -406,6 +523,9 @@ Depression:Primary.streaming.serviceOther streaming service
 -0.165
 </td>
 <td style="text-align:right;">
+0.848
+</td>
+<td style="text-align:right;">
 0.043
 </td>
 <td style="text-align:right;">
@@ -413,6 +533,12 @@ Depression:Primary.streaming.serviceOther streaming service
 </td>
 <td style="text-align:right;">
 -0.081
+</td>
+<td style="text-align:right;">
+0.779
+</td>
+<td style="text-align:right;">
+0.922
 </td>
 <td style="text-align:left;">
 &lt;0.001
@@ -426,6 +552,9 @@ Depression:Primary.streaming.servicePandora
 -0.207
 </td>
 <td style="text-align:right;">
+0.813
+</td>
+<td style="text-align:right;">
 0.067
 </td>
 <td style="text-align:right;">
@@ -433,6 +562,12 @@ Depression:Primary.streaming.servicePandora
 </td>
 <td style="text-align:right;">
 -0.077
+</td>
+<td style="text-align:right;">
+0.713
+</td>
+<td style="text-align:right;">
+0.926
 </td>
 <td style="text-align:left;">
 0.002
@@ -446,6 +581,9 @@ Depression:Primary.streaming.serviceSpotify
 -0.103
 </td>
 <td style="text-align:right;">
+0.902
+</td>
+<td style="text-align:right;">
 0.033
 </td>
 <td style="text-align:right;">
@@ -453,6 +591,12 @@ Depression:Primary.streaming.serviceSpotify
 </td>
 <td style="text-align:right;">
 -0.038
+</td>
+<td style="text-align:right;">
+0.845
+</td>
+<td style="text-align:right;">
+0.963
 </td>
 <td style="text-align:left;">
 0.002
@@ -466,6 +610,9 @@ Depression:Primary.streaming.serviceYouTube Music
 -0.140
 </td>
 <td style="text-align:right;">
+0.869
+</td>
+<td style="text-align:right;">
 0.038
 </td>
 <td style="text-align:right;">
@@ -474,17 +621,23 @@ Depression:Primary.streaming.serviceYouTube Music
 <td style="text-align:right;">
 -0.065
 </td>
+<td style="text-align:right;">
+0.806
+</td>
+<td style="text-align:right;">
+0.937
+</td>
 <td style="text-align:left;">
 &lt;0.001
 </td>
 </tr>
 </tbody>
 </table>
-<p>Table 1: Significant Predictors from RQ1 Linear Model.</p>
+<p>Table 1: Significant Predictors from RQ1 Linear Model (Original and Exponentiated Coefficients).</p>
 </div>
 </div>
-<p>INSERT ANALYSIS HERE</p>
-<p>These results show that log-transformed listening hours are shaped by depression symptoms, platform behavior, work context, and musical identity traits.</p>
+<p>The regression results in Table 1 show several clear factors associated with higher (or lower) daily listening time after adjusting for demographic and behavioral variables. Depression remains a meaningful predictor: each one-point increase in depression score corresponds to roughly an 11 percent increase in daily listening time, indicating that students with more severe symptoms tend to engage more with music throughout the day. Platform choice is also strongly associated with listening behavior. Compared with Apple Music users, students using Spotify, YouTube Music, Pandora, or other services listen between 78 percent and 117 percent more per day, suggesting large platform-based differences in engagement.</p>
+<p>Listening while working emerges as one of the strongest predictors in the model, with these students listening about 83 percent more per day than those who do not listen during work. Several individual characteristics also matter: composers listen about 16 percent more, whereas instrumentalists listen about 15 percent less. Insomnia shows a modest positive effect, with each point associated with a 2 to 3 percent increase in listening time. Finally, musical preferences appear relevant, as jazz listeners average roughly 50 percent more listening time and Latin listeners more than double the listening time of the reference group. Interaction terms indicate that the positive relationship between depression and listening time is weaker among students on most major platforms compared with Apple Music users. Together, these patterns highlight that emotional state, platform choice, and listening context all play meaningful roles in shaping how much music students consume daily.</p>
 </section>
 <section id="indicators-of-high-depression-symptoms" class="level2">
 <h2 class="anchored" data-anchor-id="indicators-of-high-depression-symptoms">Indicators of High Depression Symptoms</h2>

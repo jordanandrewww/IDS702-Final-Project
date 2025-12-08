@@ -1,17 +1,19 @@
 ---
 title: "Music Mental Health Analysis"
-subtitle: "Jordan Andrew"
-format: html
+subtitle: "Jordan Andrew, Pranshul Bhatnagar, Arushi Singh, and Jay Wu"
+format: pdf
 execute:
   echo: false
   message: false
   warning: false
 editor: visual
+classoption:
+  - DIV=18
 ---
 
 ------------------------------------------------------------------------
 
-```{r setup-packages, include=FALSE}
+```{r load-packages, message = FALSE, warning = FALSE}
 # ============================================================
 # Load required libraries
 # ============================================================
@@ -113,9 +115,6 @@ music_data_1 <- music_data_clean
 # removing the row where Primary.streaming.service is empty
 music_data_1 <- music_data_1 %>%
   filter(Primary.streaming.service != "")
-
-music_data_1 %>%
-  filter(Primary.streaming.service == "I do not use a streaming service.")
 
 # removing the rows where participants stated they do not use a streaming service
 music_data_1 <- music_data_1 %>%
@@ -334,23 +333,17 @@ tbl_rq1_sig <- tidy(
     exp_low      = exp(conf.low),
     exp_high     = exp(conf.high),
 
-    # round all columns appropriately
-    estimate     = round(estimate, 3),
-    std.error    = round(std.error, 3),
-    conf.low     = round(conf.low, 3),
-    conf.high    = round(conf.high, 3),
+    # round columns
     exp_estimate = round(exp_estimate, 3),
     exp_low      = round(exp_low, 3),
     exp_high     = round(exp_high, 3),
+    std.error    = round(std.error, 3),
     p.value      = ifelse(p.value < 0.001, "<0.001", sprintf("%.3f", p.value))
   ) %>%
   select(
     term,
-    estimate,
     exp_estimate,
     std.error,
-    conf.low,
-    conf.high,
     exp_low,
     exp_high,
     p.value
@@ -361,17 +354,15 @@ kable(
   booktabs = TRUE,
   col.names = c(
     "Term",
-    "Estimate (log scale)",
     "Exp(Estimate)",
     "Std Error",
-    "2.5% CI",
-    "97.5% CI",
     "Exp(2.5% CI)",
     "Exp(97.5% CI)",
     "p-value"
   )
 ) %>%
-  kable_styling(full_width = FALSE, font_size = 9)
+  kable_styling(full_width = FALSE, position = "center", font_size = 8)
+
 ```
 
 The regression results in Table 1 show several clear factors associated with higher (or lower) daily listening time after adjusting for demographic and behavioral variables. Depression remains a meaningful predictor: each one-point increase in depression score corresponds to roughly an 11 percent increase in daily listening time, indicating that students with more severe symptoms tend to engage more with music throughout the day. Platform choice is also strongly associated with listening behavior. Compared with Apple Music users, students using Spotify, YouTube Music, Pandora, or other services listen between 78 percent and 117 percent more per day, suggesting large platform-based differences in engagement.
@@ -470,19 +461,19 @@ Logistic regression, and therefore our model, assumes independent observations, 
 
 The first model we fit for RQ1 was a linear regression model that regressed the raw outcome of hours of music listening per day on all available predictors in the data set.
 
-```{r, fig.cap="Figure 2: Diagnostic plots for the raw RQ1 model."}
+```{r, fig.cap="Diagnostic plots for the raw RQ1 model."}
 par(mfrow = c(2, 2))
 plot(model_rq1_raw)
 par(mfrow = c(1, 1))
 ```
 
-After fitting this initial model, we first examined the standard diagnostic plots, as shown above: Residuals vs Fitted, Normal Q-Q, Scale-Location, and Residuals vs. Leverage. The Residuals vs Fitted plot revealed a strong violation of homoscedasticity, with the points forming a funnel-shape, and a small violation of linearity, where the red smoothing line curved upward rather than remaining flat. The Normal Q–Q plot showed noticeable departures from the 45 degree line, especially in the upper tail, a clear strong violation of normality. The Scale–Location plot further confirmed heteroscedasticity, with residual spread increasing at higher fitted values. Finally, the Residuals vs. Leverage plot identified several influential observations with large residuals and unusually high leverage, suggesting they were exerting disproportionate influence on the fitted model.
+After fitting this initial model, we first examined the standard diagnostic plots, as shown in Figure 2: Residuals vs Fitted, Normal Q-Q, Scale-Location, and Residuals vs. Leverage. The Residuals vs Fitted plot revealed a strong violation of homoscedasticity, with the points forming a funnel-shape, and a small violation of linearity, where the red smoothing line curved upward rather than remaining flat. The Normal Q–Q plot showed noticeable departures from the 45 degree line, especially in the upper tail, a clear strong violation of normality. The Scale–Location plot further confirmed heteroscedasticity, with residual spread increasing at higher fitted values. Finally, the Residuals vs. Leverage plot identified several influential observations with large residuals and unusually high leverage, suggesting they were exerting disproportionate influence on the fitted model.
 
 After examining the diagnostic plots, we assessed multicollinearity using GVIF values, which adjust for the degrees of freedom of multi-level categorical variables. For most predictors, including age, musician traits, mental-health indicators, and the genre-frequency variables, the adjusted $\text{GVIF}^{1/(2 \cdot \text{Df})}$ values were all close to 1.1-1.3, indicating low multicollinearity and no immediate concern for inflation of variance. The interaction term between depression and primary streaming service also showed a modest adjusted GVIF value of approximately 1.10, further supporting stability in these estimates.
 
 One exception was favorite genre, a 16-level categorical variable, which produced a very large raw GVIF (≈ 2400). However, its adjusted value, $\text{GVIF}^{1/(2 \cdot \text{Df})} \approx 1.30$, fell well within acceptable thresholds, since high raw GVIF numbers are expected for factors with many degrees of freedom. No predictors exhibited adjusted GVIF values approaching levels (≈ 2 or 3) that would indicate problematic multicollinearity.
 
-```{r p1-plot, fig.cap="Figure 3: Diagnostic plots for the raw RQ1 model.", fig.width=4, fig.height=3}
+```{r fig.cap="Diagnostic plots for the raw RQ1 model.", fig.width=4, fig.height=3}
 p1 <- ggplot(music_data_1, aes(x = Hours.per.day)) +
 geom_histogram(bins = 30, color = "black") +
 labs(
@@ -498,7 +489,7 @@ p1
 
 Because the full model included many weakly justified predictors, we fit a reduced model to improve parsimony and check whether the diagnostic issues were caused by unnecessary complexity. We also inspected a histogram of hours per day in Figure 3, which was strongly right-skewed, suggesting structural issues with the outcome itself. The reduced model produced essentially the same adjusted $R^2 (\approx 0.16)$ and similar residual behavior, with persistent violations of linearity, homoscedasticity, and normality, plus influential points. This showed that removing predictors did not improve model fit and that the underlying outcome distribution, not just model complexity, was driving the diagnostic problems.
 
-```{r, fig.cap="Figure 4: Diagnostic plots for the log-transformed RQ1 model.", fig.align='center'}
+```{r, fig.cap="Diagnostic plots for the log-transformed RQ1 model.", fig.align='center'}
 
 # Set plotting window to 2x2
 par(mfrow = c(2, 2))
@@ -512,14 +503,14 @@ par(mfrow = c(1, 1))
 # we can see that violations of homoscedasticity and normality have improved (no more strong violations)
 ```
 
-To address this we applied a log transformation to the outcome and re–fit the model with $\log(\text{Hours per day} + 0.1)$ as the response. On the log scale, the Residuals vs fitted plot and Q–Q plot showed substantially more symmetric and homoscedastic residuals (as shown above) and the histogram of the transformed outcome indicated a much more balanced distribution. These improvements suggested that the log–transformed model better met the assumptions of linear regression. We also used variance inflation factors (VIFs) to check for multicollinearity among predictors and did not find strong evidence of a violation.
+To address this we applied a log transformation to the outcome and re–fit the model with $\log(\text{Hours per day} + 0.1)$ as the response. On the log scale, the Residuals vs fitted plot and Q–Q plot showed substantially more symmetric and homoscedastic residuals (Figure 4) and the histogram of the transformed outcome indicated a much more balanced distribution. These improvements suggested that the log–transformed model better met the assumptions of linear regression. We also used variance inflation factors (VIFs) to check for multicollinearity among predictors and did not find strong evidence of a violation.
 
-```{r, fig.cap="Figure 5: Influential Points Measured by Cook's Distance.", fig.align='center', fig.width=4, fig.height=3}
+```{r, fig.cap="Influential Points Measured by Cook's Distance.", fig.align='center', fig.width=4, fig.height=3}
 # Cook's distance for linear regression (RQ1)
 cooks <- cooks.distance(model_rq1_log)
 
 plot(cooks, type = "h",
-     main = "Influential Points Measured by Cook’s Distance",
+     main = "Influential Points Measured by Cook's Distance",
      ylab = "Cook's distance",
      xlab = "Index",
      cex.main = 0.8)
@@ -560,7 +551,6 @@ kable(comp_tbl, booktabs = TRUE) %>%
 Table 3 presents a comparison of the models for RQ1 using adjusted $R^2$ and AIC. The raw model explained about $19\%$ of the variance but had a high AIC, reflecting poorer fit. Reducing predictors slightly lowered adjusted $R^2$ but improved AIC marginally. Applying the log transformation improved both adjusted $R^2$ (to 0.232) and AIC (to 1309), indicating better model performance. Finally, removing the three outliers slightly reduced adjusted $R^2$ to 0.220 but further lowered AIC to 1260, suggesting a more parsimonious and stable model. Overall, the log-transformed model with outliers removed balances interpretability, fit, and the influence of extreme points, and became our primary model for question 1.
 
 ```{r, fig.cap="Table 4: Final linear regression model for RQ1 (log-hours with influential points removed)."}
-# Table 2
 
 tbl_rq1 <- tidy(
   model_rq1_log_final,
@@ -604,7 +594,7 @@ Listening while working has the largest coefficient in the model ($\hat{\beta} =
 
 For RQ2, we modeled a binary outcome indicating “high depression” (depression score ≥ 6) using logistic regression, with daily listening time (Hours per day) as our primary predictor.
 
-```{r, fig.cap="Figure 6: Partial Residuals Plot for Hours.per.day.", fig.width=4, fig.height=3}
+```{r, fig.cap="Partial Residuals Plot for Hours.per.day.", fig.width=4, fig.height=3}
 # Partial residual plot for our main predictor (Hours.per.day)
 
 # This checks linearity of Hours.per.day with log-odds.
@@ -659,9 +649,9 @@ kable(
 
 ```
 
-To assess predictive performance, we computed an initial confusion matrix (Table 3) based on the conventional 0.5 probability threshold. The initial confusion matrix showed 277 true negatives, 243 true positives, 95 false negatives, and 103 false positives, yielding an overall accuracy of 0.724. Sensitivity was 0.719, meaning the model correctly identified about 72% of participants with high depression, while specificity was 0.729, indicating a similar rate of correct classification among low-depression participants. The model’s precision (0.702) and F1 score (0.711) suggested moderate predictive performance but also revealed room for improvement, particularly in reducing false negatives.
+To assess predictive performance, we computed an initial confusion matrix (Table 5) based on the conventional 0.5 probability threshold. The initial confusion matrix showed 277 true negatives, 243 true positives, 95 false negatives, and 103 false positives, yielding an overall accuracy of 0.724. Sensitivity was 0.719, meaning the model correctly identified about 72% of participants with high depression, while specificity was 0.729, indicating a similar rate of correct classification among low-depression participants. The model’s precision (0.702) and F1 score (0.711) suggested moderate predictive performance but also revealed room for improvement, particularly in reducing false negatives.
 
-```{r, fig.cap="Figure 7: ROC Curve.",fig.width=4, fig.height=3}
+```{r, fig.cap="ROC Curve.",fig.width=4, fig.height=3}
 invisible(
   suppressMessages(
     suppressWarnings(
@@ -720,40 +710,45 @@ kable(
 
 ```
 
-At this optimized threshold, we recomputed the confusion matrix (Table 4), and sensitivity increased from 0.719 to 0.775, meaning the model detected a larger proportion of high-depression cases, while specificity remained reasonably high at 0.705. Overall accuracy also improved from 0.724 to 0.738, and the F1 score increased from 0.711 to 0.736, demonstrating that threshold adjustment meaningfully enhanced the model’s ability to classify high depression symptoms.
+At this optimized threshold, we recomputed the confusion matrix (Table 6), and sensitivity increased from 0.719 to 0.775, meaning the model detected a larger proportion of high-depression cases, while specificity remained reasonably high at 0.705. Overall accuracy also improved from 0.724 to 0.738, and the F1 score increased from 0.711 to 0.736, demonstrating that threshold adjustment meaningfully enhanced the model’s ability to classify high depression symptoms.
 
 Finally, we tested whether hours per day meaningfully improved the logistic regression model by comparing the full model to a reduced model that excluded this predictor. A likelihood ratio test showed no significant improvement from adding hours per day $(\chi^2(1) = 2.23,\; p = 0.135)$, indicating that daily music-listening hours do not provide additional explanatory power for predicting high depression symptoms once other factors are accounted for. Model fit indices aligned with this result: the AIC values for the reduced and full models were nearly identical (839.39 vs. 839.16), confirming that including hours per day does not meaningfully enhance model performance. However, because our research question specifically examines the role of daily listening time, we retain the full model as our primary specification.
 
-```{r, fig.cap="Table 7: Logistic regression model for RQ2 (odds ratios with 95 percent confidence intervals)."}
+```{r, fig.cap="Table 7: Logistic regression model for RQ2 (odds ratios with 95% confidence intervals)."}
+
+library(broom)
+library(kableExtra)
+library(dplyr)
 
 tbl_rq2 <- tidy(
-model2,
-conf.int   = TRUE,
-conf.level = 0.95,
-exponentiate = TRUE
+  model2,
+  conf.int   = TRUE,
+  conf.level = 0.95,
+  exponentiate = TRUE
 ) %>%
-mutate(
-estimate  = round(estimate, 2),
-std.error = round(std.error, 2),
-conf.low  = round(conf.low, 2),
-conf.high = round(conf.high, 2),
-p.value   = ifelse(p.value < 0.001, "p<0.001",
-sprintf("%.3f", p.value))
-) %>%
-rename(
-Term         = term,
-`Odds Ratio` = estimate,
-`Std Error`  = std.error,
-`2.5% CI`    = conf.low,
-`97.5% CI`   = conf.high,
-`p-value`    = p.value
-)
+  mutate(
+    estimate  = round(estimate, 2),
+    std.error = round(std.error, 2),
+    conf.low  = round(conf.low, 2),
+    conf.high = round(conf.high, 2),
+    p.value   = ifelse(p.value < 0.001, "p<0.001",
+                       sprintf("%.3f", p.value))
+  ) %>%
+  rename(
+    Term         = term,
+    `Odds Ratio` = estimate,
+    `Std Error`  = std.error,
+    `2.5% CI`    = conf.low,
+    `97.5% CI`   = conf.high,
+    `p-value`    = p.value
+  ) %>%
+  mutate(
+    Term = gsub("\\(", "\\\\(", Term),
+    Term = gsub("\\)", "\\\\)", Term)
+  )
 
-kable(
-tbl_rq2,
-booktabs = TRUE) %>%
-kable_styling(position = "center", full_width = FALSE, font_size = 9)
-
+kable(tbl_rq2, booktabs = TRUE) %>%
+  kable_styling(full_width = FALSE, font_size = 9)
 
 ```
 
