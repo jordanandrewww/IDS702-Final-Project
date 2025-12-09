@@ -1,214 +1,168 @@
 # Music Mental Health Analysis
 
-This repository contains an R-based analysis of the **Music & Mental Health (MxMH) Survey** dataset from Kaggle. The project examines how university students’ music-listening habits relate to self-reported mental-health symptoms, with a focus on **depression, anxiety, and insomnia**.
+This repository contains an R-based analysis of the **Music & Mental Health (MxMH) Survey** dataset from Kaggle. The project investigates how college students’ music-listening habits relate to their self-reported mental-health symptoms, with a particular focus on **depression**, **anxiety**, and **insomnia**.
 
 ## Research Questions
 
-1. **RQ1 – Listening Time & Platforms**  
-   *How does the number of hours spent listening to music per day vary by depression status and primary streaming service?*
+1. **RQ1 – Listening Time, Platforms, and Depression**  
+   *How does depression score vary by hours spent listening to music per day and primary streaming service?*
 
 2. **RQ2 – Predicting High Depression**  
-   *Does the number of hours spent listening to music each day increase the likelihood of reporting high depression symptoms?*
+   *Does listening more hours per day increase the likelihood of reporting high depression symptoms?*  
+   (High depression defined as **score ≥ 7**.)
 
 ## Stakeholder
 
-The primary stakeholder is the **Director of University Counseling & Wellness Services**.  
-They are interested in whether **music-listening behaviors** can provide **low-burden behavioral indicators** of mental-health risk that could complement existing screening and outreach tools.
+The primary stakeholder is the **Director of University Counseling and Wellness Services**.  
+They want to know whether **music-listening behaviors** could serve as **low-burden indicators** of mental-health risk that might complement campus screening practices.
 
 ## Data
 
-- **Source:** Music and Mental Health (MxMH) Survey Results (Kaggle)  
-- **Type:** Cross-sectional, self-reported survey  
+- **Source:** Music & Mental Health (MxMH) Survey (Kaggle)  
+- **Type:** Cross-sectional self-reported survey  
 - **Key variables:**
-  - Demographics (e.g., `Age`)
-  - Music behaviors:
+  - **Demographics:** `Age`
+  - **Music behaviors:**
     - `Hours.per.day`
     - `Primary.streaming.service`
-    - Favorite genre (`Fav.genre`)
-    - Genre listening frequencies (e.g., `Frequency..Classical.`, `Frequency..Hip.hop.`, etc.)
-    - Context variables (e.g., `While.working`, `Instrumentalist`, `Composer`, `Exploratory`, `Foreign.languages`)
-  - Mental-health scores (0–10):
+    - `Fav.genre`
+    - Listening context: `While.working`, `Instrumentalist`, `Composer`, `Exploratory`, `Foreign.languages`
+  - **Mental-health scores (0–10):**
     - `Anxiety`, `Depression`, `Insomnia`, `OCD`
+  - **Music effects:** self-reported impact on mood (`Music.effects`)
 
 ### Data Cleaning (Summary)
 
-Key cleaning steps implemented in the Quarto/R script:
+Major data-cleaning steps implemented in the Quarto/R workflow:
 
-- Dropped **`BPM`** due to:
-  - 100+ missing values
-  - Inconsistent interpretation (“beats per minute of favorite genre” answered unreliably)
+- Dropped the **`BPM`** column due to:
+  - Over 100 missing or invalid entries  
+  - Unreliable interpretation  
 - Removed:
-  - 1 row with missing `Age`
-  - 1 implausible case: `Age == 89` and `Hours.per.day == 24` while working
-- Restricted Yes/No variables (`While.working`, `Instrumentalist`, `Composer`, `Exploratory`, `Foreign.languages`) to valid `"Yes"` / `"No"` responses only.
-- Removed rows with blank `Music.effects`.
+  - 1 case with missing `Age`
+  - 1 implausible outlier (`Age == 89`, `Hours.per.day == 24`)
+- Standardized all **Yes/No** variables and removed invalid responses.
+- Removed rows where `Music.effects` was blank.
 - For **RQ1**, excluded:
-  - Rows with missing `Primary.streaming.service`
-  - Rows where `Primary.streaming.service == "I do not use a streaming service."`
-- Standardized frequency variable names to `freq_*` format (e.g. `freq_Classical`, `freq_Hiphop`, etc.).
-- Created a binary outcome for RQ2:  
-  `high_depression = 1` if `Depression >= 6`, else `0`.
+  - Rows missing `Primary.streaming.service`
+  - Respondents who selected *“I do not use a streaming service.”*
+- For **Poisson modeling**, removed 2 rows with **non-integer depression scores**.
+- Created a binary RQ2 outcome:  
+  `high_depression = 1` if `Depression >= 7`, else `0`.
 
 Final sample sizes:
 
-- **RQ1 (linear regression models):** 645 respondents (after filtering + outlier removal)
-- **RQ2 (logistic regression):** 718 respondents
+- **RQ1 (Poisson model):** 646 respondents  
+- **RQ2 (Logistic model):** 718 respondents
 
 ## Methods & Models
 
-### RQ1 – Linear Regression on Listening Time
+### RQ1 – Poisson Regression on Depression Score
 
-**Outcome:**
+**Outcome:**  
+- `Depression` (0–10 count scale)
 
-- Raw: `Hours.per.day`
-- Final main model: `log_hours = log(Hours.per.day + 0.1)`
-
-**Key predictors:**
-
-- `Depression`
+**Main predictors:**  
+- `Hours.per.day`  
 - `Primary.streaming.service`  
-- Interaction: `Depression * Primary.streaming.service`
-- Covariates:
-  - `Age`
-  - `While.working`
-  - `Instrumentalist`
-  - `Composer`
-  - `Exploratory`
-  - `Foreign.languages`
-  - `Anxiety`, `Insomnia`, `OCD`
-  - `Fav.genre`
-  - `Music.effects`
+- Interaction: `Hours.per.day * Primary.streaming.service`
+
+**Covariates:**  
+`Age`, `While.working`, `Instrumentalist`, `Composer`, `Exploratory`,  
+`Foreign.languages`, `Anxiety`, `Insomnia`, `OCD`, `Fav.genre`, `Music.effects`
 
 **Model development:**
 
-1. **Model A – Raw-scale model:**  
-   Linear regression on `Hours.per.day` with all predictors.
-2. **Model B – Reduced model:**  
-   Removed weakly justified predictors (genre frequency variables) for parsimony.
-3. **Model C – Log-transformed model:**  
-   Uses `log(Hours.per.day + 0.1)` to reduce skew and improve residual behavior.
-4. **Final model – Log + outlier removal:**  
-   - Identified outliers using diagnostic plots and **Cook’s distance**.
-   - Removed three influential observations (`rownames` 407, 345, 537).
-   - Refit the log model (`model_rq1_log_final`).
-
-**Diagnostics & Fit:**
-
-- Checked:
-  - Linearity
-  - Homoscedasticity
-  - Normality of residuals
-  - Influence (Cook’s distance)
-  - Multicollinearity (GVIF / VIF)
-- Compared models via:
-  - Adjusted \(R^2\)
-  - AIC (see “Table 1” in the report)
+1. Fit linear regression → diagnostics showed **heteroscedasticity** and **nonlinearity**.
+2. Switched to **Poisson regression** (appropriate for count outcomes).
+3. Compared Poisson vs **Negative Binomial** to assess overdispersion (AIC difference small).
+4. Checked:
+   - GVIF for multicollinearity  
+   - Partial residual plot for linearity on log scale  
+   - Pearson residuals for model fit  
 
 **High-level findings:**
 
-- Higher **depression scores** are associated with **more listening time**, but:
-  - The effect varies by **streaming platform** (interaction terms).
-- **Listening while working** shows the largest positive association with listening time.
-- **Insomnia**, **composer status**, **instrumentalist status**, **age**, and some favorite genres (e.g. Jazz, Latin) also show significant effects.
-- The final log-transformed model with outlier removal gives a more stable and interpretable fit.
+- Depression varies **significantly by streaming platform**, not uniformly.
+- Hours of listening **increase** expected depression score *only for some platforms* (e.g., Apple Music, Spotify).  
+- For others (Pandora, YouTube Music, Other), the relationship is **flat or negative**.  
+- **Anxiety** and **Insomnia** remain dominant predictors of depression level.
 
-### RQ2 – Logistic Regression on High Depression
+---
 
-**Outcome:**
+### RQ2 – Logistic Regression Predicting High Depression
 
-- Binary: `high_depression` (1 if `Depression >= 6`, 0 otherwise)
+**Outcome:**  
+- `high_depression` (1 if depression ≥ 7)
 
-**Main predictor:**
+**Main predictor:**  
+- `Hours.per.day`
 
-- `Hours.per.day` (daily listening time)
-
-**Covariates:**
-
-- `Age`
-- `Instrumentalist`, `Composer`
-- `Anxiety`, `Insomnia`, `OCD`
-- `Fav.genre`
-- `Music.effects`
+**Covariates:**  
+`Age`, `Instrumentalist`, `Composer`, `Anxiety`, `Insomnia`, `OCD`, `Fav.genre`, `Music.effects`
 
 **Model & Diagnostics:**
 
-- Fit logistic regression using `glm(..., family = binomial)`.
+- Fit logistic regression with `glm(..., family = binomial)`.
 - Checked:
-  - Linearity of `Hours.per.day` on the log-odds scale (via `crPlot`)
-  - Multicollinearity (VIF)
-  - Overall model fit (Hosmer–Lemeshow test)
-  - Leverage and residuals
-- Evaluated predictive performance:
-  - Confusion matrices at:
-    - Default threshold 0.50
-    - Optimized threshold ≈ 0.456 (from ROC curve)
-  - Metrics: Accuracy, Sensitivity, Specificity, Precision, F1, Balanced Accuracy
-  - **AUC ≈ 0.80**, indicating good discrimination.
+  - Linearity of Hours.per.day on the log-odds scale (`crPlot`)
+  - VIF for multicollinearity  
+  - Hosmer–Lemeshow test (model fit acceptable)
+  - Leverage and Pearson residuals  
+- Evaluated predictive performance using:
+  - Confusion matrix (threshold 0.50)
+  - ROC curve & AUC (AUC ≈ **0.78**)
+  - Optimal threshold (≈ 0.456) for better sensitivity
 
 **Key findings:**
 
-- **Hours.per.day is *not* a significant predictor** of high depression:  
-  - OR ≈ 1.05, 95% CI [0.99, 1.12], p ≈ 0.14
-- **Anxiety** and **insomnia** are the strongest predictors:
-  - Anxiety: OR ≈ 1.40 (each point increases odds of high depression by ≈ 40%)
-  - Insomnia: OR ≈ 1.17
-- Music-related variables (favorite genre, musician status, music effects) do **not** show robust, significant associations with high depression.
-- Likelihood ratio test comparing:
-  - Full model (with `Hours.per.day`)
-  - Reduced model (without `Hours.per.day`)
-  shows **no significant improvement** from including listening time.
+- **Listening hours are *not* a significant predictor** of high depression.  
+- Strongest predictors:
+  - **Anxiety** (OR ≈ 1.39)
+  - **Insomnia** (OR ≈ 1.15)
+- Students who say music **worsens their mood** have **4–5×** the odds of high depression.
+- Favorite genres and musician status show weak or inconsistent associations.
+
+---
 
 ## Main Conclusions
 
-- Students with **higher depression scores** tend to listen to **more music per day**, but this pattern depends on **streaming platform** and other contextual factors.
-- **Daily listening hours alone are not a reliable indicator** of high depression risk once co-occurring symptoms and basic covariates are included.
-- **Anxiety and insomnia** provide far more informative predictive value for high depression than total listening time.
-- For stakeholders (e.g., university counseling services), **brief questions about music use** may still be useful as supporting context, but **screening tools should prioritize validated mental-health indicators** rather than relying on listening time alone.
+- **Listening time alone is not a reliable depression indicator.**
+- **Platform differences matter**—some associations are positive, others negative.
+- **Anxiety and insomnia** are far more informative than music behaviors.
+- For counseling stakeholders:  
+  ➜ Music data can provide *context*, but **validated mental-health measures** should remain central in screenings.
 
 ## Limitations
 
-- **Self-reported and cross-sectional** data:
-  - No causal inference
-  - Susceptible to recall and reporting bias
-- **Single-item measures** for key constructs (e.g., depression, anxiety, music effects).
-- **Coarse music behavior measures**:
-  - Total hours per day
-  - Primary streaming platform
-  - Do not capture motivation, emotional purpose, or context of listening.
-- **Unmeasured confounders** such as:
-  - Socioeconomic status
-  - Academic stress
-  - Physical health
-  - Sleep quality (beyond insomnia score)
-  may bias estimates.
+- Cross-sectional, self-reported data → no causal inference  
+- Single-item psychological measures  
+- Music behavior measured coarsely (hours, platform, favorite genre)  
+- Potential unmeasured confounders (stress, sleep routines, academic pressure)
 
 ## Future Work
 
-Potential extensions include:
-
-- Collecting **richer, campus-specific data** with:
-  - Validated multi-item mental-health scales (PHQ-9, GAD-7, etc.)
-  - More detailed music-use questions (motivation, time-of-day, emotion regulation).
-- Using **longitudinal** or **experimental** designs to clarify causal relationships.
-- Exploring **more flexible models** (GAMs, random forests, gradient boosting) to capture non-linearities and complex interactions.
-- Incorporating **streaming log data** or track-level features (tempo, valence, energy) to better characterize music behavior.
+- Collect richer campus-specific data with PHQ-9, GAD-7  
+- Add questions on **emotional motivation** for listening  
+- Use longitudinal or mixed-methods approaches  
+- Explore non-linear or machine-learning models  
+- Integrate track-level audio features (valence, tempo, energy)
 
 ## Reproducibility & Setup
 
 ### Requirements
 
-- **R** (version ≥ 4.0 recommended)
-- **Quarto** (if rendering `.qmd` to HTML)
-- R packages (as loaded in the script):
-
+- **R** (>= 4.0)
+- **Quarto** for rendering `.qmd`
+- Required libraries:
 ```r
 library(tidyverse)
 library(dplyr)
 library(ggplot2)
-library(car)               # Diagnostics (VIF, CR plots)
-library(broom)             # Tidy model output
-library(kableExtra)        # Table formatting
-library(gridExtra)         # Multi-plot grids
-library(pROC)              # ROC curves
-library(caret)             # Confusion matrix and metrics
-library(ResourceSelection) # Hosmer–Lemeshow test
+library(car)
+library(broom)
+library(kableExtra)
+library(gridExtra)
+library(pROC)
+library(caret)
+library(ResourceSelection)
