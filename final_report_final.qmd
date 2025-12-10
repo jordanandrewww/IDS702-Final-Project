@@ -216,7 +216,7 @@ This analysis examines how music-listening behaviors relate to depression sympto
 
 We address two questions: (1) whether depression score (self reported on a scale of 0-10) varies based on hours of music listened to per day and streaming platforms, and (2) whether the number of hours spent listening to music each day is associated with the likelihood of reporting high depression symptoms (scores of 7 or above).
 
-For the first question, we find that daily music-listening hours are related to depression scores, but the direction and strength of this relationship depend heavily on the streaming platform. In the baseline platform group (Apple Music), more listening time is associated with higher depression scores, while several other platforms show a weaker or even reversed pattern. This indicates that listening time alone is not a consistent or reliable indicator of depression. Other factors, such as insomnia symptoms, anxiety, and certain genre preferences, were more stable predictors of depression scores than listening hours.For the second question, our logistic regression model shows that daily listening hours do not meaningfully increase the odds of being in a high-depression category once other factors are taken into account. Instead, anxiety and insomnia serve as the strongest predictors of elevated depression symptoms.
+For the first question, we find that daily music-listening hours are related to depression scores, but the direction and strength of this relationship depend heavily on the streaming platform. In the baseline platform group (Apple Music), more listening time is associated with higher depression scores, while several other platforms show a weaker or even reversed pattern. This indicates that listening time alone is not a consistent or reliable indicator of depression. Other factors, such as insomnia symptoms, anxiety, and certain genre preferences, were more stable predictors of depression scores than listening hours. For the second question, our logistic regression model shows that daily listening hours do not meaningfully increase the odds of being in a high-depression category once other factors are taken into account. Instead, anxiety and insomnia serve as the strongest predictors of elevated depression symptoms.
 
 Overall, although depression is associated with slightly higher listening time, daily music-listening hours are not a reliable indicator of high depression risk. Co-occurring mental-health symptoms provide far more informative predictive value than listening duration.
 
@@ -257,6 +257,7 @@ ggplot(music_data_1_clean,
   )
 
 ```
+
 As shown in Figure 1, the relationship between daily music-listening time and depression score differs substantially across streaming platforms. For Apple Music users, the trend is strongly positive: students who listen for more hours per day show noticeably higher depression scores. Spotify users also show a positive association, though the slope is much more moderate. In contrast, students using YouTube Music or Other streaming services show a negative trend, where greater listening time is associated with lower depression scores for these groups. The pattern is most dramatic for Pandora, where the slope is sharply negative: even moderate increases in listening time correspond to substantially lower depression scores.
 
 These contrasting slopes indicate that the effect of listening time on depression is highly platform-dependent, with some platforms showing the expected positive association and others showing the opposite. As a result, there is no single, uniform relationship between listening hours and depression symptoms across all listeners.
@@ -293,7 +294,7 @@ Moving forward, the counseling center could incorporate a few targeted questions
 
 ## Data Background
 
-The data used in this analysis come from the Music and Mental Health (MxMH) Survey Results hosted on Kaggle. The dataset was collected through an online Google Form distributed through social media platforms and public forums, resulting in a convenience sample of 736 respondents. After cleaning, participants ranged in age from 10 to 73, with an average age of approximately 24 and a median age of 21, indicating that the sample is largely composed of late-adolescent and young adult respondents. Because most individuals fall within the traditional college-age range, it is reasonably aligned with the population of interest for our stakeholder—a university counseling center—though it is not a representative campus sample. The dataset includes demographic variables (such as age), music-listening behaviors (hours per day, primary streaming platform, and preferred genres), and self-reported mental-health symptom scores for anxiety, depression, insomnia, and OCD (each rated 0–10). As a cross-sectional, self-reported dataset, it is appropriate for identifying associations but cannot establish causal relationships. 
+The data used in this analysis come from the Music and Mental Health (MxMH) Survey Results hosted on Kaggle. The dataset was collected through an online Google Form distributed through social media platforms and public forums, resulting in a convenience sample of 736 respondents. After cleaning, participants ranged in age from 10 to 73, with an average age of approximately 24 and a median age of 21, indicating that the sample is largely composed of late-adolescent and young adult respondents. Because most individuals fall within the traditional college-age range, it is reasonably aligned with the population of interest for our stakeholder—a university counseling center—though it is not a representative campus sample. The dataset includes demographic variables (such as age), music-listening behaviors (hours per day, primary streaming platform, and preferred genres), and self-reported mental-health symptom scores for anxiety, depression, insomnia, and OCD (each rated 0–10). As a cross-sectional, self-reported dataset, it is appropriate for identifying associations but cannot establish causal relationships.
 
 ## Data Cleaning
 
@@ -375,6 +376,7 @@ kable(
 
 
 ```
+
 \begin{center}
 Table 1: AIC comparison between the Poisson and Negative Binomial models for RQ1
 \end{center}
@@ -493,6 +495,7 @@ kable(
 
 
 ```
+
 \begin{center}
 Table 2: Final Poisson model statistics for RQ1.
 \end{center}
@@ -555,6 +558,7 @@ kable(
 
 
 ```
+
 \begin{center}
 Table 3: Confusion Matrix and Classification Metrics, Threshold = 0.5.
 \end{center}
@@ -602,6 +606,7 @@ kable(
   kable_styling(position = "center", full_width = FALSE, font_size = 9)
 
 ```
+
 \begin{center}
 Table 4: Confusion Matrix and Classification Metrics (Threshold = 0.456).
 \end{center}
@@ -661,6 +666,7 @@ kable(tbl_rq2, booktabs = TRUE) %>%
   kable_styling(full_width = FALSE, font_size = 9)
 
 ```
+
 \begin{center}
 Table 5: Logistic regression model for RQ2 (odds ratios with 95% confidence intervals).
 \end{center}
