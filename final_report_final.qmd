@@ -294,7 +294,7 @@ Moving forward, the counseling center could incorporate a few targeted questions
 
 ## Data Background
 
-The data used in this analysis come from the Music and Mental Health (MxMH) Survey Results hosted on Kaggle. The dataset was collected through an online Google Form distributed through social media platforms and public forums, resulting in a convenience sample of 736 respondents. After cleaning, participants ranged in age from 10 to 73, with an average age of approximately 24 and a median age of 21, indicating that the sample is largely composed of late-adolescent and young adult respondents. Because most individuals fall within the traditional college-age range, it is reasonably aligned with the population of interest for our stakeholder—a university counseling center—though it is not a representative campus sample. The dataset includes demographic variables (such as age), music-listening behaviors (hours per day, primary streaming platform, and preferred genres), and self-reported mental-health symptom scores for anxiety, depression, insomnia, and OCD (each rated 0–10). As a cross-sectional, self-reported dataset, it is appropriate for identifying associations but cannot establish causal relationships.
+The data used in this analysis come from the Music and Mental Health (MxMH) Survey Results hosted on Kaggle (Rasgaitis, 2020). The dataset was collected through an online Google Form distributed through social media platforms and public forums, resulting in a convenience sample of 736 respondents. After cleaning, participants ranged in age from 10 to 73, with an average age of approximately 24 and a median age of 21, indicating that the sample is largely composed of late-adolescent and young adult respondents. Because most individuals fall within the traditional college-age range, it is reasonably aligned with the population of interest for our stakeholder—a university counseling center—though it is not a representative campus sample. The dataset includes demographic variables (such as age), music-listening behaviors (hours per day, primary streaming platform, and preferred genres), and self-reported mental-health symptom scores for anxiety, depression, insomnia, and OCD (each rated 0–10). As a cross-sectional, self-reported dataset, it is appropriate for identifying associations but cannot establish causal relationships.
 
 ## Data Cleaning
 
@@ -502,7 +502,7 @@ Table 2: Final Poisson model statistics for RQ1.
 
 ## Research Question 2
 
-For RQ2, we modeled a binary outcome indicating “high depression” (depression score ≥ 7) using logistic regression, with daily listening time (Hours per day) as our primary predictor.
+For RQ2, we modeled a binary outcome indicating “high depression” (depression score $≥$ 7) using logistic regression, with daily listening time (Hours per day) as our primary predictor.
 
 ```{r, fig.cap="Partial Residuals Plot for Hours.per.day.", fig.width=4, fig.height=3}
 # Partial residual plot for our main predictor (Hours.per.day)
@@ -668,7 +668,7 @@ kable(tbl_rq2, booktabs = TRUE) %>%
 ```
 
 \begin{center}
-Table 5: Logistic regression model for RQ2 (odds ratios with 95% confidence intervals).
+Table 5: Logistic regression model for RQ2
 \end{center}
 
 Overall, the model shows that anxiety and insomnia are the strongest and most consistent predictors of high depression symptoms, with both variables having statistically significant odds ratios above 1. In contrast, hours of music listening, demographic factors (including age), musician status, and most favorite-genre categories do not demonstrate meaningful or statistically reliable associations with elevated depression. The only other notable predictors are Hip hop and Music effects: Worsen, which show significantly higher odds of high depression compared to their reference groups.
@@ -699,12 +699,14 @@ These limitations mean that our findings should be interpreted as descriptive pa
 
 # Works Cited
 
-Luo et al. (2024) Luo, M.-M., Hao, M., Li, X.-H., Liao, J., Wu, C.-M., & Wang, Q. (2024). Prevalence of depressive tendencies among college students and the influence of attributional styles on depressive tendencies in the post-pandemic era. Frontiers in Public Health, 12, 1326582. https://doi.org/10.3389/fpubh.2024.1326582
-
 Li et al. (2022) Li, W., Zhao, Z., Chen, D., Peng, Y., & Lu, Z. (2022). Prevalence and associated factors of depression and anxiety symptoms among college students: A systematic review and meta-analysis. Journal of Child Psychology and Psychiatry, 63(11), 1222–1230. https://doi.org/10.1111/jcpp.13606
 
-Rebecchini et al. (2021) Rebecchini, L., Russo, F., Agostinis, G., Merlo, L., Caruana, F., & Avanzini, P. (2021). Music and health: What interventions are suitable for mental disorders? International Journal of Environmental Research and Public Health, 18(21), 11141. https://doi.org/10.3390/ijerph182111141
+Luo et al. (2024) Luo, M.-M., Hao, M., Li, X.-H., Liao, J., Wu, C.-M., & Wang, Q. (2024). Prevalence of depressive tendencies among college students and the influence of attributional styles on depressive tendencies in the post-pandemic era. Frontiers in Public Health, 12, 1326582. https://doi.org/10.3389/fpubh.2024.1326582
 
 Peters et al. (2024) Peters, V., Bissonnette, J., Nadeau, D., Gauthier-Légaré, A., & Noël, M.-A. (2024). The impact of musicking on emotion regulation: A systematic review and meta-analysis. Psychology of Music. Advance online publication. https://doi.org/10.1177/03057356241252505
+
+Rasgaitis, C. (2020). Music & Mental Health Survey Results (MXMH) [Data set]. Kaggle. <https://www.kaggle.com/datasets/catherinerasgaitis/mxmh-survey-results>
+
+Rebecchini et al. (2021) Rebecchini, L., Russo, F., Agostinis, G., Merlo, L., Caruana, F., & Avanzini, P. (2021). Music and health: What interventions are suitable for mental disorders? International Journal of Environmental Research and Public Health, 18(21), 11141. https://doi.org/10.3390/ijerph182111141
 
 Rodwin et al. (2022) Rodwin, A. H., Verma, P., Lee, J., & Tsai, A. C. (2022). Music-based interventions to improve mental health: A systematic review. The Lancet Psychiatry, 9(11), 843–854. https://doi.org/10.1016/S2215-0366(22)00237-5

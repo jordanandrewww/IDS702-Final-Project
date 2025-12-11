@@ -333,20 +333,27 @@ plot(fit_vals, Resid)
 # Predicted Listening Time vs Depression by Streaming Platform
 
 ```{r}
-ggplot(music_data_1_clean,
-       aes(x = Hours.per.day,
-           y = Depression,
-           color = Primary.streaming.service)) +
-  geom_smooth(method = "lm",
-              se = FALSE,
-              size = 1) + 
+ggplot(
+  music_data_1_clean,
+  aes(
+    x = Hours.per.day,
+    y = Depression,
+    color = Primary.streaming.service
+  )
+) +
+  geom_point(alpha = 0.5, size = 2) +         # << added points
+  geom_smooth(
+    method = "lm",
+    se = FALSE,
+    size = 1
+  ) +
   labs(
     x = "Hours of Music Listening per Day",
     y = "Depression Score"
   ) +
   scale_color_brewer(palette = "Dark2") +
-  scale_y_continuous(limits = c(0, 10)) +     # y-axis capped
-  scale_x_continuous(limits = c(0, 24)) +     # x-axis capped
+  scale_y_continuous(limits = c(0, 10)) +
+  scale_x_continuous(limits = c(0, 24)) +
   theme_minimal(base_size = 12) +
   theme(
     legend.title = element_blank(),
@@ -354,6 +361,34 @@ ggplot(music_data_1_clean,
     plot.title = element_text(face = "bold")
   )
 
+
+
+```
+```{r}
+ggplot(
+  music_data_1_clean,
+  aes(
+    x = Hours.per.day,
+    y = Depression
+  )
+) +
+  geom_point(alpha = 0.5, size = 2, color = "steelblue") +
+  geom_smooth(
+    method = "lm",
+    se = FALSE,
+    size = 1,
+    color = "black"
+  ) +
+  labs(
+    x = "Hours of Music Listening per Day",
+    y = "Depression Score"
+  ) +
+  scale_y_continuous(limits = c(0, 10)) +
+  scale_x_continuous(limits = c(0, 24)) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold")
+  )
 
 ```
 
